@@ -81,6 +81,228 @@
                 grid-column: auto;
             }
         }
+
+
+        /* =========================
+           PHOENIX HOME
+           ========================= */
+        .phoenix-container {
+            max-width: none;
+            width: 100%;
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+        }
+
+        .phoenix-home {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            background:
+                radial-gradient(circle at center, rgba(94, 43, 16, 0.28) 0%, rgba(17, 17, 17, 0) 38%),
+                radial-gradient(circle at 50% 110%, rgba(115, 48, 12, 0.18) 0%, rgba(17, 17, 17, 0) 45%),
+                #0b0908;
+        }
+
+        .phoenix-title {
+            position: absolute;
+            top: 28px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 5;
+            font-size: clamp(28px, 4vw, 54px);
+            letter-spacing: 0.28em;
+            font-weight: 700;
+            color: #f1e4d5;
+            text-shadow: 0 0 28px rgba(190, 82, 24, 0.45);
+        }
+
+        .phoenix-wheel {
+            width: min(88vw, 900px);
+            height: min(88vw, 900px);
+            max-height: 88vh;
+            max-width: 88vh;
+            position: relative;
+            border-radius: 50%;
+            transform: rotate(22.5deg);
+            background: conic-gradient(
+                from -22.5deg,
+                rgba(118, 54, 24, 0.22) 0deg 45deg,
+                rgba(255,255,255,0.025) 45deg 46deg,
+                rgba(255,255,255,0.015) 46deg 90deg,
+                rgba(255,255,255,0.025) 90deg 91deg,
+                rgba(255,255,255,0.015) 91deg 135deg,
+                rgba(255,255,255,0.025) 135deg 136deg,
+                rgba(255,255,255,0.015) 136deg 180deg,
+                rgba(255,255,255,0.025) 180deg 181deg,
+                rgba(255,255,255,0.015) 181deg 225deg,
+                rgba(255,255,255,0.025) 225deg 226deg,
+                rgba(255,255,255,0.015) 226deg 270deg,
+                rgba(255,255,255,0.025) 270deg 271deg,
+                rgba(255,255,255,0.015) 271deg 315deg,
+                rgba(255,255,255,0.025) 315deg 316deg,
+                rgba(255,255,255,0.015) 316deg 360deg
+            );
+            box-shadow:
+                0 0 0 1px rgba(255,255,255,0.06),
+                0 0 55px rgba(137, 55, 17, 0.18),
+                inset 0 0 80px rgba(0,0,0,0.72);
+        }
+
+        .phoenix-wheel::before {
+            content: '';
+            position: absolute;
+            inset: 7%;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 50%;
+            box-shadow: inset 0 0 35px rgba(0,0,0,0.65);
+        }
+
+        .phoenix-wheel::after {
+            content: '';
+            position: absolute;
+            inset: 16%;
+            border: 1px solid rgba(177, 76, 26, 0.18);
+            border-radius: 50%;
+        }
+
+        .phoenix-sector {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            top: 0;
+            left: 50%;
+            transform-origin: 0 100%;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 9%;
+            color: rgba(255,255,255,0.12);
+            transition: background .25s ease, color .25s ease, box-shadow .25s ease;
+        }
+
+        .phoenix-sector::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-right: 1px solid rgba(255,255,255,0.06);
+            transform: skewY(-45deg);
+            transform-origin: 100% 0;
+        }
+
+        .phoenix-sector span,
+        .phoenix-sector strong {
+            transform: rotate(-22.5deg);
+        }
+
+        .phoenix-sector span {
+            font-size: clamp(24px, 4vw, 46px);
+            filter: drop-shadow(0 0 16px rgba(190, 72, 18, 0.5));
+        }
+
+        .phoenix-sector strong {
+            position: absolute;
+            top: 30%;
+            font-size: clamp(12px, 1.5vw, 20px);
+            letter-spacing: 0.16em;
+        }
+
+        .sector-1 { transform: rotate(0deg) skewY(-45deg); }
+        .sector-2 { transform: rotate(45deg) skewY(-45deg); }
+        .sector-3 { transform: rotate(90deg) skewY(-45deg); }
+        .sector-4 { transform: rotate(135deg) skewY(-45deg); }
+        .sector-5 { transform: rotate(180deg) skewY(-45deg); }
+        .sector-6 { transform: rotate(225deg) skewY(-45deg); }
+        .sector-7 { transform: rotate(270deg) skewY(-45deg); }
+        .sector-8 { transform: rotate(315deg) skewY(-45deg); }
+
+        .sector-1 {
+            cursor: pointer;
+            background: radial-gradient(circle at 50% 15%, rgba(158, 64, 20, 0.34), rgba(82, 30, 12, 0.10) 48%, transparent 70%);
+            color: #f0d8c5;
+            box-shadow: inset 0 0 55px rgba(155, 58, 17, 0.16);
+        }
+
+        .sector-1:hover {
+            background: radial-gradient(circle at 50% 15%, rgba(203, 84, 25, 0.52), rgba(100, 35, 12, 0.16) 48%, transparent 72%);
+            color: #fff3e8;
+        }
+
+        .phoenix-center {
+            position: absolute;
+            width: 32%;
+            height: 32%;
+            left: 34%;
+            top: 34%;
+            border-radius: 50%;
+            transform: rotate(-22.5deg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle, #25130b 0%, #100c09 68%, #080706 100%);
+            border: 1px solid rgba(206, 88, 25, 0.35);
+            box-shadow:
+                0 0 45px rgba(172, 67, 20, 0.2),
+                inset 0 0 35px rgba(0,0,0,0.8);
+            z-index: 4;
+        }
+
+        .phoenix-flame {
+            font-size: clamp(36px, 6vw, 72px);
+            filter: drop-shadow(0 0 22px rgba(203, 79, 19, 0.55));
+        }
+
+        .phoenix-center-text {
+            margin-top: 8px;
+            color: #d7c2b1;
+            font-size: clamp(11px, 1.4vw, 17px);
+            letter-spacing: 0.22em;
+        }
+
+        .phoenix-back-wrap {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px 25px 0;
+        }
+
+        .phoenix-back {
+            padding: 9px 14px;
+            background: #1b1714;
+            color: #e9ddd3;
+            border: 1px solid #3a2b23;
+            border-radius: 9px;
+            cursor: pointer;
+        }
+
+        #goalsSection,
+        #tasksSection,
+        #routinesSection,
+        #todaySection {
+            display: none;
+        }
+
+        @media (max-width: 700px) {
+            .phoenix-title {
+                top: 22px;
+                letter-spacing: 0.18em;
+            }
+
+            .phoenix-wheel {
+                width: 94vw;
+                height: 94vw;
+                max-width: 94vw;
+                max-height: 94vw;
+            }
+
+            .phoenix-sector strong {
+                letter-spacing: 0.08em;
+            }
+        }
     </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -213,69 +435,59 @@
 
     checkSession();
 </script>
-<div class="container">
+<div class="container phoenix-container">
 
-    <header>
-        <h1>Моё пространство</h1>
-        <div class="subtitle">
-            Личная система. Идеи · цели · знания · деньги · жизнь.
+    <div class="phoenix-home" id="phoenixHome">
+        <div class="phoenix-title">PHOENIX</div>
+
+        <div class="phoenix-wheel" aria-label="Phoenix">
+            <div class="phoenix-sector sector-1" onclick="openPhoenixLife()">
+                <span>🔥</span>
+                <strong>ЖИЗНЬ</strong>
+            </div>
+            <div class="phoenix-sector sector-2"></div>
+            <div class="phoenix-sector sector-3"></div>
+            <div class="phoenix-sector sector-4"></div>
+            <div class="phoenix-sector sector-5"></div>
+            <div class="phoenix-sector sector-6"></div>
+            <div class="phoenix-sector sector-7"></div>
+            <div class="phoenix-sector sector-8"></div>
+
+            <div class="phoenix-center">
+                <div class="phoenix-flame">🔥</div>
+                <div class="phoenix-center-text">PHOENIX</div>
+            </div>
         </div>
-    </header>
-
-    <div class="grid">
-
-        <div class="card">
-            <h2>🎯 Цели</h2>
-            <p>
-                Мои цели, планы и направления развития.
-            </p>
-        </div>
-
-        <div class="card">
-            <h2>💰 Финансы</h2>
-            <p>
-                Капитал, доходы, расходы, активы и финансовые цели.
-            </p>
-        </div>
-
-        <div class="card">
-            <h2>🧠 Знания</h2>
-            <p>
-                Книги, идеи, исследования, заметки и интересные мысли.
-            </p>
-        </div>
-
-        <div class="card">
-            <h2>❤️ Отношения</h2>
-            <p>
-                Наблюдения, опыт, общение и личные выводы.
-            </p>
-        </div>
-
-        <div class="card">
-            <h2>🔥 Увлечения</h2>
-            <p>
-                Кино, музыка, путешествия, спорт и всё, что мне интересно.
-            </p>
-        </div>
-
-        <div class="card">
-            <h2>💡 Идеи</h2>
-            <p>
-                Бизнес-идеи, проекты, гипотезы и мысли, которые нельзя потерять.
-            </p>
-        </div>
-
-        <div class="card full">
-            <h2>📥 Входящие</h2>
-            <p>
-                Место для всего нового и пока не структурированного.
-            </p>
-        </div>
-
     </div>
 
 </div>
+
+<div id="phoenixBack" class="phoenix-back-wrap" style="display:none;">
+    <button type="button" class="phoenix-back" onclick="closePhoenixLife()">← PHOENIX</button>
+</div>
+
+<script>
+    function openPhoenixLife() {
+        document.getElementById('phoenixHome').style.display = 'none';
+        document.getElementById('goalsSection').style.display = 'block';
+        document.getElementById('tasksSection').style.display = 'block';
+        document.getElementById('routinesSection').style.display = 'block';
+        document.getElementById('todaySection').style.display = 'block';
+        document.getElementById('phoenixBack').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function closePhoenixLife() {
+        document.getElementById('goalsSection').style.display = 'none';
+        document.getElementById('tasksSection').style.display = 'none';
+        document.getElementById('routinesSection').style.display = 'none';
+        document.getElementById('todaySection').style.display = 'none';
+        document.getElementById('phoenixBack').style.display = 'none';
+        document.getElementById('phoenixHome').style.display = 'flex';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+</script>
+
 <section id="goalsSection" style="
     max-width: 900px;
     margin: 30px auto;
@@ -1381,217 +1593,6 @@ async function loadRoutineGoals() {
         </label>
     `).join('');
 }
-    async function saveRoutineGoals(routineId, button) {
-
-    const editor =
-        document.getElementById(
-            `routine-goals-editor-${routineId}`
-        );
-
-    if (!editor) {
-        return;
-    }
-
-    const selectedGoalIds = Array.from(
-        editor.querySelectorAll(
-            '.routine-editor-goal:checked'
-        )
-    ).map(checkbox => Number(checkbox.value));
-
-    const { data: currentLinks, error: currentError } =
-        await supabaseClient
-            .from('routine_goal_links')
-            .select('goal_id')
-            .eq('routine_id', routineId);
-
-    if (currentError) {
-        alert(
-            'Ошибка загрузки текущих связей: ' +
-            currentError.message
-        );
-        return;
-    }
-
-    const currentGoalIds =
-        (currentLinks || []).map(
-            link => link.goal_id
-        );
-
-    const goalsToAdd =
-        selectedGoalIds.filter(
-            goalId => !currentGoalIds.includes(goalId)
-        );
-
-    const goalsToRemove =
-        currentGoalIds.filter(
-            goalId => !selectedGoalIds.includes(goalId)
-        );
-
-    // Добавляем новые связи
-    if (goalsToAdd.length > 0) {
-
-        const rowsToInsert =
-            goalsToAdd.map(goalId => ({
-                routine_id: routineId,
-                goal_id: goalId
-            }));
-
-        const { error: insertError } =
-            await supabaseClient
-                .from('routine_goal_links')
-                .insert(rowsToInsert);
-
-        if (insertError) {
-            alert(
-                'Ошибка добавления связей: ' +
-                insertError.message
-            );
-            return;
-        }
-    }
-
-    // Удаляем снятые связи
-    if (goalsToRemove.length > 0) {
-
-        const { error: deleteError } =
-            await supabaseClient
-                .from('routine_goal_links')
-                .delete()
-                .eq('routine_id', routineId)
-                .in('goal_id', goalsToRemove);
-
-        if (deleteError) {
-            alert(
-                'Ошибка удаления связей: ' +
-                deleteError.message
-            );
-            return;
-        }
-    }
-
-    await loadRoutines();
-}
-    async function openRoutineGoalsEditor(routineId, button) {
-
-    const existingEditor =
-        document.getElementById(`routine-goals-editor-${routineId}`);
-
-    if (existingEditor) {
-        existingEditor.remove();
-        return;
-    }
-
-    const { data: allGoals, error: goalsError } =
-        await supabaseClient
-            .from('goals')
-            .select('id, title, period')
-            .order('created_at', { ascending: false });
-
-    if (goalsError) {
-        alert(
-            'Ошибка загрузки целей: ' +
-            goalsError.message
-        );
-        return;
-    }
-
-    const { data: currentLinks, error: linksError } =
-        await supabaseClient
-            .from('routine_goal_links')
-            .select('goal_id')
-            .eq('routine_id', routineId);
-
-    if (linksError) {
-        alert(
-            'Ошибка загрузки связанных целей: ' +
-            linksError.message
-        );
-        return;
-    }
-
-    const currentGoalIds =
-        new Set(
-            (currentLinks || []).map(
-                link => link.goal_id
-            )
-        );
-
-    const editor = document.createElement('div');
-
-    editor.id =
-        `routine-goals-editor-${routineId}`;
-
-    editor.style.marginTop = '10px';
-    editor.style.padding = '12px';
-    editor.style.background = '#151515';
-    editor.style.border = '1px solid #292929';
-    editor.style.borderRadius = '8px';
-
-    editor.innerHTML = `
-        <div style="
-            color:#aaa;
-            font-size:14px;
-            margin-bottom:8px;
-        ">
-            Выберите цели для этой рутины:
-        </div>
-
-        ${
-            allGoals && allGoals.length > 0
-                ? allGoals.map(goal => `
-                    <label style="
-                        display:block;
-                        padding:7px 0;
-                        color:#ddd;
-                        cursor:pointer;
-                    ">
-                        <input
-                            type="checkbox"
-                            class="routine-editor-goal"
-                            value="${goal.id}"
-                            ${currentGoalIds.has(goal.id)
-                                ? 'checked'
-                                : ''}
-                            style="margin-right:8px;"
-                        >
-
-                        ${goal.title || 'Без названия'}
-
-                        <span style="color:#777;">
-                            (${getGoalPeriodLabel(goal.period)})
-                        </span>
-                    </label>
-                `).join('')
-                : `
-                    <div style="color:#777;">
-                        Пока нет целей.
-                    </div>
-                `
-        }
-
-        <div style="margin-top:10px;">
-            <button
-                type="button"
-                onclick="saveRoutineGoals(${routineId}, this)"
-                style="
-                    padding:7px 12px;
-                    background:#333;
-                    color:white;
-                    border:0;
-                    border-radius:7px;
-                    cursor:pointer;
-                "
-            >
-                💾 Сохранить связи
-            </button>
-        </div>
-    `;
-
-    button.parentElement.insertAdjacentElement(
-        'afterend',
-        editor
-    );
-}
     async function loadRoutines() {
     const routinesList = document.getElementById('routinesList');
 
@@ -1611,6 +1612,8 @@ async function loadRoutineGoals() {
         return;
     }
 
+
+    // Получаем сегодняшнюю дату в локальном времени браузера
     const now = new Date();
 
     const formatDate = (date) => {
@@ -1623,22 +1626,27 @@ async function loadRoutineGoals() {
 
     const today = formatDate(now);
 
+
+    // Определяем текущий период для каждой рутины
     function getPeriodRange(frequency) {
 
         const start = new Date(now);
         const end = new Date(now);
 
         if (frequency === 'daily') {
+
             return {
                 start: today,
                 end: today
             };
         }
 
+
         if (frequency === 'weekly') {
 
             const dayOfWeek = now.getDay();
 
+            // Понедельник = 1, воскресенье = 0
             const daysFromMonday =
                 dayOfWeek === 0
                     ? 6
@@ -1658,6 +1666,7 @@ async function loadRoutineGoals() {
             };
         }
 
+
         if (frequency === 'monthly') {
 
             start.setDate(1);
@@ -1673,16 +1682,20 @@ async function loadRoutineGoals() {
             };
         }
 
+
         return {
             start: today,
             end: today
         };
     }
 
+
     const routineIds = routines.map(
         routine => routine.id
     );
 
+
+    // Загружаем выполнения всех рутин
     const { data: allCompletions, error: completionsError } =
         await supabaseClient
             .from('routine_completions')
@@ -1691,6 +1704,7 @@ async function loadRoutineGoals() {
             )
             .in('routine_id', routineIds);
 
+
     if (completionsError) {
         routinesList.textContent =
             'Ошибка загрузки выполнений рутин: ' +
@@ -1698,11 +1712,14 @@ async function loadRoutineGoals() {
         return;
     }
 
+
+    // Загружаем связи рутин с целями
     const { data: links, error: linksError } =
         await supabaseClient
             .from('routine_goal_links')
             .select('routine_id, goal_id')
             .in('routine_id', routineIds);
+
 
     if (linksError) {
         routinesList.textContent =
@@ -1711,11 +1728,14 @@ async function loadRoutineGoals() {
         return;
     }
 
+
     const goalIds = [...new Set(
         (links || []).map(link => link.goal_id)
     )];
 
+
     let goals = [];
+
 
     if (goalIds.length > 0) {
 
@@ -1724,6 +1744,7 @@ async function loadRoutineGoals() {
                 .from('goals')
                 .select('id, title, period')
                 .in('id', goalIds);
+
 
         if (goalsError) {
             routinesList.textContent =
@@ -1735,10 +1756,12 @@ async function loadRoutineGoals() {
         goals = goalData || [];
     }
 
+
     routinesList.innerHTML = routines.map(routine => {
 
         const period =
             getPeriodRange(routine.frequency);
+
 
         const periodCompletions =
             (allCompletions || []).filter(completion =>
@@ -1748,16 +1771,20 @@ async function loadRoutineGoals() {
                 completion.completion_date <= period.end
             );
 
+
         const completedCount =
             periodCompletions.length;
+
 
         const target =
             routine.times_per_period
                 ? Number(routine.times_per_period)
                 : 1;
 
+
         const remaining =
             Math.max(target - completedCount, 0);
+
 
         const completedToday =
             (allCompletions || []).some(completion =>
@@ -1766,6 +1793,7 @@ async function loadRoutineGoals() {
                 completion.status === 'completed'
             );
 
+
         const routineGoalIds =
             (links || [])
                 .filter(link =>
@@ -1773,10 +1801,12 @@ async function loadRoutineGoals() {
                 )
                 .map(link => link.goal_id);
 
+
         const routineGoals =
             goals.filter(goal =>
                 routineGoalIds.includes(goal.id)
             );
+
 
         const goalsHtml =
             routineGoals.length > 0
@@ -1807,17 +1837,11 @@ async function loadRoutineGoals() {
                         `).join('')}
                     </div>
                 `
-                : `
-                    <div style="
-                        margin-top: 12px;
-                        color: #777;
-                        font-size: 14px;
-                    ">
-                        У рутины пока нет связанной цели.
-                    </div>
-                `;
+                : '';
+
 
         let progressHtml;
+
 
         if (routine.frequency === 'daily') {
 
@@ -1859,9 +1883,10 @@ async function loadRoutineGoals() {
             `;
         }
 
+
         const completionButton =
-            routine.frequency !== 'daily' &&
-            completedCount >= target
+    routine.frequency !== 'daily' &&
+    completedCount >= target
         ? `
             <div style="
                 margin-top: 12px;
@@ -1871,70 +1896,33 @@ async function loadRoutineGoals() {
             </div>
         `
         : completedToday
-        ? `
-            <div style="
-                margin-top: 12px;
-                color: #aaa;
-            ">
-                ☑ Выполнено сегодня
-            </div>
-        `
-        : `
-            <div style="margin-top: 12px;">
-                <button
-                    type="button"
-                    onclick="completeRoutineToday(${routine.id})"
-                    style="
-                        padding: 7px 12px;
-                        background: #333;
-                        color: white;
-                        border: 0;
-                        border-radius: 7px;
-                        cursor: pointer;
-                    "
-                >
-                    ☑ Выполнить сегодня
-                </button>
-            </div>
-        `;
+            ? `
+                <div style="
+                    margin-top: 12px;
+                    color: #aaa;
+                ">
+                    ☑ Выполнено сегодня
+                </div>
+            `
+            : `
+                <div style="margin-top: 12px;">
+                    <button
+                        type="button"
+                        onclick="completeRoutineToday(${routine.id})"
+                        style="
+                            padding: 7px 12px;
+                            background: #333;
+                            color: white;
+                            border: 0;
+                            border-radius: 7px;
+                            cursor: pointer;
+                        "
+                    >
+                        ☑ Выполнить сегодня
+                    </button>
+                </div>
+            `;
 
-        const whyButton = `
-            <div style="margin-top: 8px;">
-                <button
-                    type="button"
-                    onclick="showWhy('routine', ${routine.id}, this)"
-                    style="
-                        padding: 6px 10px;
-                        background: #333;
-                        color: white;
-                        border: 0;
-                        border-radius: 7px;
-                        cursor: pointer;
-                    "
-                >
-                    🎯 Почему?
-                </button>
-            </div>
-        `;
-
-        const editGoalsButton = `
-            <div style="margin-top: 8px;">
-                <button
-                    type="button"
-                    onclick="openRoutineGoalsEditor(${routine.id}, this)"
-                    style="
-                        padding: 6px 10px;
-                        background: #333;
-                        color: white;
-                        border: 0;
-                        border-radius: 7px;
-                        cursor: pointer;
-                    "
-                >
-                    🔗 Изменить цели
-                </button>
-            </div>
-        `;
 
         return `
             <div style="
@@ -1946,6 +1934,7 @@ async function loadRoutineGoals() {
                     ${routine.title || 'Без названия'}
                 </strong>
 
+
                 ${routine.description
                     ? `<div style="
                         color:#aaa;
@@ -1955,6 +1944,7 @@ async function loadRoutineGoals() {
                     </div>`
                     : ''
                 }
+
 
                 <div style="
                     color:#999;
@@ -1966,6 +1956,7 @@ async function loadRoutineGoals() {
                     )}
                 </div>
 
+
                 ${routine.times_per_period
                     ? `<div style="color:#999;">
                         Раз за период:
@@ -1973,6 +1964,7 @@ async function loadRoutineGoals() {
                     </div>`
                     : ''
                 }
+
 
                 ${routine.time_of_day
                     ? `<div style="color:#999;">
@@ -1982,6 +1974,7 @@ async function loadRoutineGoals() {
                     : ''
                 }
 
+
                 ${routine.duration_minutes
                     ? `<div style="color:#999;">
                         Длительность:
@@ -1990,6 +1983,7 @@ async function loadRoutineGoals() {
                     : ''
                 }
 
+
                 <div style="color:#999;">
                     Статус:
                     ${routine.is_active
@@ -1997,18 +1991,17 @@ async function loadRoutineGoals() {
                         : 'Неактивна'}
                 </div>
 
+
                 ${progressHtml}
 
+
                 ${goalsHtml}
+
 
                 ${routine.is_active
                     ? completionButton
                     : ''
                 }
-
-                ${whyButton}
-
-                ${editGoalsButton}
 
             </div>
         `;
