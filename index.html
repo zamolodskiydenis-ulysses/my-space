@@ -1143,5 +1143,318 @@ async function reopenTask(taskId) {
     });
 
 </script>
+    <section id="routinesSection" style="
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 24px;
+    background: #1b1b1b;
+    border: 1px solid #292929;
+    border-radius: 14px;
+">
+    <h2>🔁 Рутины</h2>
+
+    <form id="routineForm" style="margin-bottom: 24px;">
+
+        <input
+            id="routineTitle"
+            type="text"
+            placeholder="Название рутины"
+            required
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+            "
+        >
+
+        <textarea
+            id="routineDescription"
+            placeholder="Описание рутины"
+            rows="3"
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+                resize: vertical;
+            "
+        ></textarea>
+
+        <select
+            id="routineFrequency"
+            required
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+            "
+        >
+            <option value="">Выберите частоту</option>
+            <option value="daily">Каждый день</option>
+            <option value="weekly">Каждую неделю</option>
+            <option value="monthly">Каждый месяц</option>
+        </select>
+
+        <input
+            id="routineTimesPerPeriod"
+            type="number"
+            min="1"
+            placeholder="Сколько раз за период"
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+            "
+        >
+
+        <input
+            id="routineTimeOfDay"
+            type="text"
+            placeholder="Время / период дня, например: утром"
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+            "
+        >
+
+        <input
+            id="routineDuration"
+            type="number"
+            min="1"
+            placeholder="Продолжительность, минут"
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 16px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+            "
+        >
+
+        <label style="
+            display: block;
+            color: #ddd;
+            margin-bottom: 16px;
+        ">
+            <input
+                id="routineActive"
+                type="checkbox"
+                checked
+                style="margin-right: 8px;"
+            >
+            Активная рутина
+        </label>
+
+        <button
+            type="submit"
+            style="
+                padding: 10px 16px;
+                background: #333;
+                color: white;
+                border: 0;
+                border-radius: 8px;
+                cursor: pointer;
+            "
+        >
+            Добавить рутину
+        </button>
+
+    </form>
+
+    <div id="routinesList">Загрузка рутин...</div>
+</section>
+
+<script>
+
+    function getRoutineFrequencyLabel(frequency) {
+        const labels = {
+            daily: 'Каждый день',
+            weekly: 'Каждую неделю',
+            monthly: 'Каждый месяц'
+        };
+
+        return labels[frequency] || frequency || 'Не указана';
+    }
+
+
+    async function loadRoutines() {
+        const routinesList = document.getElementById('routinesList');
+
+        const { data, error } = await supabaseClient
+            .from('routines')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            routinesList.textContent =
+                'Ошибка загрузки рутин: ' + error.message;
+            return;
+        }
+
+        if (!data || data.length === 0) {
+            routinesList.textContent = 'Пока рутин нет.';
+            return;
+        }
+
+        routinesList.innerHTML = data.map(routine => `
+            <div style="
+                padding: 16px 0;
+                border-bottom: 1px solid #292929;
+            ">
+                <strong>
+                    ${routine.title || 'Без названия'}
+                </strong>
+
+                ${routine.description
+                    ? `<div style="color:#aaa; margin-top:6px;">
+                        ${routine.description}
+                    </div>`
+                    : ''
+                }
+
+                <div style="color:#999; margin-top:8px;">
+                    Частота:
+                    ${getRoutineFrequencyLabel(routine.frequency)}
+                </div>
+
+                ${routine.times_per_period
+                    ? `<div style="color:#999;">
+                        Раз за период: ${routine.times_per_period}
+                    </div>`
+                    : ''
+                }
+
+                ${routine.time_of_day
+                    ? `<div style="color:#999;">
+                        Время: ${routine.time_of_day}
+                    </div>`
+                    : ''
+                }
+
+                ${routine.duration_minutes
+                    ? `<div style="color:#999;">
+                        Длительность:
+                        ${routine.duration_minutes} мин.
+                    </div>`
+                    : ''
+                }
+
+                <div style="color:#999;">
+                    Статус:
+                    ${routine.is_active ? 'Активна' : 'Неактивна'}
+                </div>
+            </div>
+        `).join('');
+    }
+
+
+    document.getElementById('routineForm')
+        .addEventListener('submit', async (event) => {
+
+            event.preventDefault();
+
+            const title =
+                document.getElementById('routineTitle').value.trim();
+
+            const description =
+                document.getElementById('routineDescription').value.trim();
+
+            const frequency =
+                document.getElementById('routineFrequency').value;
+
+            const timesPerPeriod =
+                document.getElementById('routineTimesPerPeriod').value;
+
+            const timeOfDay =
+                document.getElementById('routineTimeOfDay').value.trim();
+
+            const duration =
+                document.getElementById('routineDuration').value;
+
+            const isActive =
+                document.getElementById('routineActive').checked;
+
+
+            if (!title || !frequency) {
+                return;
+            }
+
+
+            const { error } = await supabaseClient
+                .from('routines')
+                .insert({
+                    title: title,
+                    description: description || null,
+                    frequency: frequency,
+                    times_per_period:
+                        timesPerPeriod
+                            ? Number(timesPerPeriod)
+                            : null,
+                    time_of_day: timeOfDay || null,
+                    duration_minutes:
+                        duration
+                            ? Number(duration)
+                            : null,
+                    is_active: isActive
+                });
+
+
+            if (error) {
+                alert(
+                    'Ошибка создания рутины: ' +
+                    error.message
+                );
+                return;
+            }
+
+
+            document.getElementById('routineTitle').value = '';
+            document.getElementById('routineDescription').value = '';
+            document.getElementById('routineFrequency').value = '';
+            document.getElementById('routineTimesPerPeriod').value = '';
+            document.getElementById('routineTimeOfDay').value = '';
+            document.getElementById('routineDuration').value = '';
+            document.getElementById('routineActive').checked = true;
+
+
+            await loadRoutines();
+        });
+
+
+    supabaseClient.auth.getSession().then(({ data }) => {
+        if (data.session) {
+            loadRoutines();
+        }
+    });
+
+</script>
 </body>
 </html>
