@@ -1400,16 +1400,98 @@ async function loadRoutineGoals() {
         return;
     }
 
-    const today = new Date().toISOString().split('T')[0];
 
-    const routineIds = routines.map(routine => routine.id);
+    // Получаем сегодняшнюю дату в локальном времени браузера
+    const now = new Date();
 
-    const { data: completions, error: completionsError } =
+    const formatDate = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+
+        return `${year}-${month}-${day}`;
+    };
+
+    const today = formatDate(now);
+
+
+    // Определяем текущий период для каждой рутины
+    function getPeriodRange(frequency) {
+
+        const start = new Date(now);
+        const end = new Date(now);
+
+        if (frequency === 'daily') {
+
+            return {
+                start: today,
+                end: today
+            };
+        }
+
+
+        if (frequency === 'weekly') {
+
+            const dayOfWeek = now.getDay();
+
+            // Понедельник = 1, воскресенье = 0
+            const daysFromMonday =
+                dayOfWeek === 0
+                    ? 6
+                    : dayOfWeek - 1;
+
+            start.setDate(
+                now.getDate() - daysFromMonday
+            );
+
+            end.setDate(
+                start.getDate() + 6
+            );
+
+            return {
+                start: formatDate(start),
+                end: formatDate(end)
+            };
+        }
+
+
+        if (frequency === 'monthly') {
+
+            start.setDate(1);
+
+            end.setMonth(
+                now.getMonth() + 1,
+                0
+            );
+
+            return {
+                start: formatDate(start),
+                end: formatDate(end)
+            };
+        }
+
+
+        return {
+            start: today,
+            end: today
+        };
+    }
+
+
+    const routineIds = routines.map(
+        routine => routine.id
+    );
+
+
+    // Загружаем выполнения всех рутин
+    const { data: allCompletions, error: completionsError } =
         await supabaseClient
             .from('routine_completions')
-            .select('routine_id, completion_date, status')
-            .in('routine_id', routineIds)
-            .eq('completion_date', today);
+            .select(
+                'routine_id, completion_date, status'
+            )
+            .in('routine_id', routineIds);
+
 
     if (completionsError) {
         routinesList.textContent =
@@ -1418,11 +1500,14 @@ async function loadRoutineGoals() {
         return;
     }
 
+
+    // Загружаем связи рутин с целями
     const { data: links, error: linksError } =
         await supabaseClient
             .from('routine_goal_links')
             .select('routine_id, goal_id')
             .in('routine_id', routineIds);
+
 
     if (linksError) {
         routinesList.textContent =
@@ -1431,18 +1516,23 @@ async function loadRoutineGoals() {
         return;
     }
 
+
     const goalIds = [...new Set(
         (links || []).map(link => link.goal_id)
     )];
 
+
     let goals = [];
 
+
     if (goalIds.length > 0) {
+
         const { data: goalData, error: goalsError } =
             await supabaseClient
                 .from('goals')
                 .select('id, title, period')
                 .in('id', goalIds);
+
 
         if (goalsError) {
             routinesList.textContent =
@@ -1454,114 +1544,214 @@ async function loadRoutineGoals() {
         goals = goalData || [];
     }
 
+
     routinesList.innerHTML = routines.map(routine => {
 
-        const completedToday = (completions || []).some(
-            completion =>
+        const period =
+            getPeriodRange(routine.frequency);
+
+
+        const periodCompletions =
+            (allCompletions || []).filter(completion =>
                 completion.routine_id === routine.id &&
+                completion.status === 'completed' &&
+                completion.completion_date >= period.start &&
+                completion.completion_date <= period.end
+            );
+
+
+        const completedCount =
+            periodCompletions.length;
+
+
+        const target =
+            routine.times_per_period
+                ? Number(routine.times_per_period)
+                : 1;
+
+
+        const remaining =
+            Math.max(target - completedCount, 0);
+
+
+        const completedToday =
+            (allCompletions || []).some(completion =>
+                completion.routine_id === routine.id &&
+                completion.completion_date === today &&
                 completion.status === 'completed'
-        );
+            );
 
-        const routineGoalIds = (links || [])
-            .filter(link => link.routine_id === routine.id)
-            .map(link => link.goal_id);
 
-        const routineGoals = goals.filter(goal =>
-            routineGoalIds.includes(goal.id)
-        );
+        const routineGoalIds =
+            (links || [])
+                .filter(link =>
+                    link.routine_id === routine.id
+                )
+                .map(link => link.goal_id);
 
-        const goalsHtml = routineGoals.length > 0
-            ? `
-                <div style="
-                    margin-top: 12px;
-                    padding-top: 10px;
-                    border-top: 1px solid #292929;
-                    color: #aaa;
-                ">
+
+        const routineGoals =
+            goals.filter(goal =>
+                routineGoalIds.includes(goal.id)
+            );
+
+
+        const goalsHtml =
+            routineGoals.length > 0
+                ? `
                     <div style="
-                        font-size: 14px;
-                        margin-bottom: 6px;
+                        margin-top: 12px;
+                        padding-top: 10px;
+                        border-top: 1px solid #292929;
+                        color: #aaa;
                     ">
-                        🎯 Связанные цели
-                    </div>
-
-                    ${routineGoals.map(goal => `
                         <div style="
-                            color: #ddd;
-                            margin-top: 4px;
+                            font-size: 14px;
+                            margin-bottom: 6px;
                         ">
-                            → ${goal.title || 'Без названия'}
-                            <span style="color:#777;">
-                                (${getGoalPeriodLabel(goal.period)})
-                            </span>
+                            🎯 Связанные цели
                         </div>
-                    `).join('')}
-                </div>
-            `
-            : '';
 
-        const completionButton = completedToday
-            ? `
+                        ${routineGoals.map(goal => `
+                            <div style="
+                                color: #ddd;
+                                margin-top: 4px;
+                            ">
+                                → ${goal.title || 'Без названия'}
+                                <span style="color:#777;">
+                                    (${getGoalPeriodLabel(goal.period)})
+                                </span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `
+                : '';
+
+
+        let progressHtml;
+
+
+        if (routine.frequency === 'daily') {
+
+            progressHtml = completedToday
+                ? `
+                    <div style="
+                        color: #aaa;
+                        margin-top: 10px;
+                    ">
+                        Сегодня: ☑ Выполнено
+                    </div>
+                `
+                : `
+                    <div style="
+                        color: #aaa;
+                        margin-top: 10px;
+                    ">
+                        Сегодня: ☐ Не выполнено
+                    </div>
+                `;
+
+        } else {
+
+            progressHtml = `
                 <div style="
-                    margin-top: 12px;
+                    color: #aaa;
+                    margin-top: 10px;
+                ">
+                    Выполнено:
+                    ${completedCount} / ${target}
+                </div>
+
+                <div style="
                     color: #aaa;
                 ">
-                    ☑ Выполнено сегодня
-                </div>
-            `
-            : `
-                <div style="margin-top: 12px;">
-                    <button
-                        type="button"
-                        onclick="completeRoutineToday(${routine.id})"
-                        style="
-                            padding: 7px 12px;
-                            background: #333;
-                            color: white;
-                            border: 0;
-                            border-radius: 7px;
-                            cursor: pointer;
-                        "
-                    >
-                        ☑ Выполнить сегодня
-                    </button>
+                    Осталось:
+                    ${remaining}
                 </div>
             `;
+        }
+
+
+        const completionButton =
+            completedToday
+                ? `
+                    <div style="
+                        margin-top: 12px;
+                        color: #aaa;
+                    ">
+                        ☑ Выполнено сегодня
+                    </div>
+                `
+                : `
+                    <div style="margin-top: 12px;">
+                        <button
+                            type="button"
+                            onclick="completeRoutineToday(${routine.id})"
+                            style="
+                                padding: 7px 12px;
+                                background: #333;
+                                color: white;
+                                border: 0;
+                                border-radius: 7px;
+                                cursor: pointer;
+                            "
+                        >
+                            ☑ Выполнить сегодня
+                        </button>
+                    </div>
+                `;
+
 
         return `
             <div style="
                 padding: 16px 0;
                 border-bottom: 1px solid #292929;
             ">
+
                 <strong>
                     ${routine.title || 'Без названия'}
                 </strong>
 
+
                 ${routine.description
-                    ? `<div style="color:#aaa; margin-top:6px;">
+                    ? `<div style="
+                        color:#aaa;
+                        margin-top:6px;
+                    ">
                         ${routine.description}
                     </div>`
                     : ''
                 }
 
-                <div style="color:#999; margin-top:8px;">
+
+                <div style="
+                    color:#999;
+                    margin-top:8px;
+                ">
                     Частота:
-                    ${getRoutineFrequencyLabel(routine.frequency)}
+                    ${getRoutineFrequencyLabel(
+                        routine.frequency
+                    )}
                 </div>
+
 
                 ${routine.times_per_period
                     ? `<div style="color:#999;">
-                        Раз за период: ${routine.times_per_period}
+                        Раз за период:
+                        ${routine.times_per_period}
                     </div>`
                     : ''
                 }
 
+
                 ${routine.time_of_day
                     ? `<div style="color:#999;">
-                        Время: ${routine.time_of_day}
+                        Время:
+                        ${routine.time_of_day}
                     </div>`
                     : ''
                 }
+
 
                 ${routine.duration_minutes
                     ? `<div style="color:#999;">
@@ -1571,14 +1761,26 @@ async function loadRoutineGoals() {
                     : ''
                 }
 
+
                 <div style="color:#999;">
                     Статус:
-                    ${routine.is_active ? 'Активна' : 'Неактивна'}
+                    ${routine.is_active
+                        ? 'Активна'
+                        : 'Неактивна'}
                 </div>
+
+
+                ${progressHtml}
+
 
                 ${goalsHtml}
 
-                ${routine.is_active ? completionButton : ''}
+
+                ${routine.is_active
+                    ? completionButton
+                    : ''
+                }
+
             </div>
         `;
     }).join('');
