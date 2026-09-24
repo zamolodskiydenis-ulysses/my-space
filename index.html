@@ -925,12 +925,42 @@
             `
             : '';
 
+        const completeButton = task.status === 'completed'
+            ? `
+                <div style="
+                    margin-top: 10px;
+                    color: #aaa;
+                ">
+                    ☑ Выполнена
+                </div>
+            `
+            : `
+                <div style="margin-top: 10px;">
+                    <button
+                        type="button"
+                        onclick="completeTask(${task.id})"
+                        style="
+                            padding: 7px 12px;
+                            background: #333;
+                            color: white;
+                            border: 0;
+                            border-radius: 7px;
+                            cursor: pointer;
+                        "
+                    >
+                        ☑ Выполнить
+                    </button>
+                </div>
+            `;
+
         return `
             <div style="
                 padding: 16px 0;
                 border-bottom: 1px solid #292929;
             ">
                 <strong>${task.title || 'Без названия'}</strong>
+
+                ${completeButton}
 
                 ${task.description
                     ? `<div style="color:#aaa; margin-top:6px;">
