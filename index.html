@@ -2512,7 +2512,11 @@ async function loadToday() {
 
     `;
 }
-
+supabaseClient.auth.getSession().then(({ data }) => {
+    if (data.session) {
+        loadToday();
+    }
+});
 </script>
 </body>
 </html>
