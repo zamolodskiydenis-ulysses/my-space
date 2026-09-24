@@ -1418,6 +1418,42 @@ async function loadRoutineGoals() {
         return;
     }
 
+    const { data: links, error: linksError } =
+        await supabaseClient
+            .from('routine_goal_links')
+            .select('routine_id, goal_id')
+            .in('routine_id', routineIds);
+
+    if (linksError) {
+        routinesList.textContent =
+            'Ошибка загрузки связей рутин: ' +
+            linksError.message;
+        return;
+    }
+
+    const goalIds = [...new Set(
+        (links || []).map(link => link.goal_id)
+    )];
+
+    let goals = [];
+
+    if (goalIds.length > 0) {
+        const { data: goalData, error: goalsError } =
+            await supabaseClient
+                .from('goals')
+                .select('id, title, period')
+                .in('id', goalIds);
+
+        if (goalsError) {
+            routinesList.textContent =
+                'Ошибка загрузки связанных целей: ' +
+                goalsError.message;
+            return;
+        }
+
+        goals = goalData || [];
+    }
+
     routinesList.innerHTML = routines.map(routine => {
 
         const completedToday = (completions || []).some(
@@ -1425,6 +1461,44 @@ async function loadRoutineGoals() {
                 completion.routine_id === routine.id &&
                 completion.status === 'completed'
         );
+
+        const routineGoalIds = (links || [])
+            .filter(link => link.routine_id === routine.id)
+            .map(link => link.goal_id);
+
+        const routineGoals = goals.filter(goal =>
+            routineGoalIds.includes(goal.id)
+        );
+
+        const goalsHtml = routineGoals.length > 0
+            ? `
+                <div style="
+                    margin-top: 12px;
+                    padding-top: 10px;
+                    border-top: 1px solid #292929;
+                    color: #aaa;
+                ">
+                    <div style="
+                        font-size: 14px;
+                        margin-bottom: 6px;
+                    ">
+                        🎯 Связанные цели
+                    </div>
+
+                    ${routineGoals.map(goal => `
+                        <div style="
+                            color: #ddd;
+                            margin-top: 4px;
+                        ">
+                            → ${goal.title || 'Без названия'}
+                            <span style="color:#777;">
+                                (${getGoalPeriodLabel(goal.period)})
+                            </span>
+                        </div>
+                    `).join('')}
+                </div>
+            `
+            : '';
 
         const completionButton = completedToday
             ? `
@@ -1501,6 +1575,8 @@ async function loadRoutineGoals() {
                     Статус:
                     ${routine.is_active ? 'Активна' : 'Неактивна'}
                 </div>
+
+                ${goalsHtml}
 
                 ${routine.is_active ? completionButton : ''}
             </div>
