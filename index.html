@@ -1931,5 +1931,588 @@ async function loadRoutineGoals() {
     });
 
 </script>
+    <section id="todaySection" style="
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 24px;
+    background: #1b1b1b;
+    border: 1px solid #292929;
+    border-radius: 14px;
+">
+
+    <h2>🔥 Сегодня</h2>
+
+    <div id="todayContent">
+        Загрузка...
+    </div>
+
+</section>
+
+
+<script>
+
+async function loadToday() {
+
+    const todayContent =
+        document.getElementById('todayContent');
+
+    const now = new Date();
+
+    const today =
+        `${now.getFullYear()}-` +
+        `${String(now.getMonth() + 1).padStart(2, '0')}-` +
+        `${String(now.getDate()).padStart(2, '0')}`;
+
+
+    /*
+     * =========================
+     * ЗАДАЧИ НА СЕГОДНЯ
+     * =========================
+     */
+
+    const { data: tasks, error: tasksError } =
+        await supabaseClient
+            .from('tasks')
+            .select('*')
+            .eq('status', 'open')
+            .eq('due_date', today)
+            .order('priority', { ascending: false });
+
+
+    if (tasksError) {
+        todayContent.textContent =
+            'Ошибка загрузки задач: ' +
+            tasksError.message;
+        return;
+    }
+
+
+    /*
+     * =========================
+     * РУТИНЫ
+     * =========================
+     */
+
+    const { data: routines, error: routinesError } =
+        await supabaseClient
+            .from('routines')
+            .select('*')
+            .eq('is_active', true)
+            .order('created_at', { ascending: false });
+
+
+    if (routinesError) {
+        todayContent.textContent =
+            'Ошибка загрузки рутин: ' +
+            routinesError.message;
+        return;
+    }
+
+
+    const routineIds =
+        (routines || []).map(routine => routine.id);
+
+
+    let completions = [];
+
+
+    if (routineIds.length > 0) {
+
+        const { data, error } =
+            await supabaseClient
+                .from('routine_completions')
+                .select(
+                    'routine_id, completion_date, status'
+                )
+                .in('routine_id', routineIds);
+
+
+        if (error) {
+            todayContent.textContent =
+                'Ошибка загрузки выполнений рутин: ' +
+                error.message;
+            return;
+        }
+
+        completions = data || [];
+    }
+
+
+    /*
+     * =========================
+     * СВЯЗИ РУТИН С ЦЕЛЯМИ
+     * =========================
+     */
+
+    let routineLinks = [];
+
+
+    if (routineIds.length > 0) {
+
+        const { data, error } =
+            await supabaseClient
+                .from('routine_goal_links')
+                .select('routine_id, goal_id')
+                .in('routine_id', routineIds);
+
+
+        if (error) {
+            todayContent.textContent =
+                'Ошибка загрузки связей рутин: ' +
+                error.message;
+            return;
+        }
+
+        routineLinks = data || [];
+    }
+
+
+    /*
+     * =========================
+     * СВЯЗИ ЗАДАЧ С ЦЕЛЯМИ
+     * =========================
+     */
+
+    let taskLinks = [];
+
+    const taskIds =
+        (tasks || []).map(task => task.id);
+
+
+    if (taskIds.length > 0) {
+
+        const { data, error } =
+            await supabaseClient
+                .from('task_goal_links')
+                .select('task_id, goal_id')
+                .in('task_id', taskIds);
+
+
+        if (error) {
+            todayContent.textContent =
+                'Ошибка загрузки связей задач: ' +
+                error.message;
+            return;
+        }
+
+        taskLinks = data || [];
+    }
+
+
+    /*
+     * =========================
+     * ВСЕ НУЖНЫЕ ЦЕЛИ
+     * =========================
+     */
+
+    const goalIds = [
+        ...new Set([
+            ...routineLinks.map(link => link.goal_id),
+            ...taskLinks.map(link => link.goal_id)
+        ])
+    ];
+
+
+    let goals = [];
+
+
+    if (goalIds.length > 0) {
+
+        const { data, error } =
+            await supabaseClient
+                .from('goals')
+                .select('id, title, period')
+                .in('id', goalIds);
+
+
+        if (error) {
+            todayContent.textContent =
+                'Ошибка загрузки целей: ' +
+                error.message;
+            return;
+        }
+
+        goals = data || [];
+    }
+
+
+    /*
+     * =========================
+     * ЗАДАЧИ
+     * =========================
+     */
+
+    let tasksHtml = '';
+
+
+    if (!tasks || tasks.length === 0) {
+
+        tasksHtml = `
+            <div style="color:#777;">
+                На сегодня задач с дедлайном нет.
+            </div>
+        `;
+
+    } else {
+
+        tasksHtml = tasks.map(task => {
+
+            const linkedGoalIds =
+                taskLinks
+                    .filter(link =>
+                        link.task_id === task.id
+                    )
+                    .map(link => link.goal_id);
+
+
+            const linkedGoals =
+                goals.filter(goal =>
+                    linkedGoalIds.includes(goal.id)
+                );
+
+
+            const goalHtml =
+                linkedGoals.length > 0
+                    ? `
+                        <div style="
+                            margin-top: 6px;
+                            color: #888;
+                            font-size: 14px;
+                        ">
+                            🎯
+                            ${linkedGoals.map(goal =>
+                                `→ ${goal.title}`
+                            ).join(', ')}
+                        </div>
+                    `
+                    : '';
+
+
+            return `
+                <div style="
+                    padding: 12px 0;
+                    border-bottom: 1px solid #292929;
+                ">
+
+                    <div>
+                        ☐
+                        <strong>
+                            ${task.title || 'Без названия'}
+                        </strong>
+                    </div>
+
+                    ${task.description
+                        ? `
+                            <div style="
+                                color:#888;
+                                margin-top:5px;
+                            ">
+                                ${task.description}
+                            </div>
+                        `
+                        : ''
+                    }
+
+                    ${goalHtml}
+
+                    <div style="
+                        margin-top: 8px;
+                    ">
+                        <button
+                            type="button"
+                            onclick="completeTask(${task.id}); loadToday();"
+                            style="
+                                padding: 6px 10px;
+                                background: #333;
+                                color: white;
+                                border: 0;
+                                border-radius: 7px;
+                                cursor: pointer;
+                            "
+                        >
+                            ☑ Выполнить
+                        </button>
+                    </div>
+
+                </div>
+            `;
+
+        }).join('');
+    }
+
+
+    /*
+     * =========================
+     * РУТИНЫ НА СЕГОДНЯ
+     * =========================
+     */
+
+    const todayRoutines =
+        (routines || []).filter(routine => {
+
+            const routineCompletions =
+                completions.filter(completion =>
+                    completion.routine_id === routine.id &&
+                    completion.status === 'completed'
+                );
+
+
+            const completedToday =
+                routineCompletions.some(completion =>
+                    completion.completion_date === today
+                );
+
+
+            /*
+             * Если сегодня уже выполнена —
+             * в «Сегодня» её больше не показываем.
+             */
+
+            if (completedToday) {
+                return false;
+            }
+
+
+            /*
+             * Для ежедневной рутины
+             * достаточно того, что сегодня она не выполнена.
+             */
+
+            if (routine.frequency === 'daily') {
+                return true;
+            }
+
+
+            /*
+             * Определяем начало текущего периода.
+             */
+
+            let periodStart;
+
+
+            if (routine.frequency === 'weekly') {
+
+                const dayOfWeek = now.getDay();
+
+                const daysFromMonday =
+                    dayOfWeek === 0
+                        ? 6
+                        : dayOfWeek - 1;
+
+                periodStart = new Date(now);
+
+                periodStart.setDate(
+                    now.getDate() - daysFromMonday
+                );
+
+            } else if (
+                routine.frequency === 'monthly'
+            ) {
+
+                periodStart = new Date(
+                    now.getFullYear(),
+                    now.getMonth(),
+                    1
+                );
+
+            } else {
+
+                return false;
+            }
+
+
+            const periodStartString =
+                `${periodStart.getFullYear()}-` +
+                `${String(
+                    periodStart.getMonth() + 1
+                ).padStart(2, '0')}-` +
+                `${String(
+                    periodStart.getDate()
+                ).padStart(2, '0')}`;
+
+
+            const completedThisPeriod =
+                routineCompletions.filter(completion =>
+                    completion.completion_date >=
+                    periodStartString &&
+                    completion.completion_date <=
+                    today
+                ).length;
+
+
+            const target =
+                routine.times_per_period
+                    ? Number(
+                        routine.times_per_period
+                    )
+                    : 1;
+
+
+            return completedThisPeriod < target;
+        });
+
+
+    let routinesHtml = '';
+
+
+    if (todayRoutines.length === 0) {
+
+        routinesHtml = `
+            <div style="color:#777;">
+                Все необходимые рутины на сегодня выполнены.
+            </div>
+        `;
+
+    } else {
+
+        routinesHtml =
+            todayRoutines.map(routine => {
+
+                const linkedGoalIds =
+                    routineLinks
+                        .filter(link =>
+                            link.routine_id === routine.id
+                        )
+                        .map(link => link.goal_id);
+
+
+                const linkedGoals =
+                    goals.filter(goal =>
+                        linkedGoalIds.includes(goal.id)
+                    );
+
+
+                const goalHtml =
+                    linkedGoals.length > 0
+                        ? `
+                            <div style="
+                                margin-top: 6px;
+                                color: #888;
+                                font-size: 14px;
+                            ">
+                                🎯
+                                ${linkedGoals.map(goal =>
+                                    `→ ${goal.title}`
+                                ).join(', ')}
+                            </div>
+                        `
+                        : '';
+
+
+                return `
+                    <div style="
+                        padding: 12px 0;
+                        border-bottom: 1px solid #292929;
+                    ">
+
+                        <div>
+                            ☐
+                            <strong>
+                                ${routine.title}
+                            </strong>
+                        </div>
+
+                        <div style="
+                            color:#888;
+                            margin-top:5px;
+                        ">
+                            ${getRoutineFrequencyLabel(
+                                routine.frequency
+                            )}
+                            ·
+                            ${routine.times_per_period || 1}
+                            раз за период
+                        </div>
+
+                        ${routine.time_of_day
+                            ? `
+                                <div style="
+                                    color:#888;
+                                ">
+                                    ${routine.time_of_day}
+                                </div>
+                            `
+                            : ''
+                        }
+
+                        ${routine.duration_minutes
+                            ? `
+                                <div style="
+                                    color:#888;
+                                ">
+                                    ${routine.duration_minutes}
+                                    мин.
+                                </div>
+                            `
+                            : ''
+                        }
+
+                        ${goalHtml}
+
+                        <div style="
+                            margin-top: 8px;
+                        ">
+                            <button
+                                type="button"
+                                onclick="completeRoutineToday(${routine.id}); loadToday();"
+                                style="
+                                    padding: 6px 10px;
+                                    background: #333;
+                                    color: white;
+                                    border: 0;
+                                    border-radius: 7px;
+                                    cursor: pointer;
+                                "
+                            >
+                                ☑ Выполнить сегодня
+                            </button>
+                        </div>
+
+                    </div>
+                `;
+
+            }).join('');
+    }
+
+
+    /*
+     * =========================
+     * ИТОГОВЫЙ ЭКРАН
+     * =========================
+     */
+
+    todayContent.innerHTML = `
+
+        <div style="
+            margin-bottom: 28px;
+        ">
+
+            <h3 style="
+                margin-bottom: 8px;
+            ">
+                📋 Задачи
+            </h3>
+
+            ${tasksHtml}
+
+        </div>
+
+
+        <div>
+
+            <h3 style="
+                margin-bottom: 8px;
+            ">
+                🔁 Рутины
+            </h3>
+
+            ${routinesHtml}
+
+        </div>
+
+    `;
+}
+
+</script>
 </body>
 </html>
