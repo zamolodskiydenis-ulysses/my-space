@@ -360,38 +360,55 @@
     position: absolute;
     width: 50%;
     height: 50%;
-    top: 0;
-    left: 50%;
-    transform-origin: 0 100%;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: center;
-    padding-top: 10%;
     cursor: pointer;
     color: #d8c5b7;
     transition: .25s ease;
+    box-sizing: border-box;
 }
 
 .phoenix-life-sector strong {
-    transform: rotate(-45deg);
-    font-size: clamp(13px, 1.7vw, 21px);
-    letter-spacing: .12em;
+    position: relative;
+    transform: none;
+    display: block;
+    text-align: center;
+    white-space: nowrap;
+    font-size: clamp(15px, 1.8vw, 22px);
+    letter-spacing: 0.08em;
     font-weight: 500;
+    z-index: 2;
 }
 
 .phoenix-life-sector:hover {
     color: #fff3e8;
-    background: radial-gradient(
-        circle at 50% 15%,
-        rgba(203,84,25,0.38),
-        transparent 70%
-    );
+    background: rgba(150, 62, 20, 0.16);
 }
 
-.life-sector-1 { transform: rotate(0deg) skewY(-45deg); }
-.life-sector-2 { transform: rotate(90deg) skewY(-45deg); }
-.life-sector-3 { transform: rotate(180deg) skewY(-45deg); }
-.life-sector-4 { transform: rotate(270deg) skewY(-45deg); }
+.life-sector-1 {
+    top: 0;
+    left: 0;
+    border-right: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.life-sector-2 {
+    top: 0;
+    left: 50%;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.life-sector-3 {
+    top: 50%;
+    left: 0;
+    border-right: 1px solid rgba(255,255,255,0.05);
+}
+
+.life-sector-4 {
+    top: 50%;
+    left: 50%;
+}
 
 .phoenix-life-center {
     position: absolute;
@@ -740,14 +757,23 @@
 </div>
 
 <div id="phoenixBack" class="phoenix-back-wrap" style="display:none;">
-    <button type="button" class="phoenix-back" onclick="closePhoenixLife()">← PHOENIX</button>
+    <button
+    type="button"
+    id="phoenixBackButton"
+    class="phoenix-back"
+    onclick="closePhoenixLife()"
+>← PHOENIX</button>
 </div>
 
 <script>
     function openPhoenixLife() {
     document.getElementById('phoenixHome').style.display = 'none';
     document.getElementById('phoenixLife').style.display = 'flex';
+
     document.getElementById('phoenixBack').style.display = 'block';
+
+    document.getElementById('phoenixBackButton').textContent = '← PHOENIX';
+    document.getElementById('phoenixBackButton').onclick = closePhoenixLife;
 
     window.scrollTo(0, 0);
 }
@@ -760,6 +786,21 @@ function openLifeSection(sectionId) {
     document.getElementById('todaySection').style.display = 'none';
 
     document.getElementById(sectionId).style.display = 'block';
+    document.getElementById('phoenixBackButton').textContent = '← ЖИЗНЬ';
+document.getElementById('phoenixBackButton').onclick = backToPhoenixLife;
+
+    window.scrollTo(0, 0);
+}
+    function backToPhoenixLife() {
+    document.getElementById('goalsSection').style.display = 'none';
+    document.getElementById('tasksSection').style.display = 'none';
+    document.getElementById('routinesSection').style.display = 'none';
+    document.getElementById('todaySection').style.display = 'none';
+
+    document.getElementById('phoenixLife').style.display = 'flex';
+
+    document.getElementById('phoenixBackButton').textContent = '← PHOENIX';
+    document.getElementById('phoenixBackButton').onclick = closePhoenixLife;
 
     window.scrollTo(0, 0);
 }
