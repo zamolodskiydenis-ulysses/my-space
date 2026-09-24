@@ -1381,6 +1381,127 @@ async function loadRoutineGoals() {
         </label>
     `).join('');
 }
+    async function openRoutineGoalsEditor(routineId, button) {
+
+    const existingEditor =
+        document.getElementById(`routine-goals-editor-${routineId}`);
+
+    if (existingEditor) {
+        existingEditor.remove();
+        return;
+    }
+
+    const { data: allGoals, error: goalsError } =
+        await supabaseClient
+            .from('goals')
+            .select('id, title, period')
+            .order('created_at', { ascending: false });
+
+    if (goalsError) {
+        alert(
+            'Ошибка загрузки целей: ' +
+            goalsError.message
+        );
+        return;
+    }
+
+    const { data: currentLinks, error: linksError } =
+        await supabaseClient
+            .from('routine_goal_links')
+            .select('goal_id')
+            .eq('routine_id', routineId);
+
+    if (linksError) {
+        alert(
+            'Ошибка загрузки связанных целей: ' +
+            linksError.message
+        );
+        return;
+    }
+
+    const currentGoalIds =
+        new Set(
+            (currentLinks || []).map(
+                link => link.goal_id
+            )
+        );
+
+    const editor = document.createElement('div');
+
+    editor.id =
+        `routine-goals-editor-${routineId}`;
+
+    editor.style.marginTop = '10px';
+    editor.style.padding = '12px';
+    editor.style.background = '#151515';
+    editor.style.border = '1px solid #292929';
+    editor.style.borderRadius = '8px';
+
+    editor.innerHTML = `
+        <div style="
+            color:#aaa;
+            font-size:14px;
+            margin-bottom:8px;
+        ">
+            Выберите цели для этой рутины:
+        </div>
+
+        ${
+            allGoals && allGoals.length > 0
+                ? allGoals.map(goal => `
+                    <label style="
+                        display:block;
+                        padding:7px 0;
+                        color:#ddd;
+                        cursor:pointer;
+                    ">
+                        <input
+                            type="checkbox"
+                            class="routine-editor-goal"
+                            value="${goal.id}"
+                            ${currentGoalIds.has(goal.id)
+                                ? 'checked'
+                                : ''}
+                            style="margin-right:8px;"
+                        >
+
+                        ${goal.title || 'Без названия'}
+
+                        <span style="color:#777;">
+                            (${getGoalPeriodLabel(goal.period)})
+                        </span>
+                    </label>
+                `).join('')
+                : `
+                    <div style="color:#777;">
+                        Пока нет целей.
+                    </div>
+                `
+        }
+
+        <div style="margin-top:10px;">
+            <button
+                type="button"
+                onclick="saveRoutineGoals(${routineId}, this)"
+                style="
+                    padding:7px 12px;
+                    background:#333;
+                    color:white;
+                    border:0;
+                    border-radius:7px;
+                    cursor:pointer;
+                "
+            >
+                💾 Сохранить связи
+            </button>
+        </div>
+    `;
+
+    button.parentElement.insertAdjacentElement(
+        'afterend',
+        editor
+    );
+}
     async function loadRoutines() {
     const routinesList = document.getElementById('routinesList');
 
