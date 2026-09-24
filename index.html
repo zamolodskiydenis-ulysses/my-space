@@ -1306,25 +1306,79 @@ async function reopenTask(taskId) {
 
 
     async function loadRoutines() {
-        const routinesList = document.getElementById('routinesList');
+    const routinesList = document.getElementById('routinesList');
 
-        const { data, error } = await supabaseClient
-            .from('routines')
-            .select('*')
-            .order('created_at', { ascending: false });
+    const { data: routines, error } = await supabaseClient
+        .from('routines')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-        if (error) {
-            routinesList.textContent =
-                'Ошибка загрузки рутин: ' + error.message;
-            return;
-        }
+    if (error) {
+        routinesList.textContent =
+            'Ошибка загрузки рутин: ' + error.message;
+        return;
+    }
 
-        if (!data || data.length === 0) {
-            routinesList.textContent = 'Пока рутин нет.';
-            return;
-        }
+    if (!routines || routines.length === 0) {
+        routinesList.textContent = 'Пока рутин нет.';
+        return;
+    }
 
-        routinesList.innerHTML = data.map(routine => `
+    const today = new Date().toISOString().split('T')[0];
+
+    const routineIds = routines.map(routine => routine.id);
+
+    const { data: completions, error: completionsError } =
+        await supabaseClient
+            .from('routine_completions')
+            .select('routine_id, completion_date, status')
+            .in('routine_id', routineIds)
+            .eq('completion_date', today);
+
+    if (completionsError) {
+        routinesList.textContent =
+            'Ошибка загрузки выполнений рутин: ' +
+            completionsError.message;
+        return;
+    }
+
+    routinesList.innerHTML = routines.map(routine => {
+
+        const completedToday = (completions || []).some(
+            completion =>
+                completion.routine_id === routine.id &&
+                completion.status === 'completed'
+        );
+
+        const completionButton = completedToday
+            ? `
+                <div style="
+                    margin-top: 12px;
+                    color: #aaa;
+                ">
+                    ☑ Выполнено сегодня
+                </div>
+            `
+            : `
+                <div style="margin-top: 12px;">
+                    <button
+                        type="button"
+                        onclick="completeRoutineToday(${routine.id})"
+                        style="
+                            padding: 7px 12px;
+                            background: #333;
+                            color: white;
+                            border: 0;
+                            border-radius: 7px;
+                            cursor: pointer;
+                        "
+                    >
+                        ☑ Выполнить сегодня
+                    </button>
+                </div>
+            `;
+
+        return `
             <div style="
                 padding: 16px 0;
                 border-bottom: 1px solid #292929;
@@ -1371,10 +1425,12 @@ async function reopenTask(taskId) {
                     Статус:
                     ${routine.is_active ? 'Активна' : 'Неактивна'}
                 </div>
-            </div>
-        `).join('');
-    }
 
+                ${routine.is_active ? completionButton : ''}
+            </div>
+        `;
+    }).join('');
+}
 
     document.getElementById('routineForm')
         .addEventListener('submit', async (event) => {
