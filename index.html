@@ -1653,6 +1653,9 @@ async function loadRoutineGoals() {
         }
 
 
+        /*
+         * Сохраняем связи с выбранными целями
+         */
         if (selectedGoalIds.length > 0) {
 
             const links = selectedGoalIds.map(goalId => ({
@@ -1660,21 +1663,35 @@ async function loadRoutineGoals() {
                 goal_id: goalId
             }));
 
-            const { error: linkError } =
-                await supabaseClient
-                    .from('routine_goal_links')
-                    .insert(links);
+            const {
+                data: savedLinks,
+                error: linkError
+            } = await supabaseClient
+                .from('routine_goal_links')
+                .insert(links)
+                .select();
+
 
             if (linkError) {
                 alert(
-                    'Рутина создана, но не удалось сохранить ' +
-                    'связи с целями: ' +
-                    linkError.message
+                    'Рутина создана, но связь с целью НЕ сохранена.\n\n' +
+                    'Ошибка: ' + linkError.message
                 );
+                return;
+            }
+
+            if (!savedLinks || savedLinks.length !== links.length) {
+                alert(
+                    'Рутина создана, но не все связи с целями сохранились.'
+                );
+                return;
             }
         }
 
 
+        /*
+         * Очищаем форму
+         */
         document.getElementById('routineTitle').value = '';
         document.getElementById('routineDescription').value = '';
         document.getElementById('routineFrequency').value = '';
