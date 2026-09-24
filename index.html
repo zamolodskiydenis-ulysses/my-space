@@ -276,6 +276,54 @@
     </div>
 
 </div>
+<section id="goalsSection" style="
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 24px;
+    background: #1b1b1b;
+    border: 1px solid #292929;
+    border-radius: 14px;
+">
+    <h2>🎯 Цели</h2>
+    <div id="goalsList">Загрузка целей...</div>
+</section>
 
+<script>
+    async function loadGoals() {
+        const goalsList = document.getElementById('goalsList');
+
+        const { data, error } = await supabaseClient
+            .from('goals')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            goalsList.textContent = 'Ошибка загрузки целей: ' + error.message;
+            return;
+        }
+
+        if (!data || data.length === 0) {
+            goalsList.textContent = 'Пока целей нет.';
+            return;
+        }
+
+        goalsList.innerHTML = data.map(goal => `
+            <div style="
+                padding: 14px 0;
+                border-bottom: 1px solid #292929;
+            ">
+                <strong>${goal.title || 'Без названия'}</strong>
+                ${goal.period ? `<div style="color:#999;">Период: ${goal.period}</div>` : ''}
+                ${goal.status ? `<div style="color:#999;">Статус: ${goal.status}</div>` : ''}
+            </div>
+        `).join('');
+    }
+
+    supabaseClient.auth.getSession().then(({ data }) => {
+        if (data.session) {
+            loadGoals();
+        }
+    });
+</script>
 </body>
 </html>
