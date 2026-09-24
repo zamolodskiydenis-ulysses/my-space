@@ -602,5 +602,256 @@
         }
     });
 </script>
+    <section id="tasksSection" style="
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 24px;
+    background: #1b1b1b;
+    border: 1px solid #292929;
+    border-radius: 14px;
+">
+    <h2>✅ Задачи</h2>
+
+    <form id="taskForm" style="margin-bottom: 24px;">
+
+        <input
+            id="taskTitle"
+            type="text"
+            placeholder="Название задачи"
+            required
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+            "
+        >
+
+        <textarea
+            id="taskDescription"
+            placeholder="Описание задачи"
+            rows="3"
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+                resize: vertical;
+            "
+        ></textarea>
+
+        <select
+            id="taskStatus"
+            required
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+            "
+        >
+            <option value="">Выберите статус</option>
+            <option value="open">Открыта</option>
+            <option value="completed">Выполнена</option>
+            <option value="postponed">Отложена</option>
+        </select>
+
+        <select
+            id="taskPriority"
+            required
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+            "
+        >
+            <option value="">Выберите приоритет</option>
+            <option value="mandatory">Обязательно</option>
+            <option value="important">Важно</option>
+            <option value="desirable">Желательно</option>
+            <option value="if_time">Если есть время</option>
+        </select>
+
+        <label style="
+            display: block;
+            color: #999;
+            font-size: 14px;
+            margin-bottom: 6px;
+        ">
+            Дедлайн
+        </label>
+
+        <input
+            id="taskDueDate"
+            type="date"
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+            "
+        >
+
+        <button
+            type="submit"
+            style="
+                padding: 10px 16px;
+                background: #333;
+                color: white;
+                border: 0;
+                border-radius: 8px;
+                cursor: pointer;
+            "
+        >
+            Добавить задачу
+        </button>
+
+    </form>
+
+    <div id="tasksList">Загрузка задач...</div>
+</section>
+
+<script>
+    function getTaskStatusLabel(status) {
+        const labels = {
+            open: 'Открыта',
+            completed: 'Выполнена',
+            postponed: 'Отложена'
+        };
+
+        return labels[status] || status || 'Не указан';
+    }
+
+    function getTaskPriorityLabel(priority) {
+        const labels = {
+            4: 'Обязательно',
+            3: 'Важно',
+            2: 'Желательно',
+            1: 'Если есть время'
+        };
+
+        return labels[priority] || 'Не указан';
+    }
+
+    async function loadTasks() {
+        const tasksList = document.getElementById('tasksList');
+
+        const { data, error } = await supabaseClient
+            .from('tasks')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            tasksList.textContent = 'Ошибка загрузки задач: ' + error.message;
+            return;
+        }
+
+        if (!data || data.length === 0) {
+            tasksList.textContent = 'Пока задач нет.';
+            return;
+        }
+
+        tasksList.innerHTML = data.map(task => `
+            <div style="
+                padding: 16px 0;
+                border-bottom: 1px solid #292929;
+            ">
+                <strong>${task.title || 'Без названия'}</strong>
+
+                ${task.description
+                    ? `<div style="color:#aaa; margin-top:6px;">
+                        ${task.description}
+                    </div>`
+                    : ''
+                }
+
+                <div style="color:#999; margin-top:8px;">
+                    Статус: ${getTaskStatusLabel(task.status)}
+                </div>
+
+                <div style="color:#999;">
+                    Приоритет: ${getTaskPriorityLabel(task.priority)}
+                </div>
+
+                ${task.due_date
+                    ? `<div style="color:#999;">
+                        Дедлайн: ${task.due_date}
+                    </div>`
+                    : ''
+                }
+            </div>
+        `).join('');
+    }
+
+    document.getElementById('taskForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const title = document.getElementById('taskTitle').value.trim();
+        const description = document.getElementById('taskDescription').value.trim();
+        const status = document.getElementById('taskStatus').value;
+        const priority = document.getElementById('taskPriority').value;
+        const dueDate = document.getElementById('taskDueDate').value;
+
+        if (!title || !status || !priority) {
+            return;
+        }
+
+        const priorityNumber =
+            priority === 'mandatory' ? 4 :
+            priority === 'important' ? 3 :
+            priority === 'desirable' ? 2 :
+            1;
+
+        const { error } = await supabaseClient
+            .from('tasks')
+            .insert({
+                title: title,
+                description: description || null,
+                status: status,
+                priority: priorityNumber,
+                due_date: dueDate || null
+            });
+
+        if (error) {
+            alert('Ошибка создания задачи: ' + error.message);
+            return;
+        }
+
+        document.getElementById('taskTitle').value = '';
+        document.getElementById('taskDescription').value = '';
+        document.getElementById('taskStatus').value = '';
+        document.getElementById('taskPriority').value = '';
+        document.getElementById('taskDueDate').value = '';
+
+        await loadTasks();
+    });
+
+    supabaseClient.auth.getSession().then(({ data }) => {
+        if (data.session) {
+            loadTasks();
+        }
+    });
+</script>
 </body>
 </html>
