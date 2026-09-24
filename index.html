@@ -831,25 +831,101 @@
 
 
     async function loadTasks() {
-        const tasksList = document.getElementById('tasksList');
+    const tasksList = document.getElementById('tasksList');
 
-        const { data, error } = await supabaseClient
-            .from('tasks')
-            .select('*')
-            .order('created_at', { ascending: false });
+    const { data: tasks, error: tasksError } = await supabaseClient
+        .from('tasks')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-        if (error) {
+    if (tasksError) {
+        tasksList.textContent =
+            'Ошибка загрузки задач: ' + tasksError.message;
+        return;
+    }
+
+    if (!tasks || tasks.length === 0) {
+        tasksList.textContent = 'Пока задач нет.';
+        return;
+    }
+
+    const taskIds = tasks.map(task => task.id);
+
+    const { data: links, error: linksError } = await supabaseClient
+        .from('task_goal_links')
+        .select('task_id, goal_id')
+        .in('task_id', taskIds);
+
+    if (linksError) {
+        tasksList.textContent =
+            'Ошибка загрузки связей задач: ' + linksError.message;
+        return;
+    }
+
+    const goalIds = [...new Set(
+        (links || []).map(link => link.goal_id)
+    )];
+
+    let goals = [];
+
+    if (goalIds.length > 0) {
+        const { data: goalData, error: goalsError } =
+            await supabaseClient
+                .from('goals')
+                .select('id, title, period')
+                .in('id', goalIds);
+
+        if (goalsError) {
             tasksList.textContent =
-                'Ошибка загрузки задач: ' + error.message;
+                'Ошибка загрузки связанных целей: ' +
+                goalsError.message;
             return;
         }
 
-        if (!data || data.length === 0) {
-            tasksList.textContent = 'Пока задач нет.';
-            return;
-        }
+        goals = goalData || [];
+    }
 
-        tasksList.innerHTML = data.map(task => `
+    tasksList.innerHTML = tasks.map(task => {
+
+        const taskGoalIds = (links || [])
+            .filter(link => link.task_id === task.id)
+            .map(link => link.goal_id);
+
+        const taskGoals = goals.filter(goal =>
+            taskGoalIds.includes(goal.id)
+        );
+
+        const goalsHtml = taskGoals.length > 0
+            ? `
+                <div style="
+                    margin-top: 12px;
+                    padding-top: 10px;
+                    border-top: 1px solid #292929;
+                    color: #aaa;
+                ">
+                    <div style="
+                        font-size: 14px;
+                        margin-bottom: 6px;
+                    ">
+                        🎯 Связанные цели
+                    </div>
+
+                    ${taskGoals.map(goal => `
+                        <div style="
+                            color: #ddd;
+                            margin-top: 4px;
+                        ">
+                            → ${goal.title}
+                            <span style="color:#777;">
+                                (${getGoalPeriodLabel(goal.period)})
+                            </span>
+                        </div>
+                    `).join('')}
+                </div>
+            `
+            : '';
+
+        return `
             <div style="
                 padding: 16px 0;
                 border-bottom: 1px solid #292929;
@@ -877,9 +953,12 @@
                     </div>`
                     : ''
                 }
+
+                ${goalsHtml}
             </div>
-        `).join('');
-    }
+        `;
+    }).join('');
+}
 
 
     document.getElementById('taskForm').addEventListener('submit', async (event) => {
