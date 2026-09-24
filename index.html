@@ -534,7 +534,372 @@
         left: 16px;
     }
 }
-    </style>
+    
+/* =========================================================
+   PHOENIX GOALS — PERIOD WHEEL
+   ========================================================= */
+
+.phoenix-goals-screen {
+    position: relative !important;
+    width: min(1180px, calc(100vw - 40px)) !important;
+    min-height: calc(100vh - 80px) !important;
+    margin: 40px auto !important;
+    padding: 42px 30px 50px !important;
+    box-sizing: border-box;
+    background:
+        radial-gradient(circle at 50% 45%, rgba(255, 100, 20, 0.09), transparent 30%),
+        radial-gradient(circle at 50% 110%, rgba(116, 37, 8, 0.15), transparent 42%),
+        linear-gradient(145deg, #090807, #030303 72%) !important;
+    border: 1px solid rgba(255, 166, 82, 0.13) !important;
+    border-radius: 24px !important;
+    overflow: hidden;
+    box-shadow: 0 35px 100px rgba(0,0,0,.58), inset 0 1px 0 rgba(255,255,255,.03) !important;
+}
+
+.phoenix-goals-screen::before {
+    content: '';
+    position: absolute;
+    inset: 18px;
+    border: 1px solid rgba(255, 160, 69, 0.055);
+    border-radius: 18px;
+    pointer-events: none;
+}
+
+.phoenix-goals-header {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+}
+
+.phoenix-kicker {
+    color: #b97b48;
+    font: 11px/1.2 Arial, sans-serif;
+    letter-spacing: .28em;
+    text-transform: uppercase;
+}
+
+.phoenix-goals-header h2 {
+    margin: 9px 0 5px !important;
+    color: #f5ddc1 !important;
+    font-family: Georgia, 'Times New Roman', serif !important;
+    font-size: clamp(30px, 4vw, 48px) !important;
+    font-weight: 400 !important;
+    letter-spacing: .16em !important;
+}
+
+.phoenix-goals-header p {
+    margin: 0;
+    color: #7f7167;
+    font: 13px/1.5 Arial, sans-serif;
+    letter-spacing: .05em;
+}
+
+.phoenix-goals-wheel-wrap {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    margin: 35px auto 24px;
+}
+
+.phoenix-goals-wheel {
+    position: relative;
+    width: min(72vw, 620px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at center, rgba(0,0,0,.98) 0 16%, transparent 16.3%),
+        conic-gradient(from -90deg,
+            rgba(255,116,28,.055) 0 25%,
+            rgba(255,255,255,.012) 25% 25.35%,
+            rgba(255,116,28,.035) 25.35% 50%,
+            rgba(255,255,255,.012) 50% 50.35%,
+            rgba(255,116,28,.035) 50.35% 75%,
+            rgba(255,255,255,.012) 75% 75.35%,
+            rgba(255,116,28,.055) 75.35% 100%);
+    border: 1px solid rgba(255, 120, 26, .42);
+    box-shadow:
+        0 0 0 1px rgba(255, 179, 91, .05),
+        0 0 45px rgba(255, 75, 15, .13),
+        inset 0 0 80px rgba(0,0,0,.88);
+}
+
+.phoenix-goals-wheel::before,
+.phoenix-goals-wheel::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.phoenix-goals-wheel::before {
+    inset: 4.5%;
+    border: 1px solid rgba(255, 200, 138, .16);
+}
+
+.phoenix-goals-wheel::after {
+    inset: 28%;
+    border: 1px solid rgba(255, 132, 40, .55);
+    box-shadow: 0 0 28px rgba(255, 81, 17, .16), inset 0 0 28px rgba(255, 81, 17, .08);
+}
+
+.phoenix-goal-period {
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: #e7d5c5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    cursor: pointer;
+    z-index: 2;
+    font-family: Georgia, 'Times New Roman', serif;
+    transition: background .25s ease, color .25s ease, box-shadow .25s ease;
+}
+
+.phoenix-goal-period::after {
+    content: '';
+    position: absolute;
+    width: 1px;
+    height: 100%;
+    right: 0;
+    top: 0;
+    background: linear-gradient(transparent, rgba(255, 218, 174, .18), transparent);
+}
+
+.phoenix-goal-period::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    left: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 218, 174, .18), transparent);
+}
+
+.phoenix-goal-month::after,
+.phoenix-goal-day::after { display: none; }
+.phoenix-goal-week::before,
+.phoenix-goal-day::before { display: none; }
+
+.phoenix-goal-year { left: 0; top: 0; }
+.phoenix-goal-month { left: 50%; top: 0; }
+.phoenix-goal-week { left: 0; top: 50%; }
+.phoenix-goal-day { left: 50%; top: 50%; }
+
+.phoenix-goal-period:hover {
+    color: #fff0dc;
+    background: radial-gradient(circle at center, rgba(255, 94, 20, .18), transparent 68%);
+}
+
+.phoenix-goal-period strong {
+    font-size: clamp(17px, 2.2vw, 26px);
+    font-weight: 400;
+    letter-spacing: .08em;
+}
+
+.phoenix-goal-period small {
+    color: #8f8177;
+    font: 12px/1.2 Arial, sans-serif;
+}
+
+.phoenix-goal-period small b {
+    display: block;
+    color: #e8c69f;
+    font: 26px/1 Georgia, 'Times New Roman', serif;
+    margin-bottom: 3px;
+}
+
+.phoenix-goal-icon {
+    color: #f39a4d;
+    font: 28px/1 Georgia, serif;
+    text-shadow: 0 0 16px rgba(255, 98, 21, .28);
+}
+
+.phoenix-goal-add {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 108px;
+    height: 108px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    border: 1px solid rgba(255, 169, 85, .65);
+    background: radial-gradient(circle, #17100b 0%, #080706 72%);
+    color: #f6b36e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    cursor: pointer;
+    box-shadow: 0 0 35px rgba(255, 84, 18, .15), inset 0 0 25px rgba(255, 83, 18, .08);
+    transition: .25s ease;
+}
+
+.phoenix-goal-add span {
+    font: 42px/1 Arial, sans-serif;
+    font-weight: 200;
+    transform: translateY(-2px);
+}
+
+.phoenix-goal-add:hover {
+    transform: translate(-50%, -50%) scale(1.05);
+    color: #fff1df;
+    border-color: #ffb76e;
+    box-shadow: 0 0 48px rgba(255, 86, 17, .28), inset 0 0 30px rgba(255, 83, 18, .12);
+}
+
+.phoenix-goals-hint {
+    position: relative;
+    z-index: 2;
+    width: min(620px, 100%);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    box-sizing: border-box;
+    border: 1px solid rgba(255, 173, 91, .10);
+    background: rgba(255,255,255,.015);
+    border-radius: 12px;
+}
+
+.phoenix-goals-hint > span {
+    color: #ff9d4d;
+    font-size: 23px;
+}
+
+.phoenix-goals-hint strong {
+    display: block;
+    color: #d9c2aa;
+    font: 13px/1.3 Arial, sans-serif;
+}
+
+.phoenix-goals-hint small {
+    display: block;
+    margin-top: 3px;
+    color: #756960;
+    font: 12px/1.4 Arial, sans-serif;
+}
+
+.phoenix-goals-list-hidden {
+    display: none !important;
+}
+
+.phoenix-goal-modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 3000;
+}
+
+.phoenix-goal-modal.is-open { display: flex; }
+
+.phoenix-goal-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,.78);
+    backdrop-filter: blur(7px);
+}
+
+.phoenix-goal-modal-card {
+    position: relative;
+    z-index: 1;
+    width: min(560px, 100%);
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 32px;
+    border: 1px solid rgba(255, 168, 83, .22);
+    border-radius: 18px;
+    background:
+        radial-gradient(circle at 50% 0%, rgba(255, 96, 20, .10), transparent 40%),
+        #0b0908;
+    box-shadow: 0 30px 100px rgba(0,0,0,.7), 0 0 55px rgba(255, 72, 15, .08);
+}
+
+.phoenix-goal-modal-close {
+    position: absolute;
+    top: 12px;
+    right: 15px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 177, 95, .16);
+    background: rgba(255,255,255,.025);
+    color: #c7b5a5;
+    font-size: 23px;
+    cursor: pointer;
+}
+
+.phoenix-goal-modal-card h3 {
+    margin: 9px 0 5px;
+    color: #f0d5b7;
+    font: 400 30px/1.2 Georgia, 'Times New Roman', serif;
+    letter-spacing: .06em;
+}
+
+.phoenix-goal-modal-subtitle {
+    margin: 0 0 22px;
+    color: #81736a;
+    font: 13px/1.5 Arial, sans-serif;
+}
+
+.phoenix-goal-modal-card #goalForm {
+    margin: 0 !important;
+}
+
+.phoenix-goal-modal-card #goalForm input,
+.phoenix-goal-modal-card #goalForm textarea,
+.phoenix-goal-modal-card #goalForm select {
+    background: #070707 !important;
+    color: #ead9c8 !important;
+    border: 1px solid rgba(255, 180, 100, .14) !important;
+}
+
+.phoenix-goal-modal-card #goalForm button[type="submit"] {
+    background: linear-gradient(135deg, #7c3212, #d05f1b) !important;
+    color: #fff0df !important;
+    border: 1px solid rgba(255, 190, 108, .28) !important;
+    border-radius: 9px !important;
+}
+
+@media (max-width: 700px) {
+    .phoenix-goals-screen {
+        width: calc(100vw - 20px) !important;
+        margin: 20px auto !important;
+        padding: 32px 14px 36px !important;
+    }
+
+    .phoenix-goals-wheel {
+        width: 92vw;
+    }
+
+    .phoenix-goal-add {
+        width: 84px;
+        height: 84px;
+    }
+
+    .phoenix-goal-add span { font-size: 34px; }
+
+    .phoenix-goal-period strong { font-size: 15px; }
+    .phoenix-goal-period small { font-size: 10px; }
+    .phoenix-goal-period small b { font-size: 22px; }
+    .phoenix-goal-icon { font-size: 22px; }
+
+    .phoenix-goal-modal-card { padding: 26px 18px; }
+}
+
+</style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   const SUPABASE_URL = 'https://blfnltvzrdontfoquxbv.supabase.co';
@@ -791,17 +1156,65 @@ document.getElementById('phoenixBackButton').onclick = backToPhoenixLife;
 }
 </script>
 
-<section id="goalsSection" style="
-    max-width: 900px;
-    margin: 30px auto;
-    padding: 24px;
-    background: #1b1b1b;
-    border: 1px solid #292929;
-    border-radius: 14px;
-">
-    <h2>🎯 Цели</h2>
+<section id="goalsSection" class="phoenix-goals-screen">
+    <div class="phoenix-goals-header">
+        <div>
+            <div class="phoenix-kicker">PHOENIX / ЖИЗНЬ</div>
+            <h2>ЦЕЛИ</h2>
+            <p>Твоя траектория — от дня к году.</p>
+        </div>
+    </div>
 
-    <form id="goalForm" style="margin-bottom: 24px;">
+    <div class="phoenix-goals-wheel-wrap">
+        <div class="phoenix-goals-wheel" aria-label="Периоды целей">
+            <button type="button" class="phoenix-goal-period phoenix-goal-year" data-period="year">
+                <span class="phoenix-goal-icon">◫</span>
+                <strong>ГОД</strong>
+                <small><b id="goalCountYear">0</b> целей</small>
+            </button>
+
+            <button type="button" class="phoenix-goal-period phoenix-goal-month" data-period="month">
+                <span class="phoenix-goal-icon">◫</span>
+                <strong>МЕСЯЦ</strong>
+                <small><b id="goalCountMonth">0</b> целей</small>
+            </button>
+
+            <button type="button" class="phoenix-goal-period phoenix-goal-week" data-period="week">
+                <span class="phoenix-goal-icon">◫</span>
+                <strong>НЕДЕЛЯ</strong>
+                <small><b id="goalCountWeek">0</b> целей</small>
+            </button>
+
+            <button type="button" class="phoenix-goal-period phoenix-goal-day" data-period="day">
+                <span class="phoenix-goal-icon">◉</span>
+                <strong>ДЕНЬ</strong>
+                <small><b id="goalCountDay">0</b> целей</small>
+            </button>
+
+            <button type="button" class="phoenix-goal-add" id="openGoalCreator" aria-label="Создать цель">
+                <span>+</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="phoenix-goals-hint">
+        <span>+</span>
+        <div>
+            <strong>Новая цель</strong>
+            <small>Выбери период в конструкторе — Phoenix распределит цель автоматически.</small>
+        </div>
+    </div>
+
+    <div id="goalsList" class="phoenix-goals-list-hidden">Загрузка целей...</div>
+
+    <div id="goalCreator" class="phoenix-goal-modal" aria-hidden="true">
+        <div class="phoenix-goal-modal-backdrop" id="closeGoalCreatorBackdrop"></div>
+        <div class="phoenix-goal-modal-card">
+            <button type="button" class="phoenix-goal-modal-close" id="closeGoalCreator">×</button>
+            <div class="phoenix-kicker">PHOENIX / НОВАЯ ЦЕЛЬ</div>
+            <h3>Создать цель</h3>
+            <p class="phoenix-goal-modal-subtitle">Определи, куда ты идёшь. Период определит сектор колеса.</p>
+            <form id="goalForm" style="margin-bottom: 24px;">
 
         <input
             id="goalTitle"
@@ -962,10 +1375,9 @@ document.getElementById('phoenixBackButton').onclick = backToPhoenixLife;
         </button>
 
     </form>
-
-    <div id="goalsList">Загрузка целей...</div>
+        </div>
+    </div>
 </section>
-
 <script>
     function getPeriodLabel(period) {
         const labels = {
@@ -1009,55 +1421,42 @@ document.getElementById('phoenixBackButton').onclick = backToPhoenixLife;
 
         if (error) {
             goalsList.textContent = 'Ошибка загрузки целей: ' + error.message;
+            updateGoalWheelCounts([]);
             return;
         }
 
-        if (!data || data.length === 0) {
+        const goals = data || [];
+        updateGoalWheelCounts(goals);
+
+        if (goals.length === 0) {
             goalsList.textContent = 'Пока целей нет.';
             return;
         }
 
-        goalsList.innerHTML = data.map(goal => `
-            <div style="
-                padding: 16px 0;
-                border-bottom: 1px solid #292929;
-            ">
+        goalsList.innerHTML = goals.map(goal => `
+            <div>
                 <strong>${goal.title || 'Без названия'}</strong>
-
-                ${goal.description
-                    ? `<div style="color:#aaa; margin-top:6px;">
-                        ${goal.description}
-                    </div>`
-                    : ''
-                }
-
-                <div style="color:#999; margin-top:8px;">
-                    Период: ${getPeriodLabel(goal.period)}
-                </div>
-
-                <div style="color:#999;">
-                    Статус: ${getStatusLabel(goal.status)}
-                </div>
-
-                <div style="color:#999;">
-                    Приоритет: ${getPriorityLabel(goal.priority)}
-                </div>
-
-                ${goal.start_date
-                    ? `<div style="color:#999;">
-                        Начало: ${goal.start_date}
-                    </div>`
-                    : ''
-                }
-
-                ${goal.due_date
-                    ? `<div style="color:#999;">
-                        Дедлайн: ${goal.due_date}
-                    </div>`
-                    : ''
-                }
+                ${goal.description ? `<div>${goal.description}</div>` : ''}
+                <div>Период: ${getPeriodLabel(goal.period)}</div>
+                <div>Статус: ${getStatusLabel(goal.status)}</div>
+                <div>Приоритет: ${getPriorityLabel(goal.priority)}</div>
             </div>
         `).join('');
+    }
+
+    function updateGoalWheelCounts(goals) {
+        const counts = { year: 0, month: 0, week: 0, day: 0 };
+
+        goals.forEach(goal => {
+            if (Object.prototype.hasOwnProperty.call(counts, goal.period)) {
+                counts[goal.period] += 1;
+            }
+        });
+
+        document.getElementById('goalCountYear').textContent = counts.year;
+        document.getElementById('goalCountMonth').textContent = counts.month;
+        document.getElementById('goalCountWeek').textContent = counts.week;
+        document.getElementById('goalCountDay').textContent = counts.day;
     }
 
 
@@ -1108,7 +1507,29 @@ document.getElementById('phoenixBackButton').onclick = backToPhoenixLife;
         document.getElementById('goalDueDate').value = '';
 
         await loadGoals();
+        closeGoalCreator();
     });
+
+
+    function openGoalCreator() {
+        const modal = document.getElementById('goalCreator');
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.getElementById('goalTitle').focus();
+    }
+
+    function closeGoalCreator() {
+        const modal = document.getElementById('goalCreator');
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+    }
+
+    document.getElementById('openGoalCreator').addEventListener('click', openGoalCreator);
+    document.getElementById('closeGoalCreator').addEventListener('click', closeGoalCreator);
+    document.getElementById('closeGoalCreatorBackdrop').addEventListener('click', closeGoalCreator);
+
+    // Сектора пока только показывают количество целей.
+    // Позже сюда подключим открытие целей выбранного периода.
 
 
     supabaseClient.auth.getSession().then(({ data }) => {
