@@ -1400,8 +1400,6 @@ async function loadRoutineGoals() {
         return;
     }
 
-
-    // Получаем сегодняшнюю дату в локальном времени браузера
     const now = new Date();
 
     const formatDate = (date) => {
@@ -1414,27 +1412,22 @@ async function loadRoutineGoals() {
 
     const today = formatDate(now);
 
-
-    // Определяем текущий период для каждой рутины
     function getPeriodRange(frequency) {
 
         const start = new Date(now);
         const end = new Date(now);
 
         if (frequency === 'daily') {
-
             return {
                 start: today,
                 end: today
             };
         }
 
-
         if (frequency === 'weekly') {
 
             const dayOfWeek = now.getDay();
 
-            // Понедельник = 1, воскресенье = 0
             const daysFromMonday =
                 dayOfWeek === 0
                     ? 6
@@ -1454,7 +1447,6 @@ async function loadRoutineGoals() {
             };
         }
 
-
         if (frequency === 'monthly') {
 
             start.setDate(1);
@@ -1470,20 +1462,16 @@ async function loadRoutineGoals() {
             };
         }
 
-
         return {
             start: today,
             end: today
         };
     }
 
-
     const routineIds = routines.map(
         routine => routine.id
     );
 
-
-    // Загружаем выполнения всех рутин
     const { data: allCompletions, error: completionsError } =
         await supabaseClient
             .from('routine_completions')
@@ -1492,7 +1480,6 @@ async function loadRoutineGoals() {
             )
             .in('routine_id', routineIds);
 
-
     if (completionsError) {
         routinesList.textContent =
             'Ошибка загрузки выполнений рутин: ' +
@@ -1500,14 +1487,11 @@ async function loadRoutineGoals() {
         return;
     }
 
-
-    // Загружаем связи рутин с целями
     const { data: links, error: linksError } =
         await supabaseClient
             .from('routine_goal_links')
             .select('routine_id, goal_id')
             .in('routine_id', routineIds);
-
 
     if (linksError) {
         routinesList.textContent =
@@ -1516,14 +1500,11 @@ async function loadRoutineGoals() {
         return;
     }
 
-
     const goalIds = [...new Set(
         (links || []).map(link => link.goal_id)
     )];
 
-
     let goals = [];
-
 
     if (goalIds.length > 0) {
 
@@ -1532,7 +1513,6 @@ async function loadRoutineGoals() {
                 .from('goals')
                 .select('id, title, period')
                 .in('id', goalIds);
-
 
         if (goalsError) {
             routinesList.textContent =
@@ -1544,12 +1524,10 @@ async function loadRoutineGoals() {
         goals = goalData || [];
     }
 
-
     routinesList.innerHTML = routines.map(routine => {
 
         const period =
             getPeriodRange(routine.frequency);
-
 
         const periodCompletions =
             (allCompletions || []).filter(completion =>
@@ -1559,20 +1537,16 @@ async function loadRoutineGoals() {
                 completion.completion_date <= period.end
             );
 
-
         const completedCount =
             periodCompletions.length;
-
 
         const target =
             routine.times_per_period
                 ? Number(routine.times_per_period)
                 : 1;
 
-
         const remaining =
             Math.max(target - completedCount, 0);
-
 
         const completedToday =
             (allCompletions || []).some(completion =>
@@ -1581,7 +1555,6 @@ async function loadRoutineGoals() {
                 completion.status === 'completed'
             );
 
-
         const routineGoalIds =
             (links || [])
                 .filter(link =>
@@ -1589,12 +1562,10 @@ async function loadRoutineGoals() {
                 )
                 .map(link => link.goal_id);
 
-
         const routineGoals =
             goals.filter(goal =>
                 routineGoalIds.includes(goal.id)
             );
-
 
         const goalsHtml =
             routineGoals.length > 0
@@ -1625,11 +1596,17 @@ async function loadRoutineGoals() {
                         `).join('')}
                     </div>
                 `
-                : '';
-
+                : `
+                    <div style="
+                        margin-top: 12px;
+                        color: #777;
+                        font-size: 14px;
+                    ">
+                        У рутины пока нет связанной цели.
+                    </div>
+                `;
 
         let progressHtml;
-
 
         if (routine.frequency === 'daily') {
 
@@ -1671,10 +1648,9 @@ async function loadRoutineGoals() {
             `;
         }
 
-
         const completionButton =
-    routine.frequency !== 'daily' &&
-    completedCount >= target
+            routine.frequency !== 'daily' &&
+            completedCount >= target
         ? `
             <div style="
                 margin-top: 12px;
@@ -1684,33 +1660,70 @@ async function loadRoutineGoals() {
             </div>
         `
         : completedToday
-            ? `
-                <div style="
-                    margin-top: 12px;
-                    color: #aaa;
-                ">
-                    ☑ Выполнено сегодня
-                </div>
-            `
-            : `
-                <div style="margin-top: 12px;">
-                    <button
-                        type="button"
-                        onclick="completeRoutineToday(${routine.id})"
-                        style="
-                            padding: 7px 12px;
-                            background: #333;
-                            color: white;
-                            border: 0;
-                            border-radius: 7px;
-                            cursor: pointer;
-                        "
-                    >
-                        ☑ Выполнить сегодня
-                    </button>
-                </div>
-            `;
+        ? `
+            <div style="
+                margin-top: 12px;
+                color: #aaa;
+            ">
+                ☑ Выполнено сегодня
+            </div>
+        `
+        : `
+            <div style="margin-top: 12px;">
+                <button
+                    type="button"
+                    onclick="completeRoutineToday(${routine.id})"
+                    style="
+                        padding: 7px 12px;
+                        background: #333;
+                        color: white;
+                        border: 0;
+                        border-radius: 7px;
+                        cursor: pointer;
+                    "
+                >
+                    ☑ Выполнить сегодня
+                </button>
+            </div>
+        `;
 
+        const whyButton = `
+            <div style="margin-top: 8px;">
+                <button
+                    type="button"
+                    onclick="showWhy('routine', ${routine.id}, this)"
+                    style="
+                        padding: 6px 10px;
+                        background: #333;
+                        color: white;
+                        border: 0;
+                        border-radius: 7px;
+                        cursor: pointer;
+                    "
+                >
+                    🎯 Почему?
+                </button>
+            </div>
+        `;
+
+        const editGoalsButton = `
+            <div style="margin-top: 8px;">
+                <button
+                    type="button"
+                    onclick="openRoutineGoalsEditor(${routine.id}, this)"
+                    style="
+                        padding: 6px 10px;
+                        background: #333;
+                        color: white;
+                        border: 0;
+                        border-radius: 7px;
+                        cursor: pointer;
+                    "
+                >
+                    🔗 Изменить цели
+                </button>
+            </div>
+        `;
 
         return `
             <div style="
@@ -1722,7 +1735,6 @@ async function loadRoutineGoals() {
                     ${routine.title || 'Без названия'}
                 </strong>
 
-
                 ${routine.description
                     ? `<div style="
                         color:#aaa;
@@ -1732,7 +1744,6 @@ async function loadRoutineGoals() {
                     </div>`
                     : ''
                 }
-
 
                 <div style="
                     color:#999;
@@ -1744,7 +1755,6 @@ async function loadRoutineGoals() {
                     )}
                 </div>
 
-
                 ${routine.times_per_period
                     ? `<div style="color:#999;">
                         Раз за период:
@@ -1752,7 +1762,6 @@ async function loadRoutineGoals() {
                     </div>`
                     : ''
                 }
-
 
                 ${routine.time_of_day
                     ? `<div style="color:#999;">
@@ -1762,7 +1771,6 @@ async function loadRoutineGoals() {
                     : ''
                 }
 
-
                 ${routine.duration_minutes
                     ? `<div style="color:#999;">
                         Длительность:
@@ -1771,7 +1779,6 @@ async function loadRoutineGoals() {
                     : ''
                 }
 
-
                 <div style="color:#999;">
                     Статус:
                     ${routine.is_active
@@ -1779,17 +1786,18 @@ async function loadRoutineGoals() {
                         : 'Неактивна'}
                 </div>
 
-
                 ${progressHtml}
 
-
                 ${goalsHtml}
-
 
                 ${routine.is_active
                     ? completionButton
                     : ''
                 }
+
+                ${whyButton}
+
+                ${editGoalsButton}
 
             </div>
         `;
