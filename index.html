@@ -95,7 +95,124 @@
 </head>
 
 <body>
+<div id="authPanel" style="
+    max-width: 420px;
+    margin: 80px auto;
+    padding: 30px;
+    background: #1b1b1b;
+    border: 1px solid #292929;
+    border-radius: 14px;
+">
+    <h2 style="margin-top: 0;">Вход в Phoenix</h2>
 
+    <form id="loginForm">
+        <input
+            id="email"
+            type="email"
+            placeholder="Email"
+            required
+            style="
+                width: 100%;
+                padding: 12px;
+                margin-bottom: 12px;
+                background: #111;
+                color: #eee;
+                border: 1px solid #444;
+                border-radius: 8px;
+            "
+        >
+
+        <input
+            id="password"
+            type="password"
+            placeholder="Пароль"
+            required
+            style="
+                width: 100%;
+                padding: 12px;
+                margin-bottom: 12px;
+                background: #111;
+                color: #eee;
+                border: 1px solid #444;
+                border-radius: 8px;
+            "
+        >
+
+        <button
+            type="submit"
+            style="
+                width: 100%;
+                padding: 12px;
+                border: 0;
+                border-radius: 8px;
+                cursor: pointer;
+            "
+        >
+            Войти
+        </button>
+    </form>
+
+    <p id="authMessage" style="color: #999;"></p>
+</div>
+
+<script>
+    const authPanel = document.getElementById('authPanel');
+    const loginForm = document.getElementById('loginForm');
+    const authMessage = document.getElementById('authMessage');
+
+    function showApp() {
+        authPanel.style.display = 'none';
+
+        const container = document.querySelector('.container');
+
+        if (container) {
+            container.style.display = 'block';
+        }
+    }
+
+    function showLogin() {
+        authPanel.style.display = 'block';
+
+        const container = document.querySelector('.container');
+
+        if (container) {
+            container.style.display = 'none';
+        }
+    }
+
+    loginForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        authMessage.textContent = 'Выполняется вход...';
+
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        const { error } = await supabaseClient.auth.signInWithPassword({
+            email,
+            password
+        });
+
+        if (error) {
+            authMessage.textContent = 'Ошибка входа: ' + error.message;
+            return;
+        }
+
+        showApp();
+    });
+
+    async function checkSession() {
+        const { data } = await supabaseClient.auth.getSession();
+
+        if (data.session) {
+            showApp();
+        } else {
+            showLogin();
+        }
+    }
+
+    checkSession();
+</script>
 <div class="container">
 
     <header>
