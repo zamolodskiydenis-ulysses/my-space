@@ -705,13 +705,33 @@
                 width: 100%;
                 box-sizing: border-box;
                 padding: 12px;
-                margin-bottom: 10px;
+                margin-bottom: 16px;
                 background: #111;
                 color: white;
                 border: 1px solid #333;
                 border-radius: 8px;
             "
         >
+
+        <div style="
+            margin-bottom: 16px;
+            padding: 14px;
+            background: #151515;
+            border: 1px solid #292929;
+            border-radius: 8px;
+        ">
+            <div style="
+                color: #999;
+                font-size: 14px;
+                margin-bottom: 8px;
+            ">
+                Связать с целями
+            </div>
+
+            <div id="taskGoalsList">
+                Загрузка целей...
+            </div>
+        </div>
 
         <button
             type="submit"
@@ -733,6 +753,7 @@
 </section>
 
 <script>
+
     function getTaskStatusLabel(status) {
         const labels = {
             open: 'Открыта',
@@ -742,6 +763,7 @@
 
         return labels[status] || status || 'Не указан';
     }
+
 
     function getTaskPriorityLabel(priority) {
         const labels = {
@@ -754,6 +776,60 @@
         return labels[priority] || 'Не указан';
     }
 
+
+    async function loadTaskGoals() {
+        const taskGoalsList = document.getElementById('taskGoalsList');
+
+        const { data, error } = await supabaseClient
+            .from('goals')
+            .select('id, title, period')
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            taskGoalsList.textContent =
+                'Ошибка загрузки целей: ' + error.message;
+            return;
+        }
+
+        if (!data || data.length === 0) {
+            taskGoalsList.textContent = 'Пока нет целей для связи.';
+            return;
+        }
+
+        taskGoalsList.innerHTML = data.map(goal => `
+            <label style="
+                display: block;
+                padding: 8px 0;
+                color: #ddd;
+                cursor: pointer;
+            ">
+                <input
+                    type="checkbox"
+                    class="task-goal-checkbox"
+                    value="${goal.id}"
+                    style="margin-right: 8px;"
+                >
+                ${goal.title || 'Без названия'}
+                <span style="color:#777;">
+                    (${getGoalPeriodLabel(goal.period)})
+                </span>
+            </label>
+        `).join('');
+    }
+
+
+    function getGoalPeriodLabel(period) {
+        const labels = {
+            year: 'год',
+            month: 'месяц',
+            week: 'неделя',
+            day: 'день'
+        };
+
+        return labels[period] || period || '';
+    }
+
+
     async function loadTasks() {
         const tasksList = document.getElementById('tasksList');
 
@@ -763,7 +839,8 @@
             .order('created_at', { ascending: false });
 
         if (error) {
-            tasksList.textContent = 'Ошибка загрузки задач: ' + error.message;
+            tasksList.textContent =
+                'Ошибка загрузки задач: ' + error.message;
             return;
         }
 
@@ -804,18 +881,34 @@
         `).join('');
     }
 
+
     document.getElementById('taskForm').addEventListener('submit', async (event) => {
         event.preventDefault();
 
-        const title = document.getElementById('taskTitle').value.trim();
-        const description = document.getElementById('taskDescription').value.trim();
-        const status = document.getElementById('taskStatus').value;
-        const priority = document.getElementById('taskPriority').value;
-        const dueDate = document.getElementById('taskDueDate').value;
+        const title =
+            document.getElementById('taskTitle').value.trim();
+
+        const description =
+            document.getElementById('taskDescription').value.trim();
+
+        const status =
+            document.getElementById('taskStatus').value;
+
+        const priority =
+            document.getElementById('taskPriority').value;
+
+        const dueDate =
+            document.getElementById('taskDueDate').value;
+
+        const selectedGoalIds = Array.from(
+            document.querySelectorAll('.task-goal-checkbox:checked')
+        ).map(checkbox => Number(checkbox.value));
+
 
         if (!title || !status || !priority) {
             return;
         }
+
 
         const priorityNumber =
             priority === 'mandatory' ? 4 :
@@ -823,20 +916,47 @@
             priority === 'desirable' ? 2 :
             1;
 
-        const { error } = await supabaseClient
-            .from('tasks')
-            .insert({
-                title: title,
-                description: description || null,
-                status: status,
-                priority: priorityNumber,
-                due_date: dueDate || null
-            });
 
-        if (error) {
-            alert('Ошибка создания задачи: ' + error.message);
+        const { data: task, error: taskError } =
+            await supabaseClient
+                .from('tasks')
+                .insert({
+                    title: title,
+                    description: description || null,
+                    status: status,
+                    priority: priorityNumber,
+                    due_date: dueDate || null
+                })
+                .select()
+                .single();
+
+
+        if (taskError) {
+            alert('Ошибка создания задачи: ' + taskError.message);
             return;
         }
+
+
+        if (selectedGoalIds.length > 0) {
+
+            const links = selectedGoalIds.map(goalId => ({
+                task_id: task.id,
+                goal_id: goalId
+            }));
+
+            const { error: linkError } =
+                await supabaseClient
+                    .from('task_goal_links')
+                    .insert(links);
+
+            if (linkError) {
+                alert(
+                    'Задача создана, но не удалось сохранить связи с целями: ' +
+                    linkError.message
+                );
+            }
+        }
+
 
         document.getElementById('taskTitle').value = '';
         document.getElementById('taskDescription').value = '';
@@ -844,14 +964,26 @@
         document.getElementById('taskPriority').value = '';
         document.getElementById('taskDueDate').value = '';
 
+        document
+            .querySelectorAll('.task-goal-checkbox')
+            .forEach(checkbox => {
+                checkbox.checked = false;
+            });
+
+
         await loadTasks();
     });
 
+
     supabaseClient.auth.getSession().then(({ data }) => {
+
         if (data.session) {
+            loadTaskGoals();
             loadTasks();
         }
+
     });
+
 </script>
 </body>
 </html>
