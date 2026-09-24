@@ -6,7 +6,261 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Моё пространство</title>
+/* =========================
+   PHOENIX — ГЛАВНЫЙ ЭКРАН
+   ========================= */
 
+.phoenix-home {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px 70px;
+}
+
+.phoenix-title {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.phoenix-title h1 {
+    margin: 0;
+    font-size: clamp(48px, 8vw, 82px);
+    letter-spacing: 0.16em;
+    font-weight: 700;
+    color: #f4f4f4;
+    text-shadow:
+        0 0 10px rgba(255, 120, 30, 0.25),
+        0 0 30px rgba(255, 70, 20, 0.15);
+}
+
+.phoenix-title p {
+    margin: 12px 0 0;
+    color: #777;
+    font-size: 15px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+
+.phoenix-wheel {
+    position: relative;
+    width: min(680px, 90vw);
+    aspect-ratio: 1;
+    border-radius: 50%;
+
+    background:
+        conic-gradient(
+            from -22.5deg,
+            #2a1710 0deg 45deg,
+            #171717 45deg 90deg,
+            #2a1710 90deg 135deg,
+            #171717 135deg 180deg,
+            #2a1710 180deg 225deg,
+            #171717 225deg 270deg,
+            #2a1710 270deg 315deg,
+            #171717 315deg 360deg
+        );
+
+    border: 2px solid #3a2117;
+
+    box-shadow:
+        0 0 0 8px #111,
+        0 0 0 10px #2b1710,
+        0 0 35px rgba(255, 85, 20, 0.18),
+        inset 0 0 50px rgba(0, 0, 0, 0.9);
+
+    transition: transform 0.5s ease;
+}
+
+.phoenix-wheel::before {
+    content: "";
+    position: absolute;
+    inset: 7%;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 100, 30, 0.25);
+    pointer-events: none;
+}
+
+.phoenix-wheel::after {
+    content: "";
+    position: absolute;
+    inset: 22%;
+    border-radius: 50%;
+    background:
+        radial-gradient(
+            circle,
+            rgba(255, 90, 20, 0.12),
+            rgba(10, 10, 10, 0.96) 68%
+        );
+    border: 1px solid rgba(255, 100, 30, 0.22);
+    box-shadow:
+        0 0 35px rgba(255, 70, 20, 0.12);
+    pointer-events: none;
+}
+
+.phoenix-center {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+
+    width: 27%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    background: #101010;
+    border: 1px solid #4a2518;
+
+    box-shadow:
+        0 0 25px rgba(255, 80, 20, 0.16),
+        inset 0 0 25px rgba(255, 80, 20, 0.08);
+
+    pointer-events: none;
+}
+
+.phoenix-symbol {
+    font-size: clamp(28px, 5vw, 46px);
+    line-height: 1;
+    margin-bottom: 8px;
+}
+
+.phoenix-center-title {
+    font-size: clamp(12px, 2vw, 17px);
+    letter-spacing: 0.22em;
+    font-weight: 700;
+}
+
+.phoenix-center-subtitle {
+    margin-top: 5px;
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    color: #777;
+    text-transform: uppercase;
+}
+
+.phoenix-sector {
+    position: absolute;
+    z-index: 10;
+
+    width: 115px;
+    min-height: 62px;
+
+    transform: translate(-50%, -50%);
+
+    padding: 8px 10px;
+
+    background: rgba(16, 16, 16, 0.82);
+    border: 1px solid rgba(255, 110, 40, 0.18);
+    border-radius: 12px;
+
+    color: #ddd;
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.phoenix-sector:hover {
+    transform: translate(-50%, -50%) scale(1.08);
+    background: rgba(35, 20, 15, 0.96);
+    border-color: rgba(255, 120, 40, 0.65);
+    box-shadow:
+        0 0 20px rgba(255, 80, 20, 0.16);
+}
+
+.phoenix-sector strong {
+    display: block;
+    font-size: 14px;
+}
+
+.phoenix-sector span {
+    display: block;
+    margin-top: 4px;
+    font-size: 10px;
+    color: #777;
+}
+
+/* Позиции 8 секторов */
+
+.phoenix-sector:nth-of-type(1) {
+    left: 50%;
+    top: 7%;
+}
+
+.phoenix-sector:nth-of-type(2) {
+    left: 80%;
+    top: 20%;
+}
+
+.phoenix-sector:nth-of-type(3) {
+    left: 93%;
+    top: 50%;
+}
+
+.phoenix-sector:nth-of-type(4) {
+    left: 80%;
+    top: 80%;
+}
+
+.phoenix-sector:nth-of-type(5) {
+    left: 50%;
+    top: 93%;
+}
+
+.phoenix-sector:nth-of-type(6) {
+    left: 20%;
+    top: 80%;
+}
+
+.phoenix-sector:nth-of-type(7) {
+    left: 7%;
+    top: 50%;
+}
+
+.phoenix-sector:nth-of-type(8) {
+    left: 20%;
+    top: 20%;
+}
+
+.phoenix-message {
+    min-height: 24px;
+    margin-top: 28px;
+    text-align: center;
+    color: #777;
+    font-size: 14px;
+}
+
+@media (max-width: 600px) {
+
+    .phoenix-wheel {
+        width: 94vw;
+    }
+
+    .phoenix-sector {
+        width: 88px;
+        min-height: 52px;
+        padding: 6px;
+    }
+
+    .phoenix-sector strong {
+        font-size: 11px;
+    }
+
+    .phoenix-sector span {
+        font-size: 8px;
+    }
+
+}
     <style>
         * {
             box-sizing: border-box;
@@ -213,67 +467,93 @@
 
     checkSession();
 </script>
-<div class="container">
+<div class="phoenix-home">
 
-    <header>
-        <h1>Моё пространство</h1>
-        <div class="subtitle">
-            Личная система. Идеи · цели · знания · деньги · жизнь.
-        </div>
-    </header>
+    <div class="phoenix-title">
+        <h1>PHOENIX</h1>
+        <p>Моё возрождение</p>
+    </div>
 
-    <div class="grid">
+    <div class="phoenix-wheel">
 
-        <div class="card">
-            <h2>🎯 Цели</h2>
-            <p>
-                Мои цели, планы и направления развития.
-            </p>
-        </div>
-
-        <div class="card">
-            <h2>💰 Финансы</h2>
-            <p>
-                Капитал, доходы, расходы, активы и финансовые цели.
-            </p>
+        <div class="phoenix-center">
+            <div class="phoenix-symbol">🔥</div>
+            <div class="phoenix-center-title">PHOENIX</div>
+            <div class="phoenix-center-subtitle">
+                личная система
+            </div>
         </div>
 
-        <div class="card">
-            <h2>🧠 Знания</h2>
-            <p>
-                Книги, идеи, исследования, заметки и интересные мысли.
-            </p>
-        </div>
+        <button
+            class="phoenix-sector"
+            onclick="openPhoenixGoals()"
+        >
+            <strong>🎯 ЦЕЛИ</strong>
+            <span>направление</span>
+        </button>
 
-        <div class="card">
-            <h2>❤️ Отношения</h2>
-            <p>
-                Наблюдения, опыт, общение и личные выводы.
-            </p>
-        </div>
+        <button
+            class="phoenix-sector"
+            onclick="showPhoenixMessage('Финансы')"
+        >
+            <strong>💰 ФИНАНСЫ</strong>
+            <span>капитал</span>
+        </button>
 
-        <div class="card">
-            <h2>🔥 Увлечения</h2>
-            <p>
-                Кино, музыка, путешествия, спорт и всё, что мне интересно.
-            </p>
-        </div>
+        <button
+            class="phoenix-sector"
+            onclick="showPhoenixMessage('Знания')"
+        >
+            <strong>🧠 ЗНАНИЯ</strong>
+            <span>развитие</span>
+        </button>
 
-        <div class="card">
-            <h2>💡 Идеи</h2>
-            <p>
-                Бизнес-идеи, проекты, гипотезы и мысли, которые нельзя потерять.
-            </p>
-        </div>
+        <button
+            class="phoenix-sector"
+            onclick="showPhoenixMessage('Отношения')"
+        >
+            <strong>❤️ ОТНОШЕНИЯ</strong>
+            <span>люди</span>
+        </button>
 
-        <div class="card full">
-            <h2>📥 Входящие</h2>
-            <p>
-                Место для всего нового и пока не структурированного.
-            </p>
-        </div>
+        <button
+            class="phoenix-sector"
+            onclick="showPhoenixMessage('Увлечения')"
+        >
+            <strong>🔥 УВЛЕЧЕНИЯ</strong>
+            <span>жизнь</span>
+        </button>
+
+        <button
+            class="phoenix-sector"
+            onclick="showPhoenixMessage('Идеи')"
+        >
+            <strong>💡 ИДЕИ</strong>
+            <span>возможности</span>
+        </button>
+
+        <button
+            class="phoenix-sector"
+            onclick="showPhoenixMessage('Входящие')"
+        >
+            <strong>📥 ВХОДЯЩИЕ</strong>
+            <span>неструктурированное</span>
+        </button>
+
+        <button
+            class="phoenix-sector"
+            onclick="showPhoenixMessage('Сегодня')"
+        >
+            <strong>🔥 СЕГОДНЯ</strong>
+            <span>действия</span>
+        </button>
 
     </div>
+
+    <div
+        id="phoenixMessage"
+        class="phoenix-message"
+    ></div>
 
 </div>
 <section id="goalsSection" style="
@@ -2961,6 +3241,52 @@ supabaseClient.auth.getSession().then(({ data }) => {
         loadToday();
     }
 });
+</script>
+    <script>
+
+function showPhoenixMessage(sectionName) {
+
+    const message =
+        document.getElementById('phoenixMessage');
+
+    message.textContent =
+        `Раздел «${sectionName}» будет подключён следующим этапом.`;
+}
+
+
+function openPhoenixGoals() {
+
+    const home =
+        document.querySelector('.phoenix-home');
+
+    if (home) {
+        home.style.display = 'none';
+    }
+
+    const sections = [
+        'goalsSection',
+        'tasksSection',
+        'routinesSection',
+        'todaySection'
+    ];
+
+    sections.forEach(sectionId => {
+
+        const section =
+            document.getElementById(sectionId);
+
+        if (section) {
+            section.style.display = 'block';
+        }
+
+    });
+
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+}
+
 </script>
 </body>
 </html>
