@@ -1950,7 +1950,198 @@ async function loadRoutineGoals() {
 
 
 <script>
+async function showWhy(type, itemId, button) {
 
+    const table =
+        type === 'task'
+            ? 'task_goal_links'
+            : 'routine_goal_links';
+
+    const itemField =
+        type === 'task'
+            ? 'task_id'
+            : 'routine_id';
+
+
+    const { data: directLinks, error: directError } =
+        await supabaseClient
+            .from(table)
+            .select('goal_id')
+            .eq(itemField, itemId);
+
+
+    if (directError) {
+        alert(
+            'Ошибка загрузки связи с целью: ' +
+            directError.message
+        );
+        return;
+    }
+
+
+    if (!directLinks || directLinks.length === 0) {
+        button.parentElement.insertAdjacentHTML(
+            'afterend',
+            `
+                <div style="
+                    margin-top: 8px;
+                    color: #777;
+                    font-size: 14px;
+                ">
+                    У этого действия пока нет связанной цели.
+                </div>
+            `
+        );
+
+        button.style.display = 'none';
+        return;
+    }
+
+
+    const { data: allGoals, error: goalsError } =
+        await supabaseClient
+            .from('goals')
+            .select('id, title, period');
+
+
+    if (goalsError) {
+        alert(
+            'Ошибка загрузки целей: ' +
+            goalsError.message
+        );
+        return;
+    }
+
+
+    const { data: goalLinks, error: linksError } =
+        await supabaseClient
+            .from('goal_links')
+            .select('parent_goal_id, child_goal_id');
+
+
+    if (linksError) {
+        alert(
+            'Ошибка загрузки связей целей: ' +
+            linksError.message
+        );
+        return;
+    }
+
+
+    const goalsMap = new Map(
+        (allGoals || []).map(goal => [
+            goal.id,
+            goal
+        ])
+    );
+
+
+    const parentsMap = new Map();
+
+
+    (goalLinks || []).forEach(link => {
+
+        if (!parentsMap.has(link.child_goal_id)) {
+            parentsMap.set(
+                link.child_goal_id,
+                []
+            );
+        }
+
+        parentsMap.get(
+            link.child_goal_id
+        ).push(link.parent_goal_id);
+    });
+
+
+    const chain = [];
+    const visited = new Set();
+
+
+    function addGoalChain(goalId) {
+
+        if (visited.has(goalId)) {
+            return;
+        }
+
+        visited.add(goalId);
+
+
+        const goal = goalsMap.get(goalId);
+
+        if (!goal) {
+            return;
+        }
+
+
+        chain.push(goal);
+
+
+        const parents =
+            parentsMap.get(goalId) || [];
+
+
+        parents.forEach(parentId => {
+            addGoalChain(parentId);
+        });
+    }
+
+
+    directLinks.forEach(link => {
+        addGoalChain(link.goal_id);
+    });
+
+
+    const chainHtml = chain.length > 0
+        ? `
+            <div style="
+                margin-top: 8px;
+                padding: 10px;
+                background: #151515;
+                border-radius: 8px;
+                color: #aaa;
+                font-size: 14px;
+            ">
+
+                <div style="
+                    color: #ddd;
+                    margin-bottom: 6px;
+                ">
+                    🎯 Связь с целями
+                </div>
+
+                ${chain.map((goal, index) => `
+                    <div style="
+                        margin-top: 4px;
+                    ">
+                        ${index > 0 ? '↑ ' : '→ '}
+                        ${goal.title || 'Без названия'}
+                        <span style="color:#777;">
+                            (${getGoalPeriodLabel(goal.period)})
+                        </span>
+                    </div>
+                `).join('')}
+
+            </div>
+        `
+        : `
+            <div style="
+                margin-top: 8px;
+                color: #777;
+                font-size: 14px;
+            ">
+                Связанные цели не найдены.
+            </div>
+        `;
+
+
+    button.parentElement.insertAdjacentHTML(
+        'afterend',
+        chainHtml
+    );
+
+    button.style.display = 'none';
+}
 async function loadToday() {
 
     const todayContent =
