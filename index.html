@@ -302,7 +302,22 @@
             border-radius: 8px;
         "
     >
-
+<textarea
+    id="goalDescription"
+    placeholder="Описание цели"
+    rows="3"
+    style="
+        width: 100%;
+        box-sizing: border-box;
+        padding: 12px;
+        margin-bottom: 10px;
+        background: #111;
+        color: white;
+        border: 1px solid #333;
+        border-radius: 8px;
+        resize: vertical;
+    "
+></textarea>
     <button
         type="submit"
         style="
@@ -325,13 +340,14 @@
     event.preventDefault();
 
     const title = document.getElementById('goalTitle').value.trim();
-
+const description = document.getElementById('goalDescription').value.trim();
     if (!title) return;
 
     const { error } = await supabaseClient
         .from('goals')
         .insert({
-            title: title
+            title: title,
+    description: description
         });
 
     if (error) {
@@ -340,7 +356,7 @@
     }
 
     document.getElementById('goalTitle').value = '';
-
+document.getElementById('goalDescription').value = '';
     await loadGoals();
 });
     async function loadGoals() {
