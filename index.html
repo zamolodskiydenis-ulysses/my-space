@@ -1509,38 +1509,45 @@ async function loadRoutineGoals() {
 }
 
     document.getElementById('routineForm')
-        .addEventListener('submit', async (event) => {
+    .addEventListener('submit', async (event) => {
 
-            event.preventDefault();
+        event.preventDefault();
 
-            const title =
-                document.getElementById('routineTitle').value.trim();
+        const title =
+            document.getElementById('routineTitle').value.trim();
 
-            const description =
-                document.getElementById('routineDescription').value.trim();
+        const description =
+            document.getElementById('routineDescription').value.trim();
 
-            const frequency =
-                document.getElementById('routineFrequency').value;
+        const frequency =
+            document.getElementById('routineFrequency').value;
 
-            const timesPerPeriod =
-                document.getElementById('routineTimesPerPeriod').value;
+        const timesPerPeriod =
+            document.getElementById('routineTimesPerPeriod').value;
 
-            const timeOfDay =
-                document.getElementById('routineTimeOfDay').value.trim();
+        const timeOfDay =
+            document.getElementById('routineTimeOfDay').value.trim();
 
-            const duration =
-                document.getElementById('routineDuration').value;
+        const duration =
+            document.getElementById('routineDuration').value;
 
-            const isActive =
-                document.getElementById('routineActive').checked;
+        const isActive =
+            document.getElementById('routineActive').checked;
+
+        const selectedGoalIds = Array.from(
+            document.querySelectorAll(
+                '.routine-goal-checkbox:checked'
+            )
+        ).map(checkbox => Number(checkbox.value));
 
 
-            if (!title || !frequency) {
-                return;
-            }
+        if (!title || !frequency) {
+            return;
+        }
 
 
-            const { error } = await supabaseClient
+        const { data: routine, error: routineError } =
+            await supabaseClient
                 .from('routines')
                 .insert({
                     title: title,
@@ -1556,29 +1563,59 @@ async function loadRoutineGoals() {
                             ? Number(duration)
                             : null,
                     is_active: isActive
-                });
+                })
+                .select()
+                .single();
 
 
-            if (error) {
+        if (routineError) {
+            alert(
+                'Ошибка создания рутины: ' +
+                routineError.message
+            );
+            return;
+        }
+
+
+        if (selectedGoalIds.length > 0) {
+
+            const links = selectedGoalIds.map(goalId => ({
+                routine_id: routine.id,
+                goal_id: goalId
+            }));
+
+            const { error: linkError } =
+                await supabaseClient
+                    .from('routine_goal_links')
+                    .insert(links);
+
+            if (linkError) {
                 alert(
-                    'Ошибка создания рутины: ' +
-                    error.message
+                    'Рутина создана, но не удалось сохранить ' +
+                    'связи с целями: ' +
+                    linkError.message
                 );
-                return;
             }
+        }
 
 
-            document.getElementById('routineTitle').value = '';
-            document.getElementById('routineDescription').value = '';
-            document.getElementById('routineFrequency').value = '';
-            document.getElementById('routineTimesPerPeriod').value = '';
-            document.getElementById('routineTimeOfDay').value = '';
-            document.getElementById('routineDuration').value = '';
-            document.getElementById('routineActive').checked = true;
+        document.getElementById('routineTitle').value = '';
+        document.getElementById('routineDescription').value = '';
+        document.getElementById('routineFrequency').value = '';
+        document.getElementById('routineTimesPerPeriod').value = '';
+        document.getElementById('routineTimeOfDay').value = '';
+        document.getElementById('routineDuration').value = '';
+        document.getElementById('routineActive').checked = true;
+
+        document
+            .querySelectorAll('.routine-goal-checkbox')
+            .forEach(checkbox => {
+                checkbox.checked = false;
+            });
 
 
-            await loadRoutines();
-        });
+        await loadRoutines();
+    });
 
 
     supabaseClient.auth.getSession().then(({ data }) => {
