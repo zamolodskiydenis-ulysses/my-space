@@ -845,7 +845,22 @@ async function completeTask(taskId) {
 
     await loadTasks();
 }
+async function reopenTask(taskId) {
+    const { error } = await supabaseClient
+        .from('tasks')
+        .update({
+            status: 'open',
+            completed_at: null
+        })
+        .eq('id', taskId);
 
+    if (error) {
+        alert('Ошибка возврата задачи: ' + error.message);
+        return;
+    }
+
+    await loadTasks();
+}
 
     async function loadTasks() {
     const tasksList = document.getElementById('tasksList');
@@ -943,32 +958,49 @@ async function completeTask(taskId) {
             : '';
 
         const completeButton = task.status === 'completed'
-            ? `
-                <div style="
-                    margin-top: 10px;
-                    color: #aaa;
-                ">
-                    ☑ Выполнена
-                </div>
-            `
-            : `
-                <div style="margin-top: 10px;">
-                    <button
-                        type="button"
-                        onclick="completeTask(${task.id})"
-                        style="
-                            padding: 7px 12px;
-                            background: #333;
-                            color: white;
-                            border: 0;
-                            border-radius: 7px;
-                            cursor: pointer;
-                        "
-                    >
-                        ☑ Выполнить
-                    </button>
-                </div>
-            `;
+    ? `
+        <div style="
+            margin-top: 10px;
+            color: #aaa;
+        ">
+            ☑ Выполнена
+        </div>
+
+        <div style="margin-top: 8px;">
+            <button
+                type="button"
+                onclick="reopenTask(${task.id})"
+                style="
+                    padding: 7px 12px;
+                    background: #333;
+                    color: white;
+                    border: 0;
+                    border-radius: 7px;
+                    cursor: pointer;
+                "
+            >
+                ↩ Вернуть в открытые
+            </button>
+        </div>
+    `
+    : `
+        <div style="margin-top: 10px;">
+            <button
+                type="button"
+                onclick="completeTask(${task.id})"
+                style="
+                    padding: 7px 12px;
+                    background: #333;
+                    color: white;
+                    border: 0;
+                    border-radius: 7px;
+                    cursor: pointer;
+                "
+            >
+                ☑ Выполнить
+            </button>
+        </div>
+    `;
 
         return `
             <div style="
