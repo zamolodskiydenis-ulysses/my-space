@@ -1,0 +1,2959 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Моё пространство</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #111111;
+            color: #eeeeee;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 40px 25px;
+        }
+
+        header {
+            margin-bottom: 50px;
+        }
+
+        h1 {
+            font-size: 48px;
+            margin: 0 0 10px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            color: #888888;
+            font-size: 18px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .card {
+            background: #1b1b1b;
+            border: 1px solid #292929;
+            border-radius: 14px;
+            padding: 25px;
+            min-height: 150px;
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 21px;
+        }
+
+        .card p {
+            color: #999999;
+            line-height: 1.6;
+        }
+
+        .full {
+            grid-column: 1 / -1;
+        }
+
+        @media (max-width: 700px) {
+            h1 {
+                font-size: 36px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .full {
+                grid-column: auto;
+            }
+        }
+
+
+        /* =========================
+           PHOENIX HOME
+           ========================= */
+        .phoenix-container {
+            max-width: none;
+            width: 100%;
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+        }
+
+        .phoenix-home {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            background:
+                radial-gradient(circle at center, rgba(94, 43, 16, 0.28) 0%, rgba(17, 17, 17, 0) 38%),
+                radial-gradient(circle at 50% 110%, rgba(115, 48, 12, 0.18) 0%, rgba(17, 17, 17, 0) 45%),
+                #0b0908;
+        }
+
+        .phoenix-title {
+            position: absolute;
+            top: 28px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 5;
+            font-size: clamp(28px, 4vw, 54px);
+            letter-spacing: 0.28em;
+            font-weight: 700;
+            color: #f1e4d5;
+            text-shadow: 0 0 28px rgba(190, 82, 24, 0.45);
+        }
+
+        .phoenix-wheel {
+            width: min(88vw, 900px);
+            height: min(88vw, 900px);
+            max-height: 88vh;
+            max-width: 88vh;
+            position: relative;
+            border-radius: 50%;
+            transform: rotate(22.5deg);
+            background: conic-gradient(
+                from -22.5deg,
+                rgba(118, 54, 24, 0.22) 0deg 45deg,
+                rgba(255,255,255,0.025) 45deg 46deg,
+                rgba(255,255,255,0.015) 46deg 90deg,
+                rgba(255,255,255,0.025) 90deg 91deg,
+                rgba(255,255,255,0.015) 91deg 135deg,
+                rgba(255,255,255,0.025) 135deg 136deg,
+                rgba(255,255,255,0.015) 136deg 180deg,
+                rgba(255,255,255,0.025) 180deg 181deg,
+                rgba(255,255,255,0.015) 181deg 225deg,
+                rgba(255,255,255,0.025) 225deg 226deg,
+                rgba(255,255,255,0.015) 226deg 270deg,
+                rgba(255,255,255,0.025) 270deg 271deg,
+                rgba(255,255,255,0.015) 271deg 315deg,
+                rgba(255,255,255,0.025) 315deg 316deg,
+                rgba(255,255,255,0.015) 316deg 360deg
+            );
+            box-shadow:
+                0 0 0 1px rgba(255,255,255,0.06),
+                0 0 55px rgba(137, 55, 17, 0.18),
+                inset 0 0 80px rgba(0,0,0,0.72);
+        }
+
+        .phoenix-wheel::before {
+            content: '';
+            position: absolute;
+            inset: 7%;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 50%;
+            box-shadow: inset 0 0 35px rgba(0,0,0,0.65);
+        }
+
+        .phoenix-wheel::after {
+            content: '';
+            position: absolute;
+            inset: 16%;
+            border: 1px solid rgba(177, 76, 26, 0.18);
+            border-radius: 50%;
+        }
+
+        .phoenix-sector {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            top: 0;
+            left: 50%;
+            transform-origin: 0 100%;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 9%;
+            color: rgba(255,255,255,0.12);
+            transition: background .25s ease, color .25s ease, box-shadow .25s ease;
+        }
+
+        .phoenix-sector::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-right: 1px solid rgba(255,255,255,0.06);
+            transform: skewY(-45deg);
+            transform-origin: 100% 0;
+        }
+
+        .phoenix-sector span,
+        .phoenix-sector strong {
+            transform: rotate(-22.5deg);
+        }
+
+        .phoenix-sector span {
+            font-size: clamp(24px, 4vw, 46px);
+            filter: drop-shadow(0 0 16px rgba(190, 72, 18, 0.5));
+        }
+
+        .phoenix-sector strong {
+            position: absolute;
+            top: 30%;
+            font-size: clamp(12px, 1.5vw, 20px);
+            letter-spacing: 0.16em;
+        }
+
+        .sector-1 { transform: rotate(0deg) skewY(-45deg); }
+        .sector-2 { transform: rotate(45deg) skewY(-45deg); }
+        .sector-3 { transform: rotate(90deg) skewY(-45deg); }
+        .sector-4 { transform: rotate(135deg) skewY(-45deg); }
+        .sector-5 { transform: rotate(180deg) skewY(-45deg); }
+        .sector-6 { transform: rotate(225deg) skewY(-45deg); }
+        .sector-7 { transform: rotate(270deg) skewY(-45deg); }
+        .sector-8 { transform: rotate(315deg) skewY(-45deg); }
+
+        .sector-1 {
+            cursor: pointer;
+            background: radial-gradient(circle at 50% 15%, rgba(158, 64, 20, 0.34), rgba(82, 30, 12, 0.10) 48%, transparent 70%);
+            color: #f0d8c5;
+            box-shadow: inset 0 0 55px rgba(155, 58, 17, 0.16);
+        }
+
+        .sector-1:hover {
+            background: radial-gradient(circle at 50% 15%, rgba(203, 84, 25, 0.52), rgba(100, 35, 12, 0.16) 48%, transparent 72%);
+            color: #fff3e8;
+        }
+
+        .phoenix-center {
+            position: absolute;
+            width: 32%;
+            height: 32%;
+            left: 34%;
+            top: 34%;
+            border-radius: 50%;
+            transform: rotate(-22.5deg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle, #25130b 0%, #100c09 68%, #080706 100%);
+            border: 1px solid rgba(206, 88, 25, 0.35);
+            box-shadow:
+                0 0 45px rgba(172, 67, 20, 0.2),
+                inset 0 0 35px rgba(0,0,0,0.8);
+            z-index: 4;
+        }
+
+        .phoenix-flame {
+            font-size: clamp(36px, 6vw, 72px);
+            filter: drop-shadow(0 0 22px rgba(203, 79, 19, 0.55));
+        }
+
+        .phoenix-center-text {
+            margin-top: 8px;
+            color: #d7c2b1;
+            font-size: clamp(11px, 1.4vw, 17px);
+            letter-spacing: 0.22em;
+        }
+
+        .phoenix-back-wrap {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px 25px 0;
+        }
+
+        .phoenix-back {
+            padding: 9px 14px;
+            background: #1b1714;
+            color: #e9ddd3;
+            border: 1px solid #3a2b23;
+            border-radius: 9px;
+            cursor: pointer;
+        }
+
+        #goalsSection,
+        #tasksSection,
+        #routinesSection,
+        #todaySection {
+            display: none;
+        }
+
+        @media (max-width: 700px) {
+            .phoenix-title {
+                top: 22px;
+                letter-spacing: 0.18em;
+            }
+
+            .phoenix-wheel {
+                width: 94vw;
+                height: 94vw;
+                max-width: 94vw;
+                max-height: 94vw;
+            }
+
+            .phoenix-sector strong {
+                letter-spacing: 0.08em;
+            }
+        }
+    </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = 'https://blfnltvzrdontfoquxbv.supabase.co';
+  const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_JMY0xJAQ06LhWcbckLYbtg_fZHu_Kiy';
+
+  const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
+</script>
+</head>
+
+<body>
+<div id="authPanel" style="
+    max-width: 420px;
+    margin: 80px auto;
+    padding: 30px;
+    background: #1b1b1b;
+    border: 1px solid #292929;
+    border-radius: 14px;
+">
+    <h2 style="margin-top: 0;">Вход в Phoenix</h2>
+
+    <form id="loginForm">
+        <input
+            id="email"
+            type="email"
+            placeholder="Email"
+            required
+            style="
+                width: 100%;
+                padding: 12px;
+                margin-bottom: 12px;
+                background: #111;
+                color: #eee;
+                border: 1px solid #444;
+                border-radius: 8px;
+            "
+        >
+
+        <input
+            id="password"
+            type="password"
+            placeholder="Пароль"
+            required
+            style="
+                width: 100%;
+                padding: 12px;
+                margin-bottom: 12px;
+                background: #111;
+                color: #eee;
+                border: 1px solid #444;
+                border-radius: 8px;
+            "
+        >
+
+        <button
+            type="submit"
+            style="
+                width: 100%;
+                padding: 12px;
+                border: 0;
+                border-radius: 8px;
+                cursor: pointer;
+            "
+        >
+            Войти
+        </button>
+    </form>
+
+    <p id="authMessage" style="color: #999;"></p>
+</div>
+
+<script>
+    const authPanel = document.getElementById('authPanel');
+    const loginForm = document.getElementById('loginForm');
+    const authMessage = document.getElementById('authMessage');
+
+    function showApp() {
+        authPanel.style.display = 'none';
+
+        const container = document.querySelector('.container');
+
+        if (container) {
+            container.style.display = 'block';
+        }
+    }
+
+    function showLogin() {
+        authPanel.style.display = 'block';
+
+        const container = document.querySelector('.container');
+
+        if (container) {
+            container.style.display = 'none';
+        }
+    }
+
+    loginForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        authMessage.textContent = 'Выполняется вход...';
+
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        const { error } = await supabaseClient.auth.signInWithPassword({
+            email,
+            password
+        });
+
+        if (error) {
+            authMessage.textContent = 'Ошибка входа: ' + error.message;
+            return;
+        }
+
+        showApp();
+    });
+
+    async function checkSession() {
+        const { data } = await supabaseClient.auth.getSession();
+
+        if (data.session) {
+            showApp();
+        } else {
+            showLogin();
+        }
+    }
+
+    checkSession();
+</script>
+<div class="container phoenix-container">
+
+    <div class="phoenix-home" id="phoenixHome">
+        <div class="phoenix-title">PHOENIX</div>
+
+        <div class="phoenix-wheel" aria-label="Phoenix">
+            <div class="phoenix-sector sector-1" onclick="openPhoenixLife()">
+                <span>🔥</span>
+                <strong>ЖИЗНЬ</strong>
+            </div>
+            <div class="phoenix-sector sector-2"></div>
+            <div class="phoenix-sector sector-3"></div>
+            <div class="phoenix-sector sector-4"></div>
+            <div class="phoenix-sector sector-5"></div>
+            <div class="phoenix-sector sector-6"></div>
+            <div class="phoenix-sector sector-7"></div>
+            <div class="phoenix-sector sector-8"></div>
+
+            <div class="phoenix-center">
+                <div class="phoenix-flame">🔥</div>
+                <div class="phoenix-center-text">PHOENIX</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div id="phoenixBack" class="phoenix-back-wrap" style="display:none;">
+    <button type="button" class="phoenix-back" onclick="closePhoenixLife()">← PHOENIX</button>
+</div>
+
+<script>
+    function openPhoenixLife() {
+        document.getElementById('phoenixHome').style.display = 'none';
+        document.getElementById('goalsSection').style.display = 'block';
+        document.getElementById('tasksSection').style.display = 'block';
+        document.getElementById('routinesSection').style.display = 'block';
+        document.getElementById('todaySection').style.display = 'block';
+        document.getElementById('phoenixBack').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function closePhoenixLife() {
+        document.getElementById('goalsSection').style.display = 'none';
+        document.getElementById('tasksSection').style.display = 'none';
+        document.getElementById('routinesSection').style.display = 'none';
+        document.getElementById('todaySection').style.display = 'none';
+        document.getElementById('phoenixBack').style.display = 'none';
+        document.getElementById('phoenixHome').style.display = 'flex';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+</script>
+
+<section id="goalsSection" style="
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 24px;
+    background: #1b1b1b;
+    border: 1px solid #292929;
+    border-radius: 14px;
+">
+    <h2>🎯 Цели</h2>
+
+    <form id="goalForm" style="margin-bottom: 24px;">
+
+        <input
+            id="goalTitle"
+            type="text"
+            placeholder="Название цели"
+            required
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+            "
+        >
+
+        <textarea
+            id="goalDescription"
+            placeholder="Описание цели"
+            rows="3"
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+                resize: vertical;
+            "
+        ></textarea>
+
+        <select
+            id="goalPeriod"
+            required
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+            "
+        >
+            <option value="">Выберите период</option>
+            <option value="year">Год</option>
+            <option value="month">Месяц</option>
+            <option value="week">Неделя</option>
+            <option value="day">День</option>
+        </select>
+
+        <select
+            id="goalStatus"
+            required
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+            "
+        >
+            <option value="">Выберите статус</option>
+            <option value="active">Активна</option>
+            <option value="completed">Завершена</option>
+            <option value="paused">На паузе</option>
+        </select>
+
+        <select
+            id="goalPriority"
+            required
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+            "
+        >
+            <option value="">Выберите приоритет</option>
+            <option value="mandatory">Обязательно</option>
+            <option value="important">Важно</option>
+            <option value="desirable">Желательно</option>
+            <option value="if_time">Если есть время</option>
+        </select>
+
+        <label style="
+            display: block;
+            color: #999;
+            font-size: 14px;
+            margin-bottom: 6px;
+        ">
+            Дата начала
+        </label>
+
+        <input
+            id="goalStartDate"
+            type="date"
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+            "
+        >
+
+        <label style="
+            display: block;
+            color: #999;
+            font-size: 14px;
+            margin-bottom: 6px;
+        ">
+            Дедлайн
+        </label>
+
+        <input
+            id="goalDueDate"
+            type="date"
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+            "
+        >
+
+        <button
+            type="submit"
+            style="
+                padding: 10px 16px;
+                background: #333;
+                color: white;
+                border: 0;
+                border-radius: 8px;
+                cursor: pointer;
+            "
+        >
+            Добавить цель
+        </button>
+
+    </form>
+
+    <div id="goalsList">Загрузка целей...</div>
+</section>
+
+<script>
+    function getPeriodLabel(period) {
+        const labels = {
+            year: 'Год',
+            month: 'Месяц',
+            week: 'Неделя',
+            day: 'День'
+        };
+
+        return labels[period] || period || 'Не указан';
+    }
+
+    function getStatusLabel(status) {
+        const labels = {
+            active: 'Активна',
+            completed: 'Завершена',
+            paused: 'На паузе'
+        };
+
+        return labels[status] || status || 'Не указан';
+    }
+
+    function getPriorityLabel(priority) {
+        const labels = {
+            4: 'Обязательно',
+            3: 'Важно',
+            2: 'Желательно',
+            1: 'Если есть время'
+        };
+
+        return labels[priority] || 'Не указан';
+    }
+
+    async function loadGoals() {
+        const goalsList = document.getElementById('goalsList');
+
+        const { data, error } = await supabaseClient
+            .from('goals')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            goalsList.textContent = 'Ошибка загрузки целей: ' + error.message;
+            return;
+        }
+
+        if (!data || data.length === 0) {
+            goalsList.textContent = 'Пока целей нет.';
+            return;
+        }
+
+        goalsList.innerHTML = data.map(goal => `
+            <div style="
+                padding: 16px 0;
+                border-bottom: 1px solid #292929;
+            ">
+                <strong>${goal.title || 'Без названия'}</strong>
+
+                ${goal.description
+                    ? `<div style="color:#aaa; margin-top:6px;">
+                        ${goal.description}
+                    </div>`
+                    : ''
+                }
+
+                <div style="color:#999; margin-top:8px;">
+                    Период: ${getPeriodLabel(goal.period)}
+                </div>
+
+                <div style="color:#999;">
+                    Статус: ${getStatusLabel(goal.status)}
+                </div>
+
+                <div style="color:#999;">
+                    Приоритет: ${getPriorityLabel(goal.priority)}
+                </div>
+
+                ${goal.start_date
+                    ? `<div style="color:#999;">
+                        Начало: ${goal.start_date}
+                    </div>`
+                    : ''
+                }
+
+                ${goal.due_date
+                    ? `<div style="color:#999;">
+                        Дедлайн: ${goal.due_date}
+                    </div>`
+                    : ''
+                }
+            </div>
+        `).join('');
+    }
+
+
+    document.getElementById('goalForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const title = document.getElementById('goalTitle').value.trim();
+        const description = document.getElementById('goalDescription').value.trim();
+        const period = document.getElementById('goalPeriod').value;
+        const status = document.getElementById('goalStatus').value;
+        const priority = document.getElementById('goalPriority').value;
+        const startDate = document.getElementById('goalStartDate').value;
+        const dueDate = document.getElementById('goalDueDate').value;
+
+        if (!title || !period || !status || !priority) {
+            return;
+        }
+
+        const priorityNumber =
+            priority === 'mandatory' ? 4 :
+            priority === 'important' ? 3 :
+            priority === 'desirable' ? 2 :
+            1;
+
+        const { error } = await supabaseClient
+            .from('goals')
+            .insert({
+                title: title,
+                description: description || null,
+                period: period,
+                status: status,
+                priority: priorityNumber,
+                start_date: startDate || null,
+                due_date: dueDate || null
+            });
+
+        if (error) {
+            alert('Ошибка создания цели: ' + error.message);
+            return;
+        }
+
+        document.getElementById('goalTitle').value = '';
+        document.getElementById('goalDescription').value = '';
+        document.getElementById('goalPeriod').value = '';
+        document.getElementById('goalStatus').value = '';
+        document.getElementById('goalPriority').value = '';
+        document.getElementById('goalStartDate').value = '';
+        document.getElementById('goalDueDate').value = '';
+
+        await loadGoals();
+    });
+
+
+    supabaseClient.auth.getSession().then(({ data }) => {
+        if (data.session) {
+            loadGoals();
+        }
+    });
+</script>
+    <section id="tasksSection" style="
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 24px;
+    background: #1b1b1b;
+    border: 1px solid #292929;
+    border-radius: 14px;
+">
+    <h2>✅ Задачи</h2>
+
+    <form id="taskForm" style="margin-bottom: 24px;">
+
+        <input
+            id="taskTitle"
+            type="text"
+            placeholder="Название задачи"
+            required
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+            "
+        >
+
+        <textarea
+            id="taskDescription"
+            placeholder="Описание задачи"
+            rows="3"
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+                resize: vertical;
+            "
+        ></textarea>
+
+        <select
+            id="taskStatus"
+            required
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+            "
+        >
+            <option value="">Выберите статус</option>
+            <option value="open">Открыта</option>
+            <option value="completed">Выполнена</option>
+            <option value="postponed">Отложена</option>
+        </select>
+
+        <select
+            id="taskPriority"
+            required
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+            "
+        >
+            <option value="">Выберите приоритет</option>
+            <option value="mandatory">Обязательно</option>
+            <option value="important">Важно</option>
+            <option value="desirable">Желательно</option>
+            <option value="if_time">Если есть время</option>
+        </select>
+
+        <label style="
+            display: block;
+            color: #999;
+            font-size: 14px;
+            margin-bottom: 6px;
+        ">
+            Дедлайн
+        </label>
+
+        <input
+            id="taskDueDate"
+            type="date"
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 16px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+            "
+        >
+
+        <div style="
+            margin-bottom: 16px;
+            padding: 14px;
+            background: #151515;
+            border: 1px solid #292929;
+            border-radius: 8px;
+        ">
+            <div style="
+                color: #999;
+                font-size: 14px;
+                margin-bottom: 8px;
+            ">
+                Связать с целями
+            </div>
+
+            <div id="taskGoalsList">
+                Загрузка целей...
+            </div>
+        </div>
+
+        <button
+            type="submit"
+            style="
+                padding: 10px 16px;
+                background: #333;
+                color: white;
+                border: 0;
+                border-radius: 8px;
+                cursor: pointer;
+            "
+        >
+            Добавить задачу
+        </button>
+
+    </form>
+
+    <div id="tasksList">Загрузка задач...</div>
+</section>
+
+<script>
+
+    function getTaskStatusLabel(status) {
+        const labels = {
+            open: 'Открыта',
+            completed: 'Выполнена',
+            postponed: 'Отложена'
+        };
+
+        return labels[status] || status || 'Не указан';
+    }
+
+
+    function getTaskPriorityLabel(priority) {
+        const labels = {
+            4: 'Обязательно',
+            3: 'Важно',
+            2: 'Желательно',
+            1: 'Если есть время'
+        };
+
+        return labels[priority] || 'Не указан';
+    }
+
+
+    async function loadTaskGoals() {
+        const taskGoalsList = document.getElementById('taskGoalsList');
+
+        const { data, error } = await supabaseClient
+            .from('goals')
+            .select('id, title, period')
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            taskGoalsList.textContent =
+                'Ошибка загрузки целей: ' + error.message;
+            return;
+        }
+
+        if (!data || data.length === 0) {
+            taskGoalsList.textContent = 'Пока нет целей для связи.';
+            return;
+        }
+
+        taskGoalsList.innerHTML = data.map(goal => `
+            <label style="
+                display: block;
+                padding: 8px 0;
+                color: #ddd;
+                cursor: pointer;
+            ">
+                <input
+                    type="checkbox"
+                    class="task-goal-checkbox"
+                    value="${goal.id}"
+                    style="margin-right: 8px;"
+                >
+                ${goal.title || 'Без названия'}
+                <span style="color:#777;">
+                    (${getGoalPeriodLabel(goal.period)})
+                </span>
+            </label>
+        `).join('');
+    }
+
+
+    function getGoalPeriodLabel(period) {
+        const labels = {
+            year: 'год',
+            month: 'месяц',
+            week: 'неделя',
+            day: 'день'
+        };
+
+        return labels[period] || period || '';
+    }
+
+async function completeTask(taskId) {
+    const { error } = await supabaseClient
+        .from('tasks')
+        .update({
+            status: 'completed',
+            completed_at: new Date().toISOString()
+        })
+        .eq('id', taskId);
+
+    if (error) {
+        alert('Ошибка завершения задачи: ' + error.message);
+        return;
+    }
+
+    await loadTasks();
+}
+async function reopenTask(taskId) {
+    const { error } = await supabaseClient
+        .from('tasks')
+        .update({
+            status: 'open',
+            completed_at: null
+        })
+        .eq('id', taskId);
+
+    if (error) {
+        alert('Ошибка возврата задачи: ' + error.message);
+        return;
+    }
+
+    await loadTasks();
+}
+
+    async function loadTasks() {
+    const tasksList = document.getElementById('tasksList');
+
+    const { data: tasks, error: tasksError } = await supabaseClient
+        .from('tasks')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (tasksError) {
+        tasksList.textContent =
+            'Ошибка загрузки задач: ' + tasksError.message;
+        return;
+    }
+
+    if (!tasks || tasks.length === 0) {
+        tasksList.textContent = 'Пока задач нет.';
+        return;
+    }
+
+    const taskIds = tasks.map(task => task.id);
+
+    const { data: links, error: linksError } = await supabaseClient
+        .from('task_goal_links')
+        .select('task_id, goal_id')
+        .in('task_id', taskIds);
+
+    if (linksError) {
+        tasksList.textContent =
+            'Ошибка загрузки связей задач: ' + linksError.message;
+        return;
+    }
+
+    const goalIds = [...new Set(
+        (links || []).map(link => link.goal_id)
+    )];
+
+    let goals = [];
+
+    if (goalIds.length > 0) {
+        const { data: goalData, error: goalsError } =
+            await supabaseClient
+                .from('goals')
+                .select('id, title, period')
+                .in('id', goalIds);
+
+        if (goalsError) {
+            tasksList.textContent =
+                'Ошибка загрузки связанных целей: ' +
+                goalsError.message;
+            return;
+        }
+
+        goals = goalData || [];
+    }
+
+    tasksList.innerHTML = tasks.map(task => {
+
+        const taskGoalIds = (links || [])
+            .filter(link => link.task_id === task.id)
+            .map(link => link.goal_id);
+
+        const taskGoals = goals.filter(goal =>
+            taskGoalIds.includes(goal.id)
+        );
+
+        const goalsHtml = taskGoals.length > 0
+            ? `
+                <div style="
+                    margin-top: 12px;
+                    padding-top: 10px;
+                    border-top: 1px solid #292929;
+                    color: #aaa;
+                ">
+                    <div style="
+                        font-size: 14px;
+                        margin-bottom: 6px;
+                    ">
+                        🎯 Связанные цели
+                    </div>
+
+                    ${taskGoals.map(goal => `
+                        <div style="
+                            color: #ddd;
+                            margin-top: 4px;
+                        ">
+                            → ${goal.title}
+                            <span style="color:#777;">
+                                (${getGoalPeriodLabel(goal.period)})
+                            </span>
+                        </div>
+                    `).join('')}
+                </div>
+            `
+            : '';
+
+        const completeButton = task.status === 'completed'
+    ? `
+        <div style="
+            margin-top: 10px;
+            color: #aaa;
+        ">
+            ☑ Выполнена
+        </div>
+
+        <div style="margin-top: 8px;">
+            <button
+                type="button"
+                onclick="reopenTask(${task.id})"
+                style="
+                    padding: 7px 12px;
+                    background: #333;
+                    color: white;
+                    border: 0;
+                    border-radius: 7px;
+                    cursor: pointer;
+                "
+            >
+                ↩ Вернуть в открытые
+            </button>
+        </div>
+    `
+    : `
+        <div style="margin-top: 10px;">
+            <button
+                type="button"
+                onclick="completeTask(${task.id})"
+                style="
+                    padding: 7px 12px;
+                    background: #333;
+                    color: white;
+                    border: 0;
+                    border-radius: 7px;
+                    cursor: pointer;
+                "
+            >
+                ☑ Выполнить
+            </button>
+        </div>
+    `;
+
+        return `
+            <div style="
+                padding: 16px 0;
+                border-bottom: 1px solid #292929;
+            ">
+                <strong>${task.title || 'Без названия'}</strong>
+
+                ${completeButton}
+
+                ${task.description
+                    ? `<div style="color:#aaa; margin-top:6px;">
+                        ${task.description}
+                    </div>`
+                    : ''
+                }
+
+                <div style="color:#999; margin-top:8px;">
+                    Статус: ${getTaskStatusLabel(task.status)}
+                </div>
+
+                <div style="color:#999;">
+                    Приоритет: ${getTaskPriorityLabel(task.priority)}
+                </div>
+
+                ${task.due_date
+                    ? `<div style="color:#999;">
+                        Дедлайн: ${task.due_date}
+                    </div>`
+                    : ''
+                }
+
+                ${goalsHtml}
+            </div>
+        `;
+    }).join('');
+}
+
+
+    document.getElementById('taskForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const title =
+            document.getElementById('taskTitle').value.trim();
+
+        const description =
+            document.getElementById('taskDescription').value.trim();
+
+        const status =
+            document.getElementById('taskStatus').value;
+
+        const priority =
+            document.getElementById('taskPriority').value;
+
+        const dueDate =
+            document.getElementById('taskDueDate').value;
+
+        const selectedGoalIds = Array.from(
+            document.querySelectorAll('.task-goal-checkbox:checked')
+        ).map(checkbox => Number(checkbox.value));
+
+
+        if (!title || !status || !priority) {
+            return;
+        }
+
+
+        const priorityNumber =
+            priority === 'mandatory' ? 4 :
+            priority === 'important' ? 3 :
+            priority === 'desirable' ? 2 :
+            1;
+
+
+        const { data: task, error: taskError } =
+            await supabaseClient
+                .from('tasks')
+                .insert({
+                    title: title,
+                    description: description || null,
+                    status: status,
+                    priority: priorityNumber,
+                    due_date: dueDate || null
+                })
+                .select()
+                .single();
+
+
+        if (taskError) {
+            alert('Ошибка создания задачи: ' + taskError.message);
+            return;
+        }
+
+
+        if (selectedGoalIds.length > 0) {
+
+            const links = selectedGoalIds.map(goalId => ({
+                task_id: task.id,
+                goal_id: goalId
+            }));
+
+            const { error: linkError } =
+                await supabaseClient
+                    .from('task_goal_links')
+                    .insert(links);
+
+            if (linkError) {
+                alert(
+                    'Задача создана, но не удалось сохранить связи с целями: ' +
+                    linkError.message
+                );
+            }
+        }
+
+
+        document.getElementById('taskTitle').value = '';
+        document.getElementById('taskDescription').value = '';
+        document.getElementById('taskStatus').value = '';
+        document.getElementById('taskPriority').value = '';
+        document.getElementById('taskDueDate').value = '';
+
+        document
+            .querySelectorAll('.task-goal-checkbox')
+            .forEach(checkbox => {
+                checkbox.checked = false;
+            });
+
+
+        await loadTasks();
+    });
+
+
+    supabaseClient.auth.getSession().then(({ data }) => {
+
+        if (data.session) {
+            loadTaskGoals();
+            loadTasks();
+        }
+
+    });
+
+</script>
+    <section id="routinesSection" style="
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 24px;
+    background: #1b1b1b;
+    border: 1px solid #292929;
+    border-radius: 14px;
+">
+    <h2>🔁 Рутины</h2>
+
+    <form id="routineForm" style="margin-bottom: 24px;">
+
+        <input
+            id="routineTitle"
+            type="text"
+            placeholder="Название рутины"
+            required
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+            "
+        >
+
+        <textarea
+            id="routineDescription"
+            placeholder="Описание рутины"
+            rows="3"
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+                resize: vertical;
+            "
+        ></textarea>
+
+        <select
+            id="routineFrequency"
+            required
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+            "
+        >
+            <option value="">Выберите частоту</option>
+            <option value="daily">Каждый день</option>
+            <option value="weekly">Каждую неделю</option>
+            <option value="monthly">Каждый месяц</option>
+        </select>
+
+        <input
+            id="routineTimesPerPeriod"
+            type="number"
+            min="1"
+            placeholder="Сколько раз за период"
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+            "
+        >
+
+        <input
+            id="routineTimeOfDay"
+            type="text"
+            placeholder="Время / период дня, например: утром"
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+            "
+        >
+
+        <input
+            id="routineDuration"
+            type="number"
+            min="1"
+            placeholder="Продолжительность, минут"
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 16px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+            "
+        >
+<div style="
+    margin-bottom: 16px;
+    padding: 14px;
+    background: #151515;
+    border: 1px solid #292929;
+    border-radius: 8px;
+">
+    <div style="
+        color: #999;
+        font-size: 14px;
+        margin-bottom: 8px;
+    ">
+        Связать с целями
+    </div>
+
+    <div id="routineGoalsList">
+        Загрузка целей...
+    </div>
+</div>
+        <label style="
+            display: block;
+            color: #ddd;
+            margin-bottom: 16px;
+        ">
+            <input
+                id="routineActive"
+                type="checkbox"
+                checked
+                style="margin-right: 8px;"
+            >
+            Активная рутина
+        </label>
+
+        <button
+            type="submit"
+            style="
+                padding: 10px 16px;
+                background: #333;
+                color: white;
+                border: 0;
+                border-radius: 8px;
+                cursor: pointer;
+            "
+        >
+            Добавить рутину
+        </button>
+
+    </form>
+
+    <div id="routinesList">Загрузка рутин...</div>
+</section>
+
+<script>
+
+    function getRoutineFrequencyLabel(frequency) {
+        const labels = {
+            daily: 'Каждый день',
+            weekly: 'Каждую неделю',
+            monthly: 'Каждый месяц'
+        };
+
+        return labels[frequency] || frequency || 'Не указана';
+    }
+async function completeRoutineToday(routineId) {
+    const today = new Date().toISOString().split('T')[0];
+
+    const { error } = await supabaseClient
+        .from('routine_completions')
+        .insert({
+            routine_id: routineId,
+            completion_date: today,
+            status: 'completed',
+            completed_at: new Date().toISOString()
+        });
+
+    if (error) {
+        alert('Ошибка выполнения рутины: ' + error.message);
+        return;
+    }
+
+    await loadRoutines();
+}
+async function loadRoutineGoals() {
+    const routineGoalsList =
+        document.getElementById('routineGoalsList');
+
+    const { data, error } = await supabaseClient
+        .from('goals')
+        .select('id, title, period')
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        routineGoalsList.textContent =
+            'Ошибка загрузки целей: ' + error.message;
+        return;
+    }
+
+    if (!data || data.length === 0) {
+        routineGoalsList.textContent =
+            'Пока нет целей для связи.';
+        return;
+    }
+
+    routineGoalsList.innerHTML = data.map(goal => `
+        <label style="
+            display: block;
+            padding: 8px 0;
+            color: #ddd;
+            cursor: pointer;
+        ">
+            <input
+                type="checkbox"
+                class="routine-goal-checkbox"
+                value="${goal.id}"
+                style="margin-right: 8px;"
+            >
+            ${goal.title || 'Без названия'}
+            <span style="color:#777;">
+                (${getGoalPeriodLabel(goal.period)})
+            </span>
+        </label>
+    `).join('');
+}
+    async function loadRoutines() {
+    const routinesList = document.getElementById('routinesList');
+
+    const { data: routines, error } = await supabaseClient
+        .from('routines')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        routinesList.textContent =
+            'Ошибка загрузки рутин: ' + error.message;
+        return;
+    }
+
+    if (!routines || routines.length === 0) {
+        routinesList.textContent = 'Пока рутин нет.';
+        return;
+    }
+
+
+    // Получаем сегодняшнюю дату в локальном времени браузера
+    const now = new Date();
+
+    const formatDate = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+
+        return `${year}-${month}-${day}`;
+    };
+
+    const today = formatDate(now);
+
+
+    // Определяем текущий период для каждой рутины
+    function getPeriodRange(frequency) {
+
+        const start = new Date(now);
+        const end = new Date(now);
+
+        if (frequency === 'daily') {
+
+            return {
+                start: today,
+                end: today
+            };
+        }
+
+
+        if (frequency === 'weekly') {
+
+            const dayOfWeek = now.getDay();
+
+            // Понедельник = 1, воскресенье = 0
+            const daysFromMonday =
+                dayOfWeek === 0
+                    ? 6
+                    : dayOfWeek - 1;
+
+            start.setDate(
+                now.getDate() - daysFromMonday
+            );
+
+            end.setDate(
+                start.getDate() + 6
+            );
+
+            return {
+                start: formatDate(start),
+                end: formatDate(end)
+            };
+        }
+
+
+        if (frequency === 'monthly') {
+
+            start.setDate(1);
+
+            end.setMonth(
+                now.getMonth() + 1,
+                0
+            );
+
+            return {
+                start: formatDate(start),
+                end: formatDate(end)
+            };
+        }
+
+
+        return {
+            start: today,
+            end: today
+        };
+    }
+
+
+    const routineIds = routines.map(
+        routine => routine.id
+    );
+
+
+    // Загружаем выполнения всех рутин
+    const { data: allCompletions, error: completionsError } =
+        await supabaseClient
+            .from('routine_completions')
+            .select(
+                'routine_id, completion_date, status'
+            )
+            .in('routine_id', routineIds);
+
+
+    if (completionsError) {
+        routinesList.textContent =
+            'Ошибка загрузки выполнений рутин: ' +
+            completionsError.message;
+        return;
+    }
+
+
+    // Загружаем связи рутин с целями
+    const { data: links, error: linksError } =
+        await supabaseClient
+            .from('routine_goal_links')
+            .select('routine_id, goal_id')
+            .in('routine_id', routineIds);
+
+
+    if (linksError) {
+        routinesList.textContent =
+            'Ошибка загрузки связей рутин: ' +
+            linksError.message;
+        return;
+    }
+
+
+    const goalIds = [...new Set(
+        (links || []).map(link => link.goal_id)
+    )];
+
+
+    let goals = [];
+
+
+    if (goalIds.length > 0) {
+
+        const { data: goalData, error: goalsError } =
+            await supabaseClient
+                .from('goals')
+                .select('id, title, period')
+                .in('id', goalIds);
+
+
+        if (goalsError) {
+            routinesList.textContent =
+                'Ошибка загрузки связанных целей: ' +
+                goalsError.message;
+            return;
+        }
+
+        goals = goalData || [];
+    }
+
+
+    routinesList.innerHTML = routines.map(routine => {
+
+        const period =
+            getPeriodRange(routine.frequency);
+
+
+        const periodCompletions =
+            (allCompletions || []).filter(completion =>
+                completion.routine_id === routine.id &&
+                completion.status === 'completed' &&
+                completion.completion_date >= period.start &&
+                completion.completion_date <= period.end
+            );
+
+
+        const completedCount =
+            periodCompletions.length;
+
+
+        const target =
+            routine.times_per_period
+                ? Number(routine.times_per_period)
+                : 1;
+
+
+        const remaining =
+            Math.max(target - completedCount, 0);
+
+
+        const completedToday =
+            (allCompletions || []).some(completion =>
+                completion.routine_id === routine.id &&
+                completion.completion_date === today &&
+                completion.status === 'completed'
+            );
+
+
+        const routineGoalIds =
+            (links || [])
+                .filter(link =>
+                    link.routine_id === routine.id
+                )
+                .map(link => link.goal_id);
+
+
+        const routineGoals =
+            goals.filter(goal =>
+                routineGoalIds.includes(goal.id)
+            );
+
+
+        const goalsHtml =
+            routineGoals.length > 0
+                ? `
+                    <div style="
+                        margin-top: 12px;
+                        padding-top: 10px;
+                        border-top: 1px solid #292929;
+                        color: #aaa;
+                    ">
+                        <div style="
+                            font-size: 14px;
+                            margin-bottom: 6px;
+                        ">
+                            🎯 Связанные цели
+                        </div>
+
+                        ${routineGoals.map(goal => `
+                            <div style="
+                                color: #ddd;
+                                margin-top: 4px;
+                            ">
+                                → ${goal.title || 'Без названия'}
+                                <span style="color:#777;">
+                                    (${getGoalPeriodLabel(goal.period)})
+                                </span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `
+                : '';
+
+
+        let progressHtml;
+
+
+        if (routine.frequency === 'daily') {
+
+            progressHtml = completedToday
+                ? `
+                    <div style="
+                        color: #aaa;
+                        margin-top: 10px;
+                    ">
+                        Сегодня: ☑ Выполнено
+                    </div>
+                `
+                : `
+                    <div style="
+                        color: #aaa;
+                        margin-top: 10px;
+                    ">
+                        Сегодня: ☐ Не выполнено
+                    </div>
+                `;
+
+        } else {
+
+            progressHtml = `
+                <div style="
+                    color: #aaa;
+                    margin-top: 10px;
+                ">
+                    Выполнено:
+                    ${completedCount} / ${target}
+                </div>
+
+                <div style="
+                    color: #aaa;
+                ">
+                    Осталось:
+                    ${remaining}
+                </div>
+            `;
+        }
+
+
+        const completionButton =
+    routine.frequency !== 'daily' &&
+    completedCount >= target
+        ? `
+            <div style="
+                margin-top: 12px;
+                color: #aaa;
+            ">
+                🎯 План выполнен
+            </div>
+        `
+        : completedToday
+            ? `
+                <div style="
+                    margin-top: 12px;
+                    color: #aaa;
+                ">
+                    ☑ Выполнено сегодня
+                </div>
+            `
+            : `
+                <div style="margin-top: 12px;">
+                    <button
+                        type="button"
+                        onclick="completeRoutineToday(${routine.id})"
+                        style="
+                            padding: 7px 12px;
+                            background: #333;
+                            color: white;
+                            border: 0;
+                            border-radius: 7px;
+                            cursor: pointer;
+                        "
+                    >
+                        ☑ Выполнить сегодня
+                    </button>
+                </div>
+            `;
+
+
+        return `
+            <div style="
+                padding: 16px 0;
+                border-bottom: 1px solid #292929;
+            ">
+
+                <strong>
+                    ${routine.title || 'Без названия'}
+                </strong>
+
+
+                ${routine.description
+                    ? `<div style="
+                        color:#aaa;
+                        margin-top:6px;
+                    ">
+                        ${routine.description}
+                    </div>`
+                    : ''
+                }
+
+
+                <div style="
+                    color:#999;
+                    margin-top:8px;
+                ">
+                    Частота:
+                    ${getRoutineFrequencyLabel(
+                        routine.frequency
+                    )}
+                </div>
+
+
+                ${routine.times_per_period
+                    ? `<div style="color:#999;">
+                        Раз за период:
+                        ${routine.times_per_period}
+                    </div>`
+                    : ''
+                }
+
+
+                ${routine.time_of_day
+                    ? `<div style="color:#999;">
+                        Время:
+                        ${routine.time_of_day}
+                    </div>`
+                    : ''
+                }
+
+
+                ${routine.duration_minutes
+                    ? `<div style="color:#999;">
+                        Длительность:
+                        ${routine.duration_minutes} мин.
+                    </div>`
+                    : ''
+                }
+
+
+                <div style="color:#999;">
+                    Статус:
+                    ${routine.is_active
+                        ? 'Активна'
+                        : 'Неактивна'}
+                </div>
+
+
+                ${progressHtml}
+
+
+                ${goalsHtml}
+
+
+                ${routine.is_active
+                    ? completionButton
+                    : ''
+                }
+
+            </div>
+        `;
+    }).join('');
+}
+
+    document.getElementById('routineForm')
+    .addEventListener('submit', async (event) => {
+
+        event.preventDefault();
+
+        const title =
+            document.getElementById('routineTitle').value.trim();
+
+        const description =
+            document.getElementById('routineDescription').value.trim();
+
+        const frequency =
+            document.getElementById('routineFrequency').value;
+
+        const timesPerPeriod =
+            document.getElementById('routineTimesPerPeriod').value;
+
+        const timeOfDay =
+            document.getElementById('routineTimeOfDay').value.trim();
+
+        const duration =
+            document.getElementById('routineDuration').value;
+
+        const isActive =
+            document.getElementById('routineActive').checked;
+
+        const selectedGoalIds = Array.from(
+            document.querySelectorAll(
+                '.routine-goal-checkbox:checked'
+            )
+        ).map(checkbox => Number(checkbox.value));
+
+
+        if (!title || !frequency) {
+            return;
+        }
+
+
+        const { data: routine, error: routineError } =
+            await supabaseClient
+                .from('routines')
+                .insert({
+                    title: title,
+                    description: description || null,
+                    frequency: frequency,
+                    times_per_period:
+                        timesPerPeriod
+                            ? Number(timesPerPeriod)
+                            : null,
+                    time_of_day: timeOfDay || null,
+                    duration_minutes:
+                        duration
+                            ? Number(duration)
+                            : null,
+                    is_active: isActive
+                })
+                .select()
+                .single();
+
+
+        if (routineError) {
+            alert(
+                'Ошибка создания рутины: ' +
+                routineError.message
+            );
+            return;
+        }
+
+
+        /*
+         * Сохраняем связи с выбранными целями
+         */
+        if (selectedGoalIds.length > 0) {
+
+            const links = selectedGoalIds.map(goalId => ({
+                routine_id: routine.id,
+                goal_id: goalId
+            }));
+
+            const {
+                data: savedLinks,
+                error: linkError
+            } = await supabaseClient
+                .from('routine_goal_links')
+                .insert(links)
+                .select();
+
+
+            if (linkError) {
+                alert(
+                    'Рутина создана, но связь с целью НЕ сохранена.\n\n' +
+                    'Ошибка: ' + linkError.message
+                );
+                return;
+            }
+
+            if (!savedLinks || savedLinks.length !== links.length) {
+                alert(
+                    'Рутина создана, но не все связи с целями сохранились.'
+                );
+                return;
+            }
+        }
+
+
+        /*
+         * Очищаем форму
+         */
+        document.getElementById('routineTitle').value = '';
+        document.getElementById('routineDescription').value = '';
+        document.getElementById('routineFrequency').value = '';
+        document.getElementById('routineTimesPerPeriod').value = '';
+        document.getElementById('routineTimeOfDay').value = '';
+        document.getElementById('routineDuration').value = '';
+        document.getElementById('routineActive').checked = true;
+
+        document
+            .querySelectorAll('.routine-goal-checkbox')
+            .forEach(checkbox => {
+                checkbox.checked = false;
+            });
+
+
+        await loadRoutines();
+    });
+
+
+    supabaseClient.auth.getSession().then(({ data }) => {
+        if (data.session) {
+            loadRoutineGoals();
+    loadRoutines();
+        }
+    });
+
+</script>
+    <section id="todaySection" style="
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 24px;
+    background: #1b1b1b;
+    border: 1px solid #292929;
+    border-radius: 14px;
+">
+
+    <h2>🔥 Сегодня</h2>
+
+    <div id="todayContent">
+        Загрузка...
+    </div>
+
+</section>
+
+
+<script>
+async function showWhy(type, itemId, button) {
+
+    const table =
+        type === 'task'
+            ? 'task_goal_links'
+            : 'routine_goal_links';
+
+    const itemField =
+        type === 'task'
+            ? 'task_id'
+            : 'routine_id';
+
+
+    const { data: directLinks, error: directError } =
+        await supabaseClient
+            .from(table)
+            .select('goal_id')
+            .eq(itemField, itemId);
+
+
+    if (directError) {
+        alert(
+            'Ошибка загрузки связи с целью: ' +
+            directError.message
+        );
+        return;
+    }
+
+
+    if (!directLinks || directLinks.length === 0) {
+        button.parentElement.insertAdjacentHTML(
+            'afterend',
+            `
+                <div style="
+                    margin-top: 8px;
+                    color: #777;
+                    font-size: 14px;
+                ">
+                    У этого действия пока нет связанной цели.
+                </div>
+            `
+        );
+
+        button.style.display = 'none';
+        return;
+    }
+
+
+    const { data: allGoals, error: goalsError } =
+        await supabaseClient
+            .from('goals')
+            .select('id, title, period');
+
+
+    if (goalsError) {
+        alert(
+            'Ошибка загрузки целей: ' +
+            goalsError.message
+        );
+        return;
+    }
+
+
+    const { data: goalLinks, error: linksError } =
+        await supabaseClient
+            .from('goal_links')
+            .select('parent_goal_id, child_goal_id');
+
+
+    if (linksError) {
+        alert(
+            'Ошибка загрузки связей целей: ' +
+            linksError.message
+        );
+        return;
+    }
+
+
+    const goalsMap = new Map(
+        (allGoals || []).map(goal => [
+            goal.id,
+            goal
+        ])
+    );
+
+
+    const parentsMap = new Map();
+
+
+    (goalLinks || []).forEach(link => {
+
+        if (!parentsMap.has(link.child_goal_id)) {
+            parentsMap.set(
+                link.child_goal_id,
+                []
+            );
+        }
+
+        parentsMap.get(
+            link.child_goal_id
+        ).push(link.parent_goal_id);
+    });
+
+
+    const chain = [];
+    const visited = new Set();
+
+
+    function addGoalChain(goalId) {
+
+        if (visited.has(goalId)) {
+            return;
+        }
+
+        visited.add(goalId);
+
+
+        const goal = goalsMap.get(goalId);
+
+        if (!goal) {
+            return;
+        }
+
+
+        chain.push(goal);
+
+
+        const parents =
+            parentsMap.get(goalId) || [];
+
+
+        parents.forEach(parentId => {
+            addGoalChain(parentId);
+        });
+    }
+
+
+    directLinks.forEach(link => {
+        addGoalChain(link.goal_id);
+    });
+
+
+    const chainHtml = chain.length > 0
+        ? `
+            <div style="
+                margin-top: 8px;
+                padding: 10px;
+                background: #151515;
+                border-radius: 8px;
+                color: #aaa;
+                font-size: 14px;
+            ">
+
+                <div style="
+                    color: #ddd;
+                    margin-bottom: 6px;
+                ">
+                    🎯 Связь с целями
+                </div>
+
+                ${chain.map((goal, index) => `
+                    <div style="
+                        margin-top: 4px;
+                    ">
+                        ${index > 0 ? '↑ ' : '→ '}
+                        ${goal.title || 'Без названия'}
+                        <span style="color:#777;">
+                            (${getGoalPeriodLabel(goal.period)})
+                        </span>
+                    </div>
+                `).join('')}
+
+            </div>
+        `
+        : `
+            <div style="
+                margin-top: 8px;
+                color: #777;
+                font-size: 14px;
+            ">
+                Связанные цели не найдены.
+            </div>
+        `;
+
+
+    button.parentElement.insertAdjacentHTML(
+        'afterend',
+        chainHtml
+    );
+
+    button.style.display = 'none';
+}
+async function loadToday() {
+
+    const todayContent =
+        document.getElementById('todayContent');
+
+    const now = new Date();
+
+    const today =
+        `${now.getFullYear()}-` +
+        `${String(now.getMonth() + 1).padStart(2, '0')}-` +
+        `${String(now.getDate()).padStart(2, '0')}`;
+
+
+    /*
+     * =========================
+     * ЗАДАЧИ НА СЕГОДНЯ
+     * =========================
+     */
+
+    const { data: tasks, error: tasksError } =
+        await supabaseClient
+            .from('tasks')
+            .select('*')
+            .eq('status', 'open')
+            .eq('due_date', today)
+            .order('priority', { ascending: false });
+
+
+    if (tasksError) {
+        todayContent.textContent =
+            'Ошибка загрузки задач: ' +
+            tasksError.message;
+        return;
+    }
+
+
+    /*
+     * =========================
+     * РУТИНЫ
+     * =========================
+     */
+
+    const { data: routines, error: routinesError } =
+        await supabaseClient
+            .from('routines')
+            .select('*')
+            .eq('is_active', true)
+            .order('created_at', { ascending: false });
+
+
+    if (routinesError) {
+        todayContent.textContent =
+            'Ошибка загрузки рутин: ' +
+            routinesError.message;
+        return;
+    }
+
+
+    const routineIds =
+        (routines || []).map(routine => routine.id);
+
+
+    let completions = [];
+
+
+    if (routineIds.length > 0) {
+
+        const { data, error } =
+            await supabaseClient
+                .from('routine_completions')
+                .select(
+                    'routine_id, completion_date, status'
+                )
+                .in('routine_id', routineIds);
+
+
+        if (error) {
+            todayContent.textContent =
+                'Ошибка загрузки выполнений рутин: ' +
+                error.message;
+            return;
+        }
+
+        completions = data || [];
+    }
+
+
+    /*
+     * =========================
+     * СВЯЗИ РУТИН С ЦЕЛЯМИ
+     * =========================
+     */
+
+    let routineLinks = [];
+
+
+    if (routineIds.length > 0) {
+
+        const { data, error } =
+            await supabaseClient
+                .from('routine_goal_links')
+                .select('routine_id, goal_id')
+                .in('routine_id', routineIds);
+
+
+        if (error) {
+            todayContent.textContent =
+                'Ошибка загрузки связей рутин: ' +
+                error.message;
+            return;
+        }
+
+        routineLinks = data || [];
+    }
+
+
+    /*
+     * =========================
+     * СВЯЗИ ЗАДАЧ С ЦЕЛЯМИ
+     * =========================
+     */
+
+    let taskLinks = [];
+
+    const taskIds =
+        (tasks || []).map(task => task.id);
+
+
+    if (taskIds.length > 0) {
+
+        const { data, error } =
+            await supabaseClient
+                .from('task_goal_links')
+                .select('task_id, goal_id')
+                .in('task_id', taskIds);
+
+
+        if (error) {
+            todayContent.textContent =
+                'Ошибка загрузки связей задач: ' +
+                error.message;
+            return;
+        }
+
+        taskLinks = data || [];
+    }
+
+
+    /*
+     * =========================
+     * ВСЕ НУЖНЫЕ ЦЕЛИ
+     * =========================
+     */
+
+    const goalIds = [
+        ...new Set([
+            ...routineLinks.map(link => link.goal_id),
+            ...taskLinks.map(link => link.goal_id)
+        ])
+    ];
+
+
+    let goals = [];
+
+
+    if (goalIds.length > 0) {
+
+        const { data, error } =
+            await supabaseClient
+                .from('goals')
+                .select('id, title, period')
+                .in('id', goalIds);
+
+
+        if (error) {
+            todayContent.textContent =
+                'Ошибка загрузки целей: ' +
+                error.message;
+            return;
+        }
+
+        goals = data || [];
+    }
+
+
+    /*
+     * =========================
+     * ЗАДАЧИ
+     * =========================
+     */
+
+    let tasksHtml = '';
+
+
+    if (!tasks || tasks.length === 0) {
+
+        tasksHtml = `
+            <div style="color:#777;">
+                На сегодня задач с дедлайном нет.
+            </div>
+        `;
+
+    } else {
+
+        tasksHtml = tasks.map(task => {
+
+            const linkedGoalIds =
+                taskLinks
+                    .filter(link =>
+                        link.task_id === task.id
+                    )
+                    .map(link => link.goal_id);
+
+
+            const linkedGoals =
+                goals.filter(goal =>
+                    linkedGoalIds.includes(goal.id)
+                );
+
+
+            const goalHtml =
+                linkedGoals.length > 0
+                    ? `
+                        <div style="
+                            margin-top: 6px;
+                            color: #888;
+                            font-size: 14px;
+                        ">
+                            🎯
+                            ${linkedGoals.map(goal =>
+                                `→ ${goal.title}`
+                            ).join(', ')}
+                        </div>
+                    `
+                    : '';
+const whyButton = `
+    <div style="margin-top: 8px;">
+        <button
+            type="button"
+            onclick="showWhy('task', ${task.id}, this)"
+            style="
+                padding: 6px 10px;
+                background: #333;
+                color: white;
+                border: 0;
+                border-radius: 7px;
+                cursor: pointer;
+            "
+        >
+            🎯 Почему?
+        </button>
+    </div>
+`;
+
+            return `
+                <div style="
+                    padding: 12px 0;
+                    border-bottom: 1px solid #292929;
+                ">
+
+                    <div>
+                        ☐
+                        <strong>
+                            ${task.title || 'Без названия'}
+                        </strong>
+                    </div>
+
+                    ${task.description
+                        ? `
+                            <div style="
+                                color:#888;
+                                margin-top:5px;
+                            ">
+                                ${task.description}
+                            </div>
+                        `
+                        : ''
+                    }
+
+                    ${goalHtml}
+${whyButton}
+                    <div style="
+                        margin-top: 8px;
+                    ">
+                        <button
+                            type="button"
+                            onclick="completeTask(${task.id}); loadToday();"
+                            style="
+                                padding: 6px 10px;
+                                background: #333;
+                                color: white;
+                                border: 0;
+                                border-radius: 7px;
+                                cursor: pointer;
+                            "
+                        >
+                            ☑ Выполнить
+                        </button>
+                    </div>
+
+                </div>
+            `;
+
+        }).join('');
+    }
+
+
+    /*
+     * =========================
+     * РУТИНЫ НА СЕГОДНЯ
+     * =========================
+     */
+
+    const todayRoutines =
+        (routines || []).filter(routine => {
+
+            const routineCompletions =
+                completions.filter(completion =>
+                    completion.routine_id === routine.id &&
+                    completion.status === 'completed'
+                );
+
+
+            const completedToday =
+                routineCompletions.some(completion =>
+                    completion.completion_date === today
+                );
+
+
+            /*
+             * Если сегодня уже выполнена —
+             * в «Сегодня» её больше не показываем.
+             */
+
+            if (completedToday) {
+                return false;
+            }
+
+
+            /*
+             * Для ежедневной рутины
+             * достаточно того, что сегодня она не выполнена.
+             */
+
+            if (routine.frequency === 'daily') {
+                return true;
+            }
+
+
+            /*
+             * Определяем начало текущего периода.
+             */
+
+            let periodStart;
+
+
+            if (routine.frequency === 'weekly') {
+
+                const dayOfWeek = now.getDay();
+
+                const daysFromMonday =
+                    dayOfWeek === 0
+                        ? 6
+                        : dayOfWeek - 1;
+
+                periodStart = new Date(now);
+
+                periodStart.setDate(
+                    now.getDate() - daysFromMonday
+                );
+
+            } else if (
+                routine.frequency === 'monthly'
+            ) {
+
+                periodStart = new Date(
+                    now.getFullYear(),
+                    now.getMonth(),
+                    1
+                );
+
+            } else {
+
+                return false;
+            }
+
+
+            const periodStartString =
+                `${periodStart.getFullYear()}-` +
+                `${String(
+                    periodStart.getMonth() + 1
+                ).padStart(2, '0')}-` +
+                `${String(
+                    periodStart.getDate()
+                ).padStart(2, '0')}`;
+
+
+            const completedThisPeriod =
+                routineCompletions.filter(completion =>
+                    completion.completion_date >=
+                    periodStartString &&
+                    completion.completion_date <=
+                    today
+                ).length;
+
+
+            const target =
+                routine.times_per_period
+                    ? Number(
+                        routine.times_per_period
+                    )
+                    : 1;
+
+
+            return completedThisPeriod < target;
+        });
+
+
+    let routinesHtml = '';
+
+
+    if (todayRoutines.length === 0) {
+
+        routinesHtml = `
+            <div style="color:#777;">
+                Все необходимые рутины на сегодня выполнены.
+            </div>
+        `;
+
+    } else {
+
+        routinesHtml =
+            todayRoutines.map(routine => {
+
+                const linkedGoalIds =
+                    routineLinks
+                        .filter(link =>
+                            link.routine_id === routine.id
+                        )
+                        .map(link => link.goal_id);
+
+
+                const linkedGoals =
+                    goals.filter(goal =>
+                        linkedGoalIds.includes(goal.id)
+                    );
+
+
+                const goalHtml =
+                    linkedGoals.length > 0
+                        ? `
+                            <div style="
+                                margin-top: 6px;
+                                color: #888;
+                                font-size: 14px;
+                            ">
+                                🎯
+                                ${linkedGoals.map(goal =>
+                                    `→ ${goal.title}`
+                                ).join(', ')}
+                            </div>
+                        `
+                        : '';
+
+const whyButton = `
+    <div style="margin-top: 8px;">
+        <button
+            type="button"
+            onclick="showWhy('routine', ${routine.id}, this)"
+            style="
+                padding: 6px 10px;
+                background: #333;
+                color: white;
+                border: 0;
+                border-radius: 7px;
+                cursor: pointer;
+            "
+        >
+            🎯 Почему?
+        </button>
+    </div>
+`;
+                return `
+                    <div style="
+                        padding: 12px 0;
+                        border-bottom: 1px solid #292929;
+                    ">
+
+                        <div>
+                            ☐
+                            <strong>
+                                ${routine.title}
+                            </strong>
+                        </div>
+
+                        <div style="
+                            color:#888;
+                            margin-top:5px;
+                        ">
+                            ${getRoutineFrequencyLabel(
+                                routine.frequency
+                            )}
+                            ·
+                            ${routine.times_per_period || 1}
+                            раз за период
+                        </div>
+
+                        ${routine.time_of_day
+                            ? `
+                                <div style="
+                                    color:#888;
+                                ">
+                                    ${routine.time_of_day}
+                                </div>
+                            `
+                            : ''
+                        }
+
+                        ${routine.duration_minutes
+                            ? `
+                                <div style="
+                                    color:#888;
+                                ">
+                                    ${routine.duration_minutes}
+                                    мин.
+                                </div>
+                            `
+                            : ''
+                        }
+
+                        ${goalHtml}
+${whyButton}
+                        <div style="
+                            margin-top: 8px;
+                        ">
+                            <button
+                                type="button"
+                                onclick="completeRoutineToday(${routine.id}); loadToday();"
+                                style="
+                                    padding: 6px 10px;
+                                    background: #333;
+                                    color: white;
+                                    border: 0;
+                                    border-radius: 7px;
+                                    cursor: pointer;
+                                "
+                            >
+                                ☑ Выполнить сегодня
+                            </button>
+                        </div>
+
+                    </div>
+                `;
+
+            }).join('');
+    }
+
+
+    /*
+     * =========================
+     * ИТОГОВЫЙ ЭКРАН
+     * =========================
+     */
+
+    todayContent.innerHTML = `
+
+        <div style="
+            margin-bottom: 28px;
+        ">
+
+            <h3 style="
+                margin-bottom: 8px;
+            ">
+                📋 Задачи
+            </h3>
+
+            ${tasksHtml}
+
+        </div>
+
+
+        <div>
+
+            <h3 style="
+                margin-bottom: 8px;
+            ">
+                🔁 Рутины
+            </h3>
+
+            ${routinesHtml}
+
+        </div>
+
+    `;
+}
+supabaseClient.auth.getSession().then(({ data }) => {
+    if (data.session) {
+        loadToday();
+    }
+});
+</script>
+</body>
+</html>
