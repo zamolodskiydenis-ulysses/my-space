@@ -1303,7 +1303,25 @@ async function reopenTask(taskId) {
 
         return labels[frequency] || frequency || 'Не указана';
     }
+async function completeRoutineToday(routineId) {
+    const today = new Date().toISOString().split('T')[0];
 
+    const { error } = await supabaseClient
+        .from('routine_completions')
+        .insert({
+            routine_id: routineId,
+            completion_date: today,
+            status: 'completed',
+            completed_at: new Date().toISOString()
+        });
+
+    if (error) {
+        alert('Ошибка выполнения рутины: ' + error.message);
+        return;
+    }
+
+    await loadRoutines();
+}
 
     async function loadRoutines() {
     const routinesList = document.getElementById('routinesList');
