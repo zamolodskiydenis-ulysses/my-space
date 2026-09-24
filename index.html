@@ -1340,7 +1340,47 @@ async function completeRoutineToday(routineId) {
 
     await loadRoutines();
 }
+async function loadRoutineGoals() {
+    const routineGoalsList =
+        document.getElementById('routineGoalsList');
 
+    const { data, error } = await supabaseClient
+        .from('goals')
+        .select('id, title, period')
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        routineGoalsList.textContent =
+            'Ошибка загрузки целей: ' + error.message;
+        return;
+    }
+
+    if (!data || data.length === 0) {
+        routineGoalsList.textContent =
+            'Пока нет целей для связи.';
+        return;
+    }
+
+    routineGoalsList.innerHTML = data.map(goal => `
+        <label style="
+            display: block;
+            padding: 8px 0;
+            color: #ddd;
+            cursor: pointer;
+        ">
+            <input
+                type="checkbox"
+                class="routine-goal-checkbox"
+                value="${goal.id}"
+                style="margin-right: 8px;"
+            >
+            ${goal.title || 'Без названия'}
+            <span style="color:#777;">
+                (${getGoalPeriodLabel(goal.period)})
+            </span>
+        </label>
+    `).join('');
+}
     async function loadRoutines() {
     const routinesList = document.getElementById('routinesList');
 
@@ -1543,7 +1583,8 @@ async function completeRoutineToday(routineId) {
 
     supabaseClient.auth.getSession().then(({ data }) => {
         if (data.session) {
-            loadRoutines();
+            loadRoutineGoals();
+    loadRoutines();
         }
     });
 
