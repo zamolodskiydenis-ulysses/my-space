@@ -829,6 +829,23 @@
         return labels[period] || period || '';
     }
 
+async function completeTask(taskId) {
+    const { error } = await supabaseClient
+        .from('tasks')
+        .update({
+            status: 'completed',
+            completed_at: new Date().toISOString()
+        })
+        .eq('id', taskId);
+
+    if (error) {
+        alert('Ошибка завершения задачи: ' + error.message);
+        return;
+    }
+
+    await loadTasks();
+}
+
 
     async function loadTasks() {
     const tasksList = document.getElementById('tasksList');
