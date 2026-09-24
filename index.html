@@ -285,148 +285,205 @@
     border-radius: 14px;
 ">
     <h2>🎯 Цели</h2>
+
     <form id="goalForm" style="margin-bottom: 24px;">
-    <input
-        id="goalTitle"
-        type="text"
-        placeholder="Название цели"
-        required
-        style="
-            width: 100%;
-            box-sizing: border-box;
-            padding: 12px;
-            margin-bottom: 10px;
-            background: #111;
-            color: white;
-            border: 1px solid #333;
-            border-radius: 8px;
-        "
-    >
-<textarea
-    id="goalDescription"
-    placeholder="Описание цели"
-    rows="3"
-    style="
-        width: 100%;
-        box-sizing: border-box;
-        padding: 12px;
-        margin-bottom: 10px;
-        background: #111;
-        color: white;
-        border: 1px solid #333;
-        border-radius: 8px;
-        resize: vertical;
-    "
-></textarea>
+
+        <input
+            id="goalTitle"
+            type="text"
+            placeholder="Название цели"
+            required
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+            "
+        >
+
+        <textarea
+            id="goalDescription"
+            placeholder="Описание цели"
+            rows="3"
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+                resize: vertical;
+            "
+        ></textarea>
+
         <select
-    id="goalPeriod"
-    required
-    style="
-        width: 100%;
-        box-sizing: border-box;
-        padding: 12px;
-        margin-bottom: 10px;
-        background: #111;
-        color: white;
-        border: 1px solid #333;
-        border-radius: 8px;
-    "
->
-    <option value="">Выберите период</option>
-    <option value="year">Год</option>
-    <option value="month">Месяц</option>
-    <option value="week">Неделя</option>
-    <option value="day">День</option>
-</select>
+            id="goalPeriod"
+            required
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+            "
+        >
+            <option value="">Выберите период</option>
+            <option value="year">Год</option>
+            <option value="month">Месяц</option>
+            <option value="week">Неделя</option>
+            <option value="day">День</option>
+        </select>
+
         <select
-    id="goalStatus"
-    required
-    style="
-        width: 100%;
-        box-sizing: border-box;
-        padding: 12px;
-        margin-bottom: 10px;
-        background: #111;
-        color: white;
-        border: 1px solid #333;
-        border-radius: 8px;
-    "
->
-    <option value="">Выберите статус</option>
-    <option value="active">Активна</option>
-    <option value="completed">Завершена</option>
-    <option value="paused">На паузе</option>
-</select>
+            id="goalStatus"
+            required
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+            "
+        >
+            <option value="">Выберите статус</option>
+            <option value="active">Активна</option>
+            <option value="completed">Завершена</option>
+            <option value="paused">На паузе</option>
+        </select>
+
         <select
-    id="goalPriority"
-    required
-    style="
-        width: 100%;
-        box-sizing: border-box;
-        padding: 12px;
-        margin-bottom: 10px;
-        background: #111;
-        color: white;
-        border: 1px solid #333;
-        border-radius: 8px;
-    "
->
-    <option value="">Выберите приоритет</option>
-    <option value="mandatory">Обязательно</option>
-    <option value="important">Важно</option>
-    <option value="desirable">Желательно</option>
-    <option value="if_time">Если есть время</option>
-</select>
-    <button
-        type="submit"
-        style="
-            padding: 10px 16px;
-            background: #333;
-            color: white;
-            border: 0;
-            border-radius: 8px;
-            cursor: pointer;
-        "
-    >
-        Добавить цель
-    </button>
-</form>
+            id="goalPriority"
+            required
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+            "
+        >
+            <option value="">Выберите приоритет</option>
+            <option value="mandatory">Обязательно</option>
+            <option value="important">Важно</option>
+            <option value="desirable">Желательно</option>
+            <option value="if_time">Если есть время</option>
+        </select>
+
+        <label style="
+            display: block;
+            color: #999;
+            font-size: 14px;
+            margin-bottom: 6px;
+        ">
+            Дата начала
+        </label>
+
+        <input
+            id="goalStartDate"
+            type="date"
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+            "
+        >
+
+        <label style="
+            display: block;
+            color: #999;
+            font-size: 14px;
+            margin-bottom: 6px;
+        ">
+            Дедлайн
+        </label>
+
+        <input
+            id="goalDueDate"
+            type="date"
+            style="
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: #111;
+                color: white;
+                border: 1px solid #333;
+                border-radius: 8px;
+            "
+        >
+
+        <button
+            type="submit"
+            style="
+                padding: 10px 16px;
+                background: #333;
+                color: white;
+                border: 0;
+                border-radius: 8px;
+                cursor: pointer;
+            "
+        >
+            Добавить цель
+        </button>
+
+    </form>
+
     <div id="goalsList">Загрузка целей...</div>
 </section>
 
 <script>
-    document.getElementById('goalForm').addEventListener('submit', async (event) => {
-    event.preventDefault();
+    function getPeriodLabel(period) {
+        const labels = {
+            year: 'Год',
+            month: 'Месяц',
+            week: 'Неделя',
+            day: 'День'
+        };
 
-    const title = document.getElementById('goalTitle').value.trim();
-const description = document.getElementById('goalDescription').value.trim();
-        const period = document.getElementById('goalPeriod').value;
-        const status = document.getElementById('goalStatus').value;
-        const priority = document.getElementById('goalPriority').value;
-    if (!title) return;
-
-    const { error } = await supabaseClient
-        .from('goals')
-        .insert({
-            title: title,
-    description: description,
-    period: period,
-    status: status,
-    priority: priority
-        });
-
-    if (error) {
-        alert('Ошибка создания цели: ' + error.message);
-        return;
+        return labels[period] || period || 'Не указан';
     }
 
-    document.getElementById('goalTitle').value = '';
-document.getElementById('goalDescription').value = '';
-        document.getElementById('goalPeriod').value = '';
-        document.getElementById('goalStatus').value = '';
-        document.getElementById('goalPriority').value = '';
-    await loadGoals();
-});
+    function getStatusLabel(status) {
+        const labels = {
+            active: 'Активна',
+            completed: 'Завершена',
+            paused: 'На паузе'
+        };
+
+        return labels[status] || status || 'Не указан';
+    }
+
+    function getPriorityLabel(priority) {
+        const labels = {
+            4: 'Обязательно',
+            3: 'Важно',
+            2: 'Желательно',
+            1: 'Если есть время'
+        };
+
+        return labels[priority] || 'Не указан';
+    }
+
     async function loadGoals() {
         const goalsList = document.getElementById('goalsList');
 
@@ -447,15 +504,97 @@ document.getElementById('goalDescription').value = '';
 
         goalsList.innerHTML = data.map(goal => `
             <div style="
-                padding: 14px 0;
+                padding: 16px 0;
                 border-bottom: 1px solid #292929;
             ">
                 <strong>${goal.title || 'Без названия'}</strong>
-                ${goal.period ? `<div style="color:#999;">Период: ${goal.period}</div>` : ''}
-                ${goal.status ? `<div style="color:#999;">Статус: ${goal.status}</div>` : ''}
+
+                ${goal.description
+                    ? `<div style="color:#aaa; margin-top:6px;">
+                        ${goal.description}
+                    </div>`
+                    : ''
+                }
+
+                <div style="color:#999; margin-top:8px;">
+                    Период: ${getPeriodLabel(goal.period)}
+                </div>
+
+                <div style="color:#999;">
+                    Статус: ${getStatusLabel(goal.status)}
+                </div>
+
+                <div style="color:#999;">
+                    Приоритет: ${getPriorityLabel(goal.priority)}
+                </div>
+
+                ${goal.start_date
+                    ? `<div style="color:#999;">
+                        Начало: ${goal.start_date}
+                    </div>`
+                    : ''
+                }
+
+                ${goal.due_date
+                    ? `<div style="color:#999;">
+                        Дедлайн: ${goal.due_date}
+                    </div>`
+                    : ''
+                }
             </div>
         `).join('');
     }
+
+
+    document.getElementById('goalForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const title = document.getElementById('goalTitle').value.trim();
+        const description = document.getElementById('goalDescription').value.trim();
+        const period = document.getElementById('goalPeriod').value;
+        const status = document.getElementById('goalStatus').value;
+        const priority = document.getElementById('goalPriority').value;
+        const startDate = document.getElementById('goalStartDate').value;
+        const dueDate = document.getElementById('goalDueDate').value;
+
+        if (!title || !period || !status || !priority) {
+            return;
+        }
+
+        const priorityNumber =
+            priority === 'mandatory' ? 4 :
+            priority === 'important' ? 3 :
+            priority === 'desirable' ? 2 :
+            1;
+
+        const { error } = await supabaseClient
+            .from('goals')
+            .insert({
+                title: title,
+                description: description || null,
+                period: period,
+                status: status,
+                priority: priorityNumber,
+                start_date: startDate || null,
+                due_date: dueDate || null
+            });
+
+        if (error) {
+            alert('Ошибка создания цели: ' + error.message);
+            return;
+        }
+
+        document.getElementById('goalTitle').value = '';
+        document.getElementById('goalDescription').value = '';
+        document.getElementById('goalPeriod').value = '';
+        document.getElementById('goalStatus').value = '';
+        document.getElementById('goalPriority').value = '';
+        document.getElementById('goalStartDate').value = '';
+        document.getElementById('goalDueDate').value = '';
+
+        await loadGoals();
+    });
+
 
     supabaseClient.auth.getSession().then(({ data }) => {
         if (data.session) {
