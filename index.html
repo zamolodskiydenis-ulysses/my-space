@@ -899,6 +899,41 @@
     .phoenix-goal-modal-card { padding: 26px 18px; }
 }
 
+
+/* GOAL PERIOD LIST */
+.phoenix-goal-period-view{display:none;position:relative;z-index:2;width:min(760px,100%);margin:30px auto 0}
+.phoenix-goal-period-view.is-open{display:block}
+.phoenix-goal-period-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px}
+.phoenix-goal-period-back{border:1px solid rgba(255,177,95,.18);background:rgba(255,255,255,.02);color:#cdb9a8;border-radius:9px;padding:9px 14px;cursor:pointer;font:12px/1 Arial,sans-serif;letter-spacing:.08em}
+.phoenix-goal-period-back:hover{color:#fff0df;border-color:rgba(255,177,95,.45);background:rgba(255,102,22,.08)}
+.phoenix-goal-period-title{margin:0;color:#f0d5b7;font:400 28px/1.2 Georgia,'Times New Roman',serif;letter-spacing:.1em}
+.phoenix-goal-period-count{color:#786a60;font:12px/1 Arial,sans-serif;white-space:nowrap}
+.phoenix-goal-cards{display:grid;gap:10px}
+.phoenix-goal-card{width:100%;text-align:left;border:1px solid rgba(255,177,95,.10);border-radius:13px;background:radial-gradient(circle at 0% 50%,rgba(255,88,18,.07),transparent 38%),rgba(255,255,255,.018);color:#ead9c8;padding:17px 19px;cursor:pointer;transition:.22s ease}
+.phoenix-goal-card:hover{border-color:rgba(255,177,95,.28);background:radial-gradient(circle at 0% 50%,rgba(255,88,18,.12),transparent 42%),rgba(255,255,255,.025);transform:translateY(-1px)}
+.phoenix-goal-card-title{display:block;color:#eee0d2;font:400 18px/1.35 Georgia,'Times New Roman',serif}
+.phoenix-goal-card-meta{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-top:8px;color:#7f7168;font:11px/1.2 Arial,sans-serif}
+.phoenix-goal-card-meta span+span:before{content:'•';margin-right:10px;color:#5f5148}
+.phoenix-goal-empty{padding:35px 20px;text-align:center;border:1px dashed rgba(255,177,95,.12);border-radius:14px;color:#756960;font:13px/1.5 Arial,sans-serif}
+/* GOAL DETAIL */
+.phoenix-goal-detail-card{width:min(700px,100%)}
+.phoenix-goal-detail-kicker{color:#b97b48;font:10px/1.2 Arial,sans-serif;letter-spacing:.25em;text-transform:uppercase}
+.phoenix-goal-detail-title{margin:10px 42px 8px 0;color:#f0d5b7;font:400 clamp(28px,4vw,40px)/1.15 Georgia,'Times New Roman',serif}
+.phoenix-goal-detail-description{margin:0 0 24px;color:#a79688;font:14px/1.7 Arial,sans-serif;white-space:pre-wrap}
+.phoenix-goal-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:22px}
+.phoenix-goal-detail-item{padding:13px 14px;border:1px solid rgba(255,177,95,.09);border-radius:10px;background:rgba(255,255,255,.015)}
+.phoenix-goal-detail-item small{display:block;margin-bottom:5px;color:#6f6259;font:10px/1.2 Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase}
+.phoenix-goal-detail-item strong{color:#d8c3b1;font:13px/1.35 Arial,sans-serif;font-weight:400}
+.phoenix-goal-detail-section{margin-top:22px}
+.phoenix-goal-detail-section h4{margin:0 0 10px;color:#c99565;font:11px/1.2 Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase}
+.phoenix-goal-detail-links{display:grid;gap:7px}
+.phoenix-goal-detail-link{padding:10px 12px;border-left:1px solid rgba(255,131,42,.35);background:rgba(255,255,255,.015);color:#aa9888;font:13px/1.4 Arial,sans-serif}
+.phoenix-goal-detail-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:28px}
+.phoenix-goal-detail-actions button{border-radius:9px;padding:10px 15px;cursor:pointer;font:12px/1 Arial,sans-serif}
+.phoenix-goal-edit-button{border:1px solid rgba(255,177,95,.28);background:rgba(255,110,24,.08);color:#e7c4a5}
+.phoenix-goal-delete-button{border:1px solid rgba(190,75,35,.24);background:rgba(130,35,15,.08);color:#a98270}
+@media(max-width:700px){.phoenix-goal-period-toolbar{align-items:flex-start;flex-direction:column}.phoenix-goal-period-title{font-size:24px}.phoenix-goal-detail-grid{grid-template-columns:1fr}}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -1207,6 +1242,24 @@ document.getElementById('phoenixBackButton').onclick = backToPhoenixLife;
 
     <div id="goalsList" class="phoenix-goals-list-hidden">Загрузка целей...</div>
 
+        <div id="goalPeriodView" class="phoenix-goal-period-view">
+            <div class="phoenix-goal-period-toolbar">
+                <button type="button" class="phoenix-goal-period-back" id="goalPeriodBack">← ЦЕЛИ</button>
+                <h3 class="phoenix-goal-period-title" id="goalPeriodTitle">ГОД</h3>
+                <span class="phoenix-goal-period-count" id="goalPeriodCount">0 целей</span>
+            </div>
+            <div id="goalPeriodCards" class="phoenix-goal-cards"></div>
+        </div>
+
+        <div id="goalDetailModal" class="phoenix-goal-modal" aria-hidden="true">
+            <div class="phoenix-goal-modal-backdrop" id="closeGoalDetailBackdrop"></div>
+            <div class="phoenix-goal-modal-card phoenix-goal-detail-card">
+                <button type="button" class="phoenix-goal-modal-close" id="closeGoalDetail">×</button>
+                <div id="goalDetailContent"></div>
+            </div>
+        </div>
+
+
     <div id="goalCreator" class="phoenix-goal-modal" aria-hidden="true">
         <div class="phoenix-goal-modal-backdrop" id="closeGoalCreatorBackdrop"></div>
         <div class="phoenix-goal-modal-card">
@@ -1411,126 +1464,211 @@ document.getElementById('phoenixBackButton').onclick = backToPhoenixLife;
         return labels[priority] || 'Не указан';
     }
 
+    let allPhoenixGoals = [];
+    let currentGoalPeriod = null;
+    let editingGoalId = null;
+
+    function escapeHtml(value) {
+        return String(value ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+    }
+
+    function formatGoalDate(value) {
+        if (!value) return '';
+        const p = String(value).split('-');
+        return p.length === 3 ? `${p[2]}.${p[1]}.${p[0]}` : value;
+    }
+
+    function getPriorityShortLabel(priority) {
+        return ({4:'Обязательно',3:'Важно',2:'Желательно',1:'Если есть время'})[priority] || 'Приоритет не указан';
+    }
+
     async function loadGoals() {
         const goalsList = document.getElementById('goalsList');
-
-        const { data, error } = await supabaseClient
-            .from('goals')
-            .select('*')
-            .order('created_at', { ascending: false });
-
-        if (error) {
-            goalsList.textContent = 'Ошибка загрузки целей: ' + error.message;
-            updateGoalWheelCounts([]);
-            return;
-        }
-
-        const goals = data || [];
-        updateGoalWheelCounts(goals);
-
-        if (goals.length === 0) {
-            goalsList.textContent = 'Пока целей нет.';
-            return;
-        }
-
-        goalsList.innerHTML = goals.map(goal => `
-            <div>
-                <strong>${goal.title || 'Без названия'}</strong>
-                ${goal.description ? `<div>${goal.description}</div>` : ''}
-                <div>Период: ${getPeriodLabel(goal.period)}</div>
-                <div>Статус: ${getStatusLabel(goal.status)}</div>
-                <div>Приоритет: ${getPriorityLabel(goal.priority)}</div>
-            </div>
-        `).join('');
+        const {data,error}=await supabaseClient.from('goals').select('*').order('created_at',{ascending:false});
+        if(error){goalsList.textContent='Ошибка загрузки целей: '+error.message;updateGoalWheelCounts([]);return;}
+        allPhoenixGoals=data||[];
+        updateGoalWheelCounts(allPhoenixGoals);
+        if(currentGoalPeriod) renderGoalPeriod(currentGoalPeriod);
     }
 
     function updateGoalWheelCounts(goals) {
-        const counts = { year: 0, month: 0, week: 0, day: 0 };
-
-        goals.forEach(goal => {
-            if (Object.prototype.hasOwnProperty.call(counts, goal.period)) {
-                counts[goal.period] += 1;
-            }
-        });
-
-        document.getElementById('goalCountYear').textContent = counts.year;
-        document.getElementById('goalCountMonth').textContent = counts.month;
-        document.getElementById('goalCountWeek').textContent = counts.week;
-        document.getElementById('goalCountDay').textContent = counts.day;
+        const counts={year:0,month:0,week:0,day:0};
+        goals.forEach(g=>{if(Object.prototype.hasOwnProperty.call(counts,g.period))counts[g.period]++;});
+        document.getElementById('goalCountYear').textContent=counts.year;
+        document.getElementById('goalCountMonth').textContent=counts.month;
+        document.getElementById('goalCountWeek').textContent=counts.week;
+        document.getElementById('goalCountDay').textContent=counts.day;
     }
 
+    function openGoalPeriod(period) {
+        currentGoalPeriod=period;
+        document.querySelector('.phoenix-goals-wheel-wrap').style.display='none';
+        document.querySelector('.phoenix-goals-hint').style.display='none';
+        document.getElementById('goalPeriodView').classList.add('is-open');
+        renderGoalPeriod(period);
+        window.scrollTo(0,0);
+    }
 
-    document.getElementById('goalForm').addEventListener('submit', async (event) => {
+    function closeGoalPeriod() {
+        currentGoalPeriod=null;
+        document.getElementById('goalPeriodView').classList.remove('is-open');
+        document.querySelector('.phoenix-goals-wheel-wrap').style.display='flex';
+        document.querySelector('.phoenix-goals-hint').style.display='flex';
+        window.scrollTo(0,0);
+    }
+
+    function renderGoalPeriod(period) {
+        const labels={year:'ГОД',month:'МЕСЯЦ',week:'НЕДЕЛЯ',day:'ДЕНЬ'};
+        const goals=allPhoenixGoals.filter(g=>g.period===period);
+        document.getElementById('goalPeriodTitle').textContent=labels[period]||'ЦЕЛИ';
+        document.getElementById('goalPeriodCount').textContent=`${goals.length} ${goals.length===1?'цель':'целей'}`;
+        const cards=document.getElementById('goalPeriodCards');
+        if(!goals.length){cards.innerHTML='<div class="phoenix-goal-empty">В этом периоде пока нет целей.</div>';return;}
+        cards.innerHTML=goals.map(g=>`
+            <button type="button" class="phoenix-goal-card" data-goal-id="${g.id}">
+                <span class="phoenix-goal-card-title">${escapeHtml(g.title||'Без названия')}</span>
+                <span class="phoenix-goal-card-meta">
+                    ${g.due_date?`<span>до ${escapeHtml(formatGoalDate(g.due_date))}</span>`:''}
+                    <span>${escapeHtml(getPriorityShortLabel(g.priority))}</span>
+                </span>
+            </button>`).join('');
+        cards.querySelectorAll('.phoenix-goal-card').forEach(card=>card.addEventListener('click',()=>openGoalDetail(Number(card.dataset.goalId))));
+    }
+
+    async function openGoalDetail(goalId) {
+        const goal=allPhoenixGoals.find(g=>Number(g.id)===Number(goalId));
+        if(!goal)return;
+        document.getElementById('goalDetailContent').innerHTML=`
+            <div class="phoenix-goal-detail-kicker">PHOENIX / ${escapeHtml(getPeriodLabel(goal.period))}</div>
+            <h3 class="phoenix-goal-detail-title">${escapeHtml(goal.title||'Без названия')}</h3>
+            <p class="phoenix-goal-detail-description">${escapeHtml(goal.description||'Описание не добавлено.')}</p>
+            <div class="phoenix-goal-detail-grid">
+                <div class="phoenix-goal-detail-item"><small>Период</small><strong>${escapeHtml(getPeriodLabel(goal.period))}</strong></div>
+                <div class="phoenix-goal-detail-item"><small>Статус</small><strong>${escapeHtml(getStatusLabel(goal.status))}</strong></div>
+                <div class="phoenix-goal-detail-item"><small>Приоритет</small><strong>${escapeHtml(getPriorityLabel(goal.priority))}</strong></div>
+                <div class="phoenix-goal-detail-item"><small>Начало</small><strong>${escapeHtml(formatGoalDate(goal.start_date)||'Не указано')}</strong></div>
+                <div class="phoenix-goal-detail-item"><small>Дедлайн</small><strong>${escapeHtml(formatGoalDate(goal.due_date)||'Не указан')}</strong></div>
+            </div>
+            <div id="goalDetailRelations">Загрузка связей...</div>
+            <div class="phoenix-goal-detail-actions">
+                <button type="button" class="phoenix-goal-edit-button" onclick="editPhoenixGoal(${goal.id})">Редактировать</button>
+                <button type="button" class="phoenix-goal-delete-button" onclick="deletePhoenixGoal(${goal.id})">Удалить</button>
+            </div>`;
+        const modal=document.getElementById('goalDetailModal');
+        modal.classList.add('is-open');modal.setAttribute('aria-hidden','false');
+        await loadGoalRelations(goal.id);
+    }
+
+    async function loadGoalRelations(goalId) {
+        const target=document.getElementById('goalDetailRelations');
+        const [p,c,t,r]=await Promise.all([
+            supabaseClient.from('goal_links').select('parent_goal_id').eq('child_goal_id',goalId),
+            supabaseClient.from('goal_links').select('child_goal_id').eq('parent_goal_id',goalId),
+            supabaseClient.from('task_goal_links').select('task_id').eq('goal_id',goalId),
+            supabaseClient.from('routine_goal_links').select('routine_id').eq('goal_id',goalId)
+        ]);
+        if(p.error||c.error||t.error||r.error){
+            target.innerHTML='<div class="phoenix-goal-detail-section"><h4>Связи</h4><div class="phoenix-goal-detail-link">Не удалось загрузить связи цели.</div></div>';return;
+        }
+        const parentIds=(p.data||[]).map(x=>x.parent_goal_id), childIds=(c.data||[]).map(x=>x.child_goal_id);
+        const taskIds=(t.data||[]).map(x=>x.task_id), routineIds=(r.data||[]).map(x=>x.routine_id);
+        const goalIds=[...new Set([...parentIds,...childIds])];
+        const [gr,tr,rr]=await Promise.all([
+            goalIds.length?supabaseClient.from('goals').select('id,title,period').in('id',goalIds):Promise.resolve({data:[]}),
+            taskIds.length?supabaseClient.from('tasks').select('id,title,status').in('id',taskIds):Promise.resolve({data:[]}),
+            routineIds.length?supabaseClient.from('routines').select('id,title,frequency').in('id',routineIds):Promise.resolve({data:[]})
+        ]);
+        const goals=gr.data||[],tasks=tr.data||[],routines=rr.data||[];
+        const parents=goals.filter(x=>parentIds.includes(x.id)),children=goals.filter(x=>childIds.includes(x.id));
+        const list=(items,empty,fn)=>items.length?items.map(fn).join(''):`<div class="phoenix-goal-detail-link">${empty}</div>`;
+        target.innerHTML=`
+            <div class="phoenix-goal-detail-section"><h4>ПОЧЕМУ / Родительские цели</h4><div class="phoenix-goal-detail-links">
+                ${list(parents,'Родительских целей нет.',x=>`<div class="phoenix-goal-detail-link">↑ ${escapeHtml(x.title||'Без названия')} <span style="color:#6f6259;">(${escapeHtml(getPeriodLabel(x.period))})</span></div>`)}
+            </div></div>
+            <div class="phoenix-goal-detail-section"><h4>Связанные подцели</h4><div class="phoenix-goal-detail-links">
+                ${list(children,'Подцелей нет.',x=>`<div class="phoenix-goal-detail-link">↓ ${escapeHtml(x.title||'Без названия')} <span style="color:#6f6259;">(${escapeHtml(getPeriodLabel(x.period))})</span></div>`)}
+            </div></div>
+            <div class="phoenix-goal-detail-section"><h4>Связанные задачи</h4><div class="phoenix-goal-detail-links">
+                ${list(tasks,'Задач пока нет.',x=>`<div class="phoenix-goal-detail-link">${escapeHtml(x.title||'Без названия')}</div>`)}
+            </div></div>
+            <div class="phoenix-goal-detail-section"><h4>Связанные рутины</h4><div class="phoenix-goal-detail-links">
+                ${list(routines,'Рутин пока нет.',x=>`<div class="phoenix-goal-detail-link">${escapeHtml(x.title||'Без названия')}</div>`)}
+            </div></div>`;
+    }
+
+    function closeGoalDetail() {
+        const modal=document.getElementById('goalDetailModal');
+        modal.classList.remove('is-open');modal.setAttribute('aria-hidden','true');
+    }
+
+    function editPhoenixGoal(goalId) {
+        const goal=allPhoenixGoals.find(g=>Number(g.id)===Number(goalId));if(!goal)return;
+        editingGoalId=goal.id;closeGoalDetail();
+        document.querySelector('#goalCreator .phoenix-kicker').textContent='PHOENIX / ЦЕЛЬ';
+        document.querySelector('#goalCreator h3').textContent='Редактировать цель';
+        document.querySelector('#goalForm button[type="submit"]').textContent='Сохранить изменения';
+        document.getElementById('goalTitle').value=goal.title||'';
+        document.getElementById('goalDescription').value=goal.description||'';
+        document.getElementById('goalPeriod').value=goal.period||'';
+        document.getElementById('goalStatus').value=goal.status||'';
+        document.getElementById('goalPriority').value=Number(goal.priority)===4?'mandatory':Number(goal.priority)===3?'important':Number(goal.priority)===2?'desirable':'if_time';
+        document.getElementById('goalStartDate').value=goal.start_date||'';
+        document.getElementById('goalDueDate').value=goal.due_date||'';
+        openGoalCreator();
+    }
+
+    async function deletePhoenixGoal(goalId) {
+        const goal=allPhoenixGoals.find(g=>Number(g.id)===Number(goalId));if(!goal)return;
+        if(!confirm(`Удалить цель «${goal.title||'Без названия'}»?`))return;
+        const {error}=await supabaseClient.from('goals').delete().eq('id',goalId);
+        if(error){alert('Ошибка удаления цели: '+error.message);return;}
+        closeGoalDetail();await loadGoals();
+    }
+
+    document.getElementById('goalForm').addEventListener('submit',async(event)=>{
         event.preventDefault();
-
-        const title = document.getElementById('goalTitle').value.trim();
-        const description = document.getElementById('goalDescription').value.trim();
-        const period = document.getElementById('goalPeriod').value;
-        const status = document.getElementById('goalStatus').value;
-        const priority = document.getElementById('goalPriority').value;
-        const startDate = document.getElementById('goalStartDate').value;
-        const dueDate = document.getElementById('goalDueDate').value;
-
-        if (!title || !period || !status || !priority) {
-            return;
-        }
-
-        const priorityNumber =
-            priority === 'mandatory' ? 4 :
-            priority === 'important' ? 3 :
-            priority === 'desirable' ? 2 :
-            1;
-
-        const { error } = await supabaseClient
-            .from('goals')
-            .insert({
-                title: title,
-                description: description || null,
-                period: period,
-                status: status,
-                priority: priorityNumber,
-                start_date: startDate || null,
-                due_date: dueDate || null
-            });
-
-        if (error) {
-            alert('Ошибка создания цели: ' + error.message);
-            return;
-        }
-
-        document.getElementById('goalTitle').value = '';
-        document.getElementById('goalDescription').value = '';
-        document.getElementById('goalPeriod').value = '';
-        document.getElementById('goalStatus').value = '';
-        document.getElementById('goalPriority').value = '';
-        document.getElementById('goalStartDate').value = '';
-        document.getElementById('goalDueDate').value = '';
-
-        await loadGoals();
-        closeGoalCreator();
+        const title=document.getElementById('goalTitle').value.trim();
+        const description=document.getElementById('goalDescription').value.trim();
+        const period=document.getElementById('goalPeriod').value;
+        const status=document.getElementById('goalStatus').value;
+        const priority=document.getElementById('goalPriority').value;
+        const startDate=document.getElementById('goalStartDate').value;
+        const dueDate=document.getElementById('goalDueDate').value;
+        if(!title||!period||!status||!priority)return;
+        const priorityNumber=priority==='mandatory'?4:priority==='important'?3:priority==='desirable'?2:1;
+        const payload={title,description:description||null,period,status,priority:priorityNumber,start_date:startDate||null,due_date:dueDate||null};
+        let error=null;
+        if(editingGoalId){const r=await supabaseClient.from('goals').update(payload).eq('id',editingGoalId);error=r.error;}
+        else{const r=await supabaseClient.from('goals').insert(payload);error=r.error;}
+        if(error){alert((editingGoalId?'Ошибка сохранения цели: ':'Ошибка создания цели: ')+error.message);return;}
+        editingGoalId=null;
+        ['goalTitle','goalDescription','goalPeriod','goalStatus','goalPriority','goalStartDate','goalDueDate'].forEach(id=>document.getElementById(id).value='');
+        document.querySelector('#goalCreator .phoenix-kicker').textContent='PHOENIX / НОВАЯ ЦЕЛЬ';
+        document.querySelector('#goalCreator h3').textContent='Создать цель';
+        document.querySelector('#goalForm button[type="submit"]').textContent='Добавить цель';
+        await loadGoals();closeGoalCreator();
     });
 
-
     function openGoalCreator() {
-        const modal = document.getElementById('goalCreator');
-        modal.classList.add('is-open');
-        modal.setAttribute('aria-hidden', 'false');
-        document.getElementById('goalTitle').focus();
+        const modal=document.getElementById('goalCreator');modal.classList.add('is-open');modal.setAttribute('aria-hidden','false');document.getElementById('goalTitle').focus();
     }
-
     function closeGoalCreator() {
-        const modal = document.getElementById('goalCreator');
-        modal.classList.remove('is-open');
-        modal.setAttribute('aria-hidden', 'true');
+        const modal=document.getElementById('goalCreator');modal.classList.remove('is-open');modal.setAttribute('aria-hidden','true');
     }
 
-    document.getElementById('openGoalCreator').addEventListener('click', openGoalCreator);
-    document.getElementById('closeGoalCreator').addEventListener('click', closeGoalCreator);
-    document.getElementById('closeGoalCreatorBackdrop').addEventListener('click', closeGoalCreator);
-
-    // Сектора пока только показывают количество целей.
-    // Позже сюда подключим открытие целей выбранного периода.
-
+    document.getElementById('openGoalCreator').addEventListener('click',()=>{
+        editingGoalId=null;
+        document.querySelector('#goalCreator .phoenix-kicker').textContent='PHOENIX / НОВАЯ ЦЕЛЬ';
+        document.querySelector('#goalCreator h3').textContent='Создать цель';
+        document.querySelector('#goalForm button[type="submit"]').textContent='Добавить цель';
+        openGoalCreator();
+    });
+    document.getElementById('closeGoalCreator').addEventListener('click',closeGoalCreator);
+    document.getElementById('closeGoalCreatorBackdrop').addEventListener('click',closeGoalCreator);
+    document.querySelectorAll('.phoenix-goal-period').forEach(button=>button.addEventListener('click',()=>openGoalPeriod(button.dataset.period)));
+    document.getElementById('goalPeriodBack').addEventListener('click',closeGoalPeriod);
+    document.getElementById('closeGoalDetail').addEventListener('click',closeGoalDetail);
+    document.getElementById('closeGoalDetailBackdrop').addEventListener('click',closeGoalDetail);
 
     supabaseClient.auth.getSession().then(({ data }) => {
         if (data.session) {
