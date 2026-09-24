@@ -285,10 +285,64 @@
     border-radius: 14px;
 ">
     <h2>🎯 Цели</h2>
+    <form id="goalForm" style="margin-bottom: 24px;">
+    <input
+        id="goalTitle"
+        type="text"
+        placeholder="Название цели"
+        required
+        style="
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px;
+            margin-bottom: 10px;
+            background: #111;
+            color: white;
+            border: 1px solid #333;
+            border-radius: 8px;
+        "
+    >
+
+    <button
+        type="submit"
+        style="
+            padding: 10px 16px;
+            background: #333;
+            color: white;
+            border: 0;
+            border-radius: 8px;
+            cursor: pointer;
+        "
+    >
+        Добавить цель
+    </button>
+</form>
     <div id="goalsList">Загрузка целей...</div>
 </section>
 
 <script>
+    document.getElementById('goalForm').addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const title = document.getElementById('goalTitle').value.trim();
+
+    if (!title) return;
+
+    const { error } = await supabaseClient
+        .from('goals')
+        .insert({
+            title: title
+        });
+
+    if (error) {
+        alert('Ошибка создания цели: ' + error.message);
+        return;
+    }
+
+    document.getElementById('goalTitle').value = '';
+
+    await loadGoals();
+});
     async function loadGoals() {
         const goalsList = document.getElementById('goalsList');
 
