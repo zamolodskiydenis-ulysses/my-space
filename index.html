@@ -1381,6 +1381,96 @@ async function loadRoutineGoals() {
         </label>
     `).join('');
 }
+    async function saveRoutineGoals(routineId, button) {
+
+    const editor =
+        document.getElementById(
+            `routine-goals-editor-${routineId}`
+        );
+
+    if (!editor) {
+        return;
+    }
+
+    const selectedGoalIds = Array.from(
+        editor.querySelectorAll(
+            '.routine-editor-goal:checked'
+        )
+    ).map(checkbox => Number(checkbox.value));
+
+    const { data: currentLinks, error: currentError } =
+        await supabaseClient
+            .from('routine_goal_links')
+            .select('goal_id')
+            .eq('routine_id', routineId);
+
+    if (currentError) {
+        alert(
+            'Ошибка загрузки текущих связей: ' +
+            currentError.message
+        );
+        return;
+    }
+
+    const currentGoalIds =
+        (currentLinks || []).map(
+            link => link.goal_id
+        );
+
+    const goalsToAdd =
+        selectedGoalIds.filter(
+            goalId => !currentGoalIds.includes(goalId)
+        );
+
+    const goalsToRemove =
+        currentGoalIds.filter(
+            goalId => !selectedGoalIds.includes(goalId)
+        );
+
+    // Добавляем новые связи
+    if (goalsToAdd.length > 0) {
+
+        const rowsToInsert =
+            goalsToAdd.map(goalId => ({
+                routine_id: routineId,
+                goal_id: goalId
+            }));
+
+        const { error: insertError } =
+            await supabaseClient
+                .from('routine_goal_links')
+                .insert(rowsToInsert);
+
+        if (insertError) {
+            alert(
+                'Ошибка добавления связей: ' +
+                insertError.message
+            );
+            return;
+        }
+    }
+
+    // Удаляем снятые связи
+    if (goalsToRemove.length > 0) {
+
+        const { error: deleteError } =
+            await supabaseClient
+                .from('routine_goal_links')
+                .delete()
+                .eq('routine_id', routineId)
+                .in('goal_id', goalsToRemove);
+
+        if (deleteError) {
+            alert(
+                'Ошибка удаления связей: ' +
+                deleteError.message
+            );
+            return;
+        }
+    }
+
+    await loadRoutines();
+}
     async function openRoutineGoalsEditor(routineId, button) {
 
     const existingEditor =
