@@ -934,6 +934,30 @@
 .phoenix-goal-delete-button{border:1px solid rgba(190,75,35,.24);background:rgba(130,35,15,.08);color:#a98270}
 @media(max-width:700px){.phoenix-goal-period-toolbar{align-items:flex-start;flex-direction:column}.phoenix-goal-period-title{font-size:24px}.phoenix-goal-detail-grid{grid-template-columns:1fr}}
 
+.phoenix-goal-card-row{display:flex;align-items:center;gap:12px;width:100%}
+.phoenix-goal-check{width:22px;height:22px;flex:0 0 22px;border:1px solid rgba(255,177,95,.28);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#f0b06d;font:14px/1 Arial,sans-serif}
+.phoenix-goal-check.is-completed{border-color:rgba(255,177,95,.55);background:rgba(255,112,28,.13);box-shadow:0 0 14px rgba(255,90,18,.10)}
+.phoenix-goal-card-title.is-completed{text-decoration:line-through;text-decoration-color:rgba(240,176,109,.45);color:#887b70}
+.phoenix-goal-relations-editor{margin:18px 0 20px;padding:14px;border:1px solid rgba(255,177,95,.10);border-radius:12px;background:rgba(255,255,255,.015)}
+.phoenix-goal-relations-editor h4{margin:0 0 9px;color:#c99565;font:11px/1.2 Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase}
+.phoenix-goal-relations-list{display:grid;gap:4px;max-height:170px;overflow:auto;margin-bottom:16px}
+.phoenix-goal-relation-option{display:flex;align-items:center;gap:9px;padding:7px 8px;color:#b7a79a;font:12px/1.3 Arial,sans-serif;border-radius:7px;cursor:pointer}
+.phoenix-goal-relation-option:hover{background:rgba(255,100,25,.05);color:#e7d4c2}
+.phoenix-goal-relation-option input{accent-color:#c45b20}
+.phoenix-goal-date-note{margin:-3px 0 10px;color:#77695f;font:11px/1.4 Arial,sans-serif}
+.phoenix-confirm-modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:20px;z-index:4000}
+.phoenix-confirm-modal.is-open{display:flex}
+.phoenix-confirm-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.80);backdrop-filter:blur(8px)}
+.phoenix-confirm-card{position:relative;z-index:1;width:min(460px,100%);padding:28px;border:1px solid rgba(255,168,83,.24);border-radius:18px;background:radial-gradient(circle at 50% 0%,rgba(255,96,20,.10),transparent 45%),#0b0908;box-shadow:0 30px 100px rgba(0,0,0,.72),0 0 55px rgba(255,72,15,.08)}
+.phoenix-confirm-kicker{color:#b97b48;font:10px/1.2 Arial,sans-serif;letter-spacing:.25em;text-transform:uppercase}
+.phoenix-confirm-title{margin:10px 0 9px;color:#f0d5b7;font:400 26px/1.2 Georgia,'Times New Roman',serif}
+.phoenix-confirm-text{margin:0;color:#9f9084;font:13px/1.6 Arial,sans-serif}
+.phoenix-confirm-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:24px}
+.phoenix-confirm-actions button{border-radius:9px;padding:10px 15px;cursor:pointer;font:12px/1 Arial,sans-serif}
+.phoenix-confirm-cancel{border:1px solid rgba(255,177,95,.20);background:rgba(255,255,255,.025);color:#cdb9a8}
+.phoenix-confirm-delete{border:1px solid rgba(190,75,35,.35);background:rgba(130,35,15,.13);color:#d39b83}
+
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -1138,57 +1162,120 @@
 </div>
 
 <script>
+    function savePhoenixRoute(route) {
+        try {
+            history.replaceState(null, '', route ? `#${route}` : '#home');
+        } catch (e) {}
+    }
+
     function openPhoenixLife() {
-    document.getElementById('phoenixHome').style.display = 'none';
-    document.getElementById('phoenixLife').style.display = 'flex';
+        document.getElementById('phoenixHome').style.display = 'none';
+        document.getElementById('phoenixLife').style.display = 'flex';
+        document.getElementById('phoenixBack').style.display = 'block';
+        document.getElementById('phoenixBackButton').textContent = '← PHOENIX';
+        document.getElementById('phoenixBackButton').onclick = closePhoenixLife;
+        savePhoenixRoute('life');
+        window.scrollTo(0, 0);
+    }
 
-    document.getElementById('phoenixBack').style.display = 'block';
+    function openLifeSection(sectionId) {
+        document.getElementById('phoenixLife').style.display = 'none';
+        document.getElementById('goalsSection').style.display = 'none';
+        document.getElementById('tasksSection').style.display = 'none';
+        document.getElementById('routinesSection').style.display = 'none';
+        document.getElementById('todaySection').style.display = 'none';
 
-    document.getElementById('phoenixBackButton').textContent = '← PHOENIX';
-    document.getElementById('phoenixBackButton').onclick = closePhoenixLife;
+        if (sectionId === 'goalsSection') {
+            currentGoalPeriod = null;
+            document.getElementById('goalPeriodView').classList.remove('is-open');
+            document.querySelector('.phoenix-goals-wheel-wrap').style.display = 'flex';
+            document.querySelector('.phoenix-goals-hint').style.display = 'flex';
+        }
 
-    window.scrollTo(0, 0);
-}
-function openLifeSection(sectionId) {
-    document.getElementById('phoenixLife').style.display = 'none';
+        document.getElementById(sectionId).style.display = 'block';
+        document.getElementById('phoenixBackButton').textContent = '← ЖИЗНЬ';
+        document.getElementById('phoenixBackButton').onclick = backToPhoenixLife;
 
-    document.getElementById('goalsSection').style.display = 'none';
-    document.getElementById('tasksSection').style.display = 'none';
-    document.getElementById('routinesSection').style.display = 'none';
-    document.getElementById('todaySection').style.display = 'none';
+        const routeMap = {
+            goalsSection: 'goals',
+            tasksSection: 'tasks',
+            routinesSection: 'routines',
+            todaySection: 'todaySection'
+        };
+        savePhoenixRoute(routeMap[sectionId] || 'life');
+        window.scrollTo(0, 0);
+    }
 
-    document.getElementById(sectionId).style.display = 'block';
-    document.getElementById('phoenixBackButton').textContent = '← ЖИЗНЬ';
-document.getElementById('phoenixBackButton').onclick = backToPhoenixLife;
-
-    window.scrollTo(0, 0);
-}
     function backToPhoenixLife() {
-    document.getElementById('goalsSection').style.display = 'none';
-    document.getElementById('tasksSection').style.display = 'none';
-    document.getElementById('routinesSection').style.display = 'none';
-    document.getElementById('todaySection').style.display = 'none';
+        document.getElementById('goalsSection').style.display = 'none';
+        document.getElementById('tasksSection').style.display = 'none';
+        document.getElementById('routinesSection').style.display = 'none';
+        document.getElementById('todaySection').style.display = 'none';
+        document.getElementById('phoenixLife').style.display = 'flex';
+        document.getElementById('phoenixBackButton').textContent = '← PHOENIX';
+        document.getElementById('phoenixBackButton').onclick = closePhoenixLife;
+        savePhoenixRoute('life');
+        window.scrollTo(0, 0);
+    }
 
-    document.getElementById('phoenixLife').style.display = 'flex';
-
-    document.getElementById('phoenixBackButton').textContent = '← PHOENIX';
-    document.getElementById('phoenixBackButton').onclick = closePhoenixLife;
-
-    window.scrollTo(0, 0);
-}
     function closePhoenixLife() {
-    document.getElementById('phoenixLife').style.display = 'none';
+        document.getElementById('phoenixLife').style.display = 'none';
+        document.getElementById('goalsSection').style.display = 'none';
+        document.getElementById('tasksSection').style.display = 'none';
+        document.getElementById('routinesSection').style.display = 'none';
+        document.getElementById('todaySection').style.display = 'none';
+        document.getElementById('phoenixBack').style.display = 'none';
+        document.getElementById('phoenixHome').style.display = 'flex';
+        savePhoenixRoute('home');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
-    document.getElementById('goalsSection').style.display = 'none';
-    document.getElementById('tasksSection').style.display = 'none';
-    document.getElementById('routinesSection').style.display = 'none';
-    document.getElementById('todaySection').style.display = 'none';
+    function restorePhoenixRoute() {
+        const route = (location.hash || '#home').replace(/^#/, '');
 
-    document.getElementById('phoenixBack').style.display = 'none';
-    document.getElementById('phoenixHome').style.display = 'flex';
+        if (route === 'home') {
+            closePhoenixLife();
+            return;
+        }
 
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+        if (route === 'life') {
+            openPhoenixLife();
+            return;
+        }
+
+        if (route === 'goals' || route.startsWith('goals-')) {
+            openPhoenixLife();
+            openLifeSection('goalsSection');
+            if (route.startsWith('goals-')) {
+                const period = route.slice(6);
+                if (['year','month','week','day'].includes(period)) {
+                    openGoalPeriod(period);
+                }
+            }
+            return;
+        }
+
+        if (route === 'tasks') {
+            openPhoenixLife();
+            openLifeSection('tasksSection');
+            return;
+        }
+
+        if (route === 'routines') {
+            openPhoenixLife();
+            openLifeSection('routinesSection');
+            return;
+        }
+
+        if (route === 'todaySection') {
+            openPhoenixLife();
+            openLifeSection('todaySection');
+            return;
+        }
+
+        closePhoenixLife();
+    }
+
 </script>
 
 <section id="goalsSection" class="phoenix-goals-screen">
@@ -1256,6 +1343,19 @@ document.getElementById('phoenixBackButton').onclick = backToPhoenixLife;
             <div class="phoenix-goal-modal-card phoenix-goal-detail-card">
                 <button type="button" class="phoenix-goal-modal-close" id="closeGoalDetail">×</button>
                 <div id="goalDetailContent"></div>
+            </div>
+        </div>
+
+        <div id="goalDeleteModal" class="phoenix-confirm-modal" aria-hidden="true">
+            <div class="phoenix-confirm-backdrop" id="closeGoalDeleteBackdrop"></div>
+            <div class="phoenix-confirm-card">
+                <div class="phoenix-confirm-kicker">PHOENIX / УДАЛЕНИЕ</div>
+                <h3 class="phoenix-confirm-title">Удалить цель?</h3>
+                <p class="phoenix-confirm-text" id="goalDeleteText"></p>
+                <div class="phoenix-confirm-actions">
+                    <button type="button" class="phoenix-confirm-cancel" id="cancelGoalDelete">Отмена</button>
+                    <button type="button" class="phoenix-confirm-delete" id="confirmGoalDelete">Удалить</button>
+                </div>
             </div>
         </div>
 
@@ -1413,6 +1513,21 @@ document.getElementById('phoenixBackButton').onclick = backToPhoenixLife;
             "
         >
 
+        <div id="goalDateNote" class="phoenix-goal-date-note">Сначала выбери период.</div>
+
+
+        <div id="goalRelationsEditor" class="phoenix-goal-relations-editor">
+            <h4>РОДИТЕЛЬСКИЕ ЦЕЛИ</h4>
+            <div id="goalParentList" class="phoenix-goal-relations-list">
+                Загрузка целей...
+            </div>
+
+            <h4>ПОДЦЕЛИ</h4>
+            <div id="goalChildList" class="phoenix-goal-relations-list">
+                Загрузка целей...
+            </div>
+        </div>
+
         <button
             type="submit"
             style="
@@ -1439,7 +1554,6 @@ document.getElementById('phoenixBackButton').onclick = backToPhoenixLife;
             week: 'Неделя',
             day: 'День'
         };
-
         return labels[period] || period || 'Не указан';
     }
 
@@ -1449,7 +1563,6 @@ document.getElementById('phoenixBackButton').onclick = backToPhoenixLife;
             completed: 'Завершена',
             paused: 'На паузе'
         };
-
         return labels[status] || status || 'Не указан';
     }
 
@@ -1460,13 +1573,13 @@ document.getElementById('phoenixBackButton').onclick = backToPhoenixLife;
             2: 'Желательно',
             1: 'Если есть время'
         };
-
         return labels[priority] || 'Не указан';
     }
 
     let allPhoenixGoals = [];
     let currentGoalPeriod = null;
     let editingGoalId = null;
+    let pendingDeleteGoalId = null;
 
     function escapeHtml(value) {
         return String(value ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
@@ -1482,10 +1595,97 @@ document.getElementById('phoenixBackButton').onclick = backToPhoenixLife;
         return ({4:'Обязательно',3:'Важно',2:'Желательно',1:'Если есть время'})[priority] || 'Приоритет не указан';
     }
 
+    function getTodayIsoDate() {
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    }
+
+    function getMonthEnd(year, month) {
+        const d = new Date(year, month, 0);
+        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    }
+
+    function addDaysIso(dateString, days) {
+        const d = new Date(`${dateString}T12:00:00`);
+        d.setDate(d.getDate() + days);
+        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    }
+
+    function normalizeGoalPeriodDates() {
+        const period = document.getElementById('goalPeriod').value;
+        const startInput = document.getElementById('goalStartDate');
+        const dueInput = document.getElementById('goalDueDate');
+        const note = document.getElementById('goalDateNote');
+
+        if (!period) {
+            startInput.disabled = false;
+            dueInput.disabled = true;
+            startInput.removeAttribute('min');
+            startInput.removeAttribute('max');
+            dueInput.value = '';
+            note.textContent = 'Сначала выбери период.';
+            return;
+        }
+
+        startInput.disabled = false;
+        dueInput.disabled = true;
+
+        if (period === 'year') {
+            const base = startInput.value || getTodayIsoDate();
+            const year = Number(String(base).slice(0,4));
+            startInput.min = `${year}-01-01`;
+            startInput.max = `${year}-12-31`;
+            startInput.value = `${year}-01-01`;
+            dueInput.value = `${year}-12-31`;
+            note.textContent = 'Годовая цель всегда занимает весь выбранный календарный год.';
+            return;
+        }
+
+        if (period === 'month') {
+            const base = startInput.value || getTodayIsoDate();
+            const parts = base.split('-');
+            const year = Number(parts[0]);
+            const month = Number(parts[1]);
+            const first = `${year}-${String(month).padStart(2,'0')}-01`;
+            const last = getMonthEnd(year, month);
+            startInput.min = first;
+            startInput.max = last;
+            startInput.value = first;
+            dueInput.value = last;
+            note.textContent = 'Месячная цель всегда занимает только один календарный месяц.';
+            return;
+        }
+
+        if (period === 'week') {
+            const base = startInput.value || getTodayIsoDate();
+            const end = addDaysIso(base, 6);
+            startInput.removeAttribute('min');
+            startInput.removeAttribute('max');
+            startInput.value = base;
+            dueInput.value = end;
+            note.textContent = 'Неделя = ровно 7 дней, начиная с выбранной даты.';
+            return;
+        }
+
+        if (period === 'day') {
+            const base = startInput.value || getTodayIsoDate();
+            startInput.removeAttribute('min');
+            startInput.removeAttribute('max');
+            startInput.value = base;
+            dueInput.value = base;
+            note.textContent = 'Дневная цель занимает ровно один день.';
+        }
+    }
+
     async function loadGoals() {
         const goalsList = document.getElementById('goalsList');
         const {data,error}=await supabaseClient.from('goals').select('*').order('created_at',{ascending:false});
-        if(error){goalsList.textContent='Ошибка загрузки целей: '+error.message;updateGoalWheelCounts([]);return;}
+        if(error){
+            goalsList.textContent='Ошибка загрузки целей: '+error.message;
+            allPhoenixGoals=[];
+            updateGoalWheelCounts([]);
+            return;
+        }
         allPhoenixGoals=data||[];
         updateGoalWheelCounts(allPhoenixGoals);
         if(currentGoalPeriod) renderGoalPeriod(currentGoalPeriod);
@@ -1506,6 +1706,7 @@ document.getElementById('phoenixBackButton').onclick = backToPhoenixLife;
         document.querySelector('.phoenix-goals-hint').style.display='none';
         document.getElementById('goalPeriodView').classList.add('is-open');
         renderGoalPeriod(period);
+        savePhoenixRoute(`goals-${period}`);
         window.scrollTo(0,0);
     }
 
@@ -1514,6 +1715,7 @@ document.getElementById('phoenixBackButton').onclick = backToPhoenixLife;
         document.getElementById('goalPeriodView').classList.remove('is-open');
         document.querySelector('.phoenix-goals-wheel-wrap').style.display='flex';
         document.querySelector('.phoenix-goals-hint').style.display='flex';
+        savePhoenixRoute('goals');
         window.scrollTo(0,0);
     }
 
@@ -1523,10 +1725,16 @@ document.getElementById('phoenixBackButton').onclick = backToPhoenixLife;
         document.getElementById('goalPeriodTitle').textContent=labels[period]||'ЦЕЛИ';
         document.getElementById('goalPeriodCount').textContent=`${goals.length} ${goals.length===1?'цель':'целей'}`;
         const cards=document.getElementById('goalPeriodCards');
-        if(!goals.length){cards.innerHTML='<div class="phoenix-goal-empty">В этом периоде пока нет целей.</div>';return;}
+        if(!goals.length){
+            cards.innerHTML='<div class="phoenix-goal-empty">В этом периоде пока нет целей.</div>';
+            return;
+        }
         cards.innerHTML=goals.map(g=>`
             <button type="button" class="phoenix-goal-card" data-goal-id="${g.id}">
-                <span class="phoenix-goal-card-title">${escapeHtml(g.title||'Без названия')}</span>
+                <span class="phoenix-goal-card-row">
+                    <span class="phoenix-goal-check ${g.status==='completed'?'is-completed':''}" aria-hidden="true">${g.status==='completed'?'✓':''}</span>
+                    <span class="phoenix-goal-card-title ${g.status==='completed'?'is-completed':''}">${escapeHtml(g.title||'Без названия')}</span>
+                </span>
                 <span class="phoenix-goal-card-meta">
                     ${g.due_date?`<span>до ${escapeHtml(formatGoalDate(g.due_date))}</span>`:''}
                     <span>${escapeHtml(getPriorityShortLabel(g.priority))}</span>
@@ -1574,7 +1782,7 @@ document.getElementById('phoenixBackButton').onclick = backToPhoenixLife;
         const taskIds=(t.data||[]).map(x=>x.task_id), routineIds=(r.data||[]).map(x=>x.routine_id);
         const goalIds=[...new Set([...parentIds,...childIds])];
         const [gr,tr,rr]=await Promise.all([
-            goalIds.length?supabaseClient.from('goals').select('id,title,period').in('id',goalIds):Promise.resolve({data:[]}),
+            goalIds.length?supabaseClient.from('goals').select('id,title,period,status').in('id',goalIds):Promise.resolve({data:[]}),
             taskIds.length?supabaseClient.from('tasks').select('id,title,status').in('id',taskIds):Promise.resolve({data:[]}),
             routineIds.length?supabaseClient.from('routines').select('id,title,frequency').in('id',routineIds):Promise.resolve({data:[]})
         ]);
@@ -1601,6 +1809,49 @@ document.getElementById('phoenixBackButton').onclick = backToPhoenixLife;
         modal.classList.remove('is-open');modal.setAttribute('aria-hidden','true');
     }
 
+    async function loadGoalRelationEditor(goalId) {
+        const parentList=document.getElementById('goalParentList');
+        const childList=document.getElementById('goalChildList');
+        const candidates=allPhoenixGoals.filter(g=>Number(g.id)!==Number(goalId));
+
+        const [parentLinks,childLinks]=await Promise.all([
+            supabaseClient.from('goal_links').select('parent_goal_id').eq('child_goal_id',goalId),
+            supabaseClient.from('goal_links').select('child_goal_id').eq('parent_goal_id',goalId)
+        ]);
+
+        if(parentLinks.error||childLinks.error){
+            parentList.textContent='Не удалось загрузить связи.';
+            childList.textContent='Не удалось загрузить связи.';
+            return;
+        }
+
+        const selectedParents=new Set((parentLinks.data||[]).map(x=>Number(x.parent_goal_id)));
+        const selectedChildren=new Set((childLinks.data||[]).map(x=>Number(x.child_goal_id)));
+
+        const renderOptions=(items,selected,className,emptyText)=>{
+            if(!items.length)return `<div style="color:#6f6259;font:12px/1.4 Arial,sans-serif;">${emptyText}</div>`;
+            return items.map(g=>`
+                <label class="phoenix-goal-relation-option">
+                    <input type="checkbox" class="${className}" value="${g.id}" ${selected.has(Number(g.id))?'checked':''}>
+                    <span>${escapeHtml(g.title||'Без названия')} <span style="color:#6f6259;">(${escapeHtml(getPeriodLabel(g.period))})</span></span>
+                </label>`).join('');
+        };
+
+        parentList.innerHTML=renderOptions(candidates,selectedParents,'goal-parent-checkbox','Других целей пока нет.');
+        childList.innerHTML=renderOptions(candidates,selectedChildren,'goal-child-checkbox','Других целей пока нет.');
+    }
+
+    function resetGoalForm() {
+        editingGoalId=null;
+        ['goalTitle','goalDescription','goalPeriod','goalStatus','goalPriority','goalStartDate','goalDueDate'].forEach(id=>document.getElementById(id).value='');
+        document.getElementById('goalDateNote').textContent='Сначала выбери период.';
+        document.getElementById('goalDueDate').disabled=true;
+        document.querySelectorAll('.goal-parent-checkbox,.goal-child-checkbox').forEach(x=>x.checked=false);
+        document.querySelector('#goalCreator .phoenix-kicker').textContent='PHOENIX / НОВАЯ ЦЕЛЬ';
+        document.querySelector('#goalCreator h3').textContent='Создать цель';
+        document.querySelector('#goalForm button[type="submit"]').textContent='Добавить цель';
+    }
+
     function editPhoenixGoal(goalId) {
         const goal=allPhoenixGoals.find(g=>Number(g.id)===Number(goalId));if(!goal)return;
         editingGoalId=goal.id;closeGoalDetail();
@@ -1612,17 +1863,77 @@ document.getElementById('phoenixBackButton').onclick = backToPhoenixLife;
         document.getElementById('goalPeriod').value=goal.period||'';
         document.getElementById('goalStatus').value=goal.status||'';
         document.getElementById('goalPriority').value=Number(goal.priority)===4?'mandatory':Number(goal.priority)===3?'important':Number(goal.priority)===2?'desirable':'if_time';
-        document.getElementById('goalStartDate').value=goal.start_date||'';
+        document.getElementById('goalStartDate').value=goal.start_date||getTodayIsoDate();
         document.getElementById('goalDueDate').value=goal.due_date||'';
+        normalizeGoalPeriodDates();
+        loadGoalRelationEditor(goal.id);
         openGoalCreator();
     }
 
-    async function deletePhoenixGoal(goalId) {
+    function openDeleteGoalModal(goalId) {
         const goal=allPhoenixGoals.find(g=>Number(g.id)===Number(goalId));if(!goal)return;
-        if(!confirm(`Удалить цель «${goal.title||'Без названия'}»?`))return;
+        pendingDeleteGoalId=goal.id;
+        document.getElementById('goalDeleteText').textContent=`Удалить цель «${goal.title||'Без названия'}»? Это действие нельзя отменить.`;
+        const modal=document.getElementById('goalDeleteModal');
+        modal.classList.add('is-open');modal.setAttribute('aria-hidden','false');
+    }
+
+    function closeDeleteGoalModal() {
+        pendingDeleteGoalId=null;
+        const modal=document.getElementById('goalDeleteModal');
+        modal.classList.remove('is-open');modal.setAttribute('aria-hidden','true');
+    }
+
+    async function deletePhoenixGoal(goalId) {
+        openDeleteGoalModal(goalId);
+    }
+
+    async function confirmDeletePhoenixGoal() {
+        if(!pendingDeleteGoalId)return;
+        const goalId=pendingDeleteGoalId;
+
+        const cleanupResults = await Promise.all([
+            supabaseClient.from('goal_links').delete().or(`parent_goal_id.eq.${goalId},child_goal_id.eq.${goalId}`),
+            supabaseClient.from('task_goal_links').delete().eq('goal_id',goalId),
+            supabaseClient.from('routine_goal_links').delete().eq('goal_id',goalId)
+        ]);
+
+        const cleanupError = cleanupResults.find(result => result.error)?.error;
+        if(cleanupError){
+            closeDeleteGoalModal();
+            alert('Не удалось удалить связи цели: '+cleanupError.message);
+            return;
+        }
+
         const {error}=await supabaseClient.from('goals').delete().eq('id',goalId);
-        if(error){alert('Ошибка удаления цели: '+error.message);return;}
-        closeGoalDetail();await loadGoals();
+        if(error){
+            closeDeleteGoalModal();
+            alert('Ошибка удаления цели: '+error.message);
+            return;
+        }
+        closeDeleteGoalModal();
+        closeGoalDetail();
+        await loadGoals();
+    }
+
+    async function saveGoalRelations(goalId) {
+        const parentIds=[...document.querySelectorAll('.goal-parent-checkbox:checked')].map(x=>Number(x.value));
+        const childIds=[...document.querySelectorAll('.goal-child-checkbox:checked')].map(x=>Number(x.value));
+        const links=[
+            ...parentIds.map(parent_goal_id=>({parent_goal_id,child_goal_id:Number(goalId)})),
+            ...childIds.map(child_goal_id=>({parent_goal_id:Number(goalId),child_goal_id}))
+        ];
+
+        const {error:deleteError}=await supabaseClient
+            .from('goal_links')
+            .delete()
+            .or(`parent_goal_id.eq.${goalId},child_goal_id.eq.${goalId}`);
+        if(deleteError)return deleteError;
+
+        if(!links.length)return null;
+
+        const {error:insertError}=await supabaseClient.from('goal_links').insert(links);
+        return insertError||null;
     }
 
     document.getElementById('goalForm').addEventListener('submit',async(event)=>{
@@ -1635,40 +1946,68 @@ document.getElementById('phoenixBackButton').onclick = backToPhoenixLife;
         const startDate=document.getElementById('goalStartDate').value;
         const dueDate=document.getElementById('goalDueDate').value;
         if(!title||!period||!status||!priority)return;
+
+        normalizeGoalPeriodDates();
+        const finalStartDate=document.getElementById('goalStartDate').value;
+        const finalDueDate=document.getElementById('goalDueDate').value;
+        if(!finalStartDate||!finalDueDate){
+            alert('Для цели обязательно нужно задать период.');
+            return;
+        }
+
         const priorityNumber=priority==='mandatory'?4:priority==='important'?3:priority==='desirable'?2:1;
-        const payload={title,description:description||null,period,status,priority:priorityNumber,start_date:startDate||null,due_date:dueDate||null};
+        const payload={title,description:description||null,period,status,priority:priorityNumber,start_date:finalStartDate,due_date:finalDueDate};
+
         let error=null;
-        if(editingGoalId){const r=await supabaseClient.from('goals').update(payload).eq('id',editingGoalId);error=r.error;}
-        else{const r=await supabaseClient.from('goals').insert(payload);error=r.error;}
+        let savedGoalId=editingGoalId;
+        if(editingGoalId){
+            const r=await supabaseClient.from('goals').update(payload).eq('id',editingGoalId);error=r.error;
+        }else{
+            const r=await supabaseClient.from('goals').insert(payload).select('id').single();
+            error=r.error;
+            if(!error)savedGoalId=r.data.id;
+        }
         if(error){alert((editingGoalId?'Ошибка сохранения цели: ':'Ошибка создания цели: ')+error.message);return;}
-        editingGoalId=null;
-        ['goalTitle','goalDescription','goalPeriod','goalStatus','goalPriority','goalStartDate','goalDueDate'].forEach(id=>document.getElementById(id).value='');
-        document.querySelector('#goalCreator .phoenix-kicker').textContent='PHOENIX / НОВАЯ ЦЕЛЬ';
-        document.querySelector('#goalCreator h3').textContent='Создать цель';
-        document.querySelector('#goalForm button[type="submit"]').textContent='Добавить цель';
-        await loadGoals();closeGoalCreator();
+
+        const relationError=await saveGoalRelations(savedGoalId);
+        if(relationError){
+            alert('Цель сохранена, но связи с целями не обновились: '+relationError.message);
+            return;
+        }
+
+        resetGoalForm();
+        await loadGoals();
+        closeGoalCreator();
     });
 
     function openGoalCreator() {
-        const modal=document.getElementById('goalCreator');modal.classList.add('is-open');modal.setAttribute('aria-hidden','false');document.getElementById('goalTitle').focus();
+        const modal=document.getElementById('goalCreator');
+        modal.classList.add('is-open');modal.setAttribute('aria-hidden','false');
+        document.getElementById('goalTitle').focus();
     }
+
     function closeGoalCreator() {
-        const modal=document.getElementById('goalCreator');modal.classList.remove('is-open');modal.setAttribute('aria-hidden','true');
+        const modal=document.getElementById('goalCreator');
+        modal.classList.remove('is-open');modal.setAttribute('aria-hidden','true');
     }
 
     document.getElementById('openGoalCreator').addEventListener('click',()=>{
-        editingGoalId=null;
-        document.querySelector('#goalCreator .phoenix-kicker').textContent='PHOENIX / НОВАЯ ЦЕЛЬ';
-        document.querySelector('#goalCreator h3').textContent='Создать цель';
-        document.querySelector('#goalForm button[type="submit"]').textContent='Добавить цель';
+        resetGoalForm();
         openGoalCreator();
     });
+
+    document.getElementById('goalPeriod').addEventListener('change',normalizeGoalPeriodDates);
+    document.getElementById('goalStartDate').addEventListener('change',normalizeGoalPeriodDates);
+
     document.getElementById('closeGoalCreator').addEventListener('click',closeGoalCreator);
     document.getElementById('closeGoalCreatorBackdrop').addEventListener('click',closeGoalCreator);
     document.querySelectorAll('.phoenix-goal-period').forEach(button=>button.addEventListener('click',()=>openGoalPeriod(button.dataset.period)));
     document.getElementById('goalPeriodBack').addEventListener('click',closeGoalPeriod);
     document.getElementById('closeGoalDetail').addEventListener('click',closeGoalDetail);
     document.getElementById('closeGoalDetailBackdrop').addEventListener('click',closeGoalDetail);
+    document.getElementById('cancelGoalDelete').addEventListener('click',closeDeleteGoalModal);
+    document.getElementById('closeGoalDeleteBackdrop').addEventListener('click',closeDeleteGoalModal);
+    document.getElementById('confirmGoalDelete').addEventListener('click',confirmDeletePhoenixGoal);
 
     supabaseClient.auth.getSession().then(({ data }) => {
         if (data.session) {
@@ -3816,6 +4155,11 @@ supabaseClient.auth.getSession().then(({ data }) => {
         loadToday();
     }
 });
+</script>
+<script>
+    window.addEventListener('load', () => {
+        setTimeout(restorePhoenixRoute, 0);
+    });
 </script>
 </body>
 </html>
