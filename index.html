@@ -900,6 +900,36 @@
 }
 
 
+
+/* TASKS */
+.phoenix-tasks-screen{max-width:900px;margin:30px auto;padding:42px 30px 60px;box-sizing:border-box;background:radial-gradient(circle at 50% 0%,rgba(255,91,20,.06),transparent 36%),#070707;border:1px solid rgba(255,177,95,.10);border-radius:18px;min-height:70vh}
+.phoenix-tasks-header{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:28px}
+.phoenix-tasks-header h2{margin:8px 0 5px;color:#f0d5b7;font:400 clamp(34px,5vw,52px)/1 Georgia,'Times New Roman',serif;letter-spacing:.08em}
+.phoenix-tasks-header p{margin:0;color:#81736a;font:13px/1.5 Arial,sans-serif}
+.phoenix-task-add-button{border:1px solid rgba(255,177,95,.28);background:rgba(255,105,25,.08);color:#e7c4a5;border-radius:10px;padding:11px 15px;cursor:pointer;font:12px/1 Arial,sans-serif;white-space:nowrap}
+.phoenix-task-add-button:hover{border-color:rgba(255,177,95,.50);background:rgba(255,105,25,.13);color:#fff0df}
+.phoenix-task-add-button span{font-size:18px;vertical-align:-1px;margin-right:5px}
+.phoenix-task-cards{display:grid;gap:10px}
+.phoenix-task-card{width:100%;text-align:left;border:1px solid rgba(255,177,95,.10);border-radius:13px;background:radial-gradient(circle at 0% 50%,rgba(255,88,18,.07),transparent 38%),rgba(255,255,255,.018);color:#ead9c8;padding:17px 19px;cursor:pointer;transition:.22s ease;box-sizing:border-box}
+.phoenix-task-card:hover{border-color:rgba(255,177,95,.28);background:radial-gradient(circle at 0% 50%,rgba(255,88,18,.12),transparent 42%),rgba(255,255,255,.025);transform:translateY(-1px)}
+.phoenix-task-card-row{display:flex;align-items:center;gap:13px}
+.phoenix-task-check{width:21px;height:21px;flex:0 0 21px;border:1px solid rgba(255,177,95,.28);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#f0b06d;font:14px/1 Arial,sans-serif}
+.phoenix-task-check.is-completed{border-color:rgba(255,177,95,.55);background:rgba(255,112,28,.13);box-shadow:0 0 14px rgba(255,90,18,.10)}
+.phoenix-task-card-main{min-width:0;display:block}
+.phoenix-task-card-title{display:block;color:#eee0d2;font:400 18px/1.35 Georgia,'Times New Roman',serif}
+.phoenix-task-card-title.is-completed{text-decoration:line-through;text-decoration-color:rgba(240,176,109,.45);color:#887b70}
+.phoenix-task-card-meta{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-top:8px;color:#7f7168;font:11px/1.2 Arial,sans-serif}
+.phoenix-task-card-meta span+span:before{content:'•';margin-right:10px;color:#5f5148}
+.phoenix-task-empty{padding:45px 20px;text-align:center;border:1px dashed rgba(255,177,95,.12);border-radius:14px;color:#756960;font:13px/1.5 Arial,sans-serif}
+.phoenix-task-empty span{color:#554a43}
+.phoenix-task-field-label{display:block;color:#999;font:12px/1.2 Arial,sans-serif;margin:4px 0 6px}
+.phoenix-task-date-note{margin:-3px 0 12px;color:#77695f;font:11px/1.4 Arial,sans-serif}
+.phoenix-task-submit{width:100%;padding:11px 16px;background:linear-gradient(135deg,#7c3212,#d05f1b);color:#fff0df;border:1px solid rgba(255,190,108,.28);border-radius:9px;cursor:pointer;font:12px/1 Arial,sans-serif}
+.phoenix-goal-modal-card #taskForm{margin:0!important}
+.phoenix-goal-modal-card #taskForm input,.phoenix-goal-modal-card #taskForm textarea,.phoenix-goal-modal-card #taskForm select{width:100%;box-sizing:border-box;padding:12px;margin-bottom:10px;background:#070707!important;color:#ead9c8!important;border:1px solid rgba(255,180,100,.14)!important;border-radius:8px}
+.phoenix-task-detail-completed{text-decoration:line-through;text-decoration-color:rgba(240,176,109,.45);color:#887b70}
+@media(max-width:700px){.phoenix-tasks-screen{width:calc(100vw - 20px);padding:30px 16px 45px}.phoenix-tasks-header{align-items:flex-start;flex-direction:column}.phoenix-task-add-button{width:100%}}
+
 /* GOAL PERIOD LIST */
 .phoenix-goal-period-view{display:none;position:relative;z-index:2;width:min(760px,100%);margin:30px auto 0}
 .phoenix-goal-period-view.is-open{display:block}
@@ -2015,157 +2045,88 @@
         }
     });
 </script>
-    <section id="tasksSection" style="
-    max-width: 900px;
-    margin: 30px auto;
-    padding: 24px;
-    background: #1b1b1b;
-    border: 1px solid #292929;
-    border-radius: 14px;
-">
-    <h2>✅ Задачи</h2>
+    <section id="tasksSection" class="phoenix-tasks-screen">
+    <div class="phoenix-tasks-header">
+        <div>
+            <div class="phoenix-kicker">PHOENIX / ЖИЗНЬ</div>
+            <h2>ЗАДАЧИ</h2>
+            <p>Конкретные действия, которые двигают цели вперёд.</p>
+        </div>
+        <button type="button" class="phoenix-task-add-button" id="openTaskCreator">
+            <span>+</span> Новая задача
+        </button>
+    </div>
 
-    <form id="taskForm" style="margin-bottom: 24px;">
+    <div id="tasksList" class="phoenix-task-cards">Загрузка задач...</div>
 
-        <input
-            id="taskTitle"
-            type="text"
-            placeholder="Название задачи"
-            required
-            style="
-                width: 100%;
-                box-sizing: border-box;
-                padding: 12px;
-                margin-bottom: 10px;
-                background: #111;
-                color: white;
-                border: 1px solid #333;
-                border-radius: 8px;
-            "
-        >
+    <div id="taskDetailModal" class="phoenix-goal-modal" aria-hidden="true">
+        <div class="phoenix-goal-modal-backdrop" id="closeTaskDetailBackdrop"></div>
+        <div class="phoenix-goal-modal-card phoenix-goal-detail-card">
+            <button type="button" class="phoenix-goal-modal-close" id="closeTaskDetail">×</button>
+            <div id="taskDetailContent"></div>
+        </div>
+    </div>
 
-        <textarea
-            id="taskDescription"
-            placeholder="Описание задачи"
-            rows="3"
-            style="
-                width: 100%;
-                box-sizing: border-box;
-                padding: 12px;
-                margin-bottom: 10px;
-                background: #111;
-                color: white;
-                border: 1px solid #333;
-                border-radius: 8px;
-                resize: vertical;
-            "
-        ></textarea>
-
-        <select
-            id="taskStatus"
-            required
-            style="
-                width: 100%;
-                box-sizing: border-box;
-                padding: 12px;
-                margin-bottom: 10px;
-                background: #111;
-                color: white;
-                border: 1px solid #333;
-                border-radius: 8px;
-            "
-        >
-            <option value="">Выберите статус</option>
-            <option value="open">Открыта</option>
-            <option value="completed">Выполнена</option>
-            <option value="postponed">Отложена</option>
-        </select>
-
-        <select
-            id="taskPriority"
-            required
-            style="
-                width: 100%;
-                box-sizing: border-box;
-                padding: 12px;
-                margin-bottom: 10px;
-                background: #111;
-                color: white;
-                border: 1px solid #333;
-                border-radius: 8px;
-            "
-        >
-            <option value="">Выберите приоритет</option>
-            <option value="mandatory">Обязательно</option>
-            <option value="important">Важно</option>
-            <option value="desirable">Желательно</option>
-            <option value="if_time">Если есть время</option>
-        </select>
-
-        <label style="
-            display: block;
-            color: #999;
-            font-size: 14px;
-            margin-bottom: 6px;
-        ">
-            Дедлайн
-        </label>
-
-        <input
-            id="taskDueDate"
-            type="date"
-            style="
-                width: 100%;
-                box-sizing: border-box;
-                padding: 12px;
-                margin-bottom: 16px;
-                background: #111;
-                color: white;
-                border: 1px solid #333;
-                border-radius: 8px;
-            "
-        >
-
-        <div style="
-            margin-bottom: 16px;
-            padding: 14px;
-            background: #151515;
-            border: 1px solid #292929;
-            border-radius: 8px;
-        ">
-            <div style="
-                color: #999;
-                font-size: 14px;
-                margin-bottom: 8px;
-            ">
-                Связать с целями
-            </div>
-
-            <div id="taskGoalsList">
-                Загрузка целей...
+    <div id="taskDeleteModal" class="phoenix-confirm-modal" aria-hidden="true">
+        <div class="phoenix-confirm-backdrop" id="closeTaskDeleteBackdrop"></div>
+        <div class="phoenix-confirm-card">
+            <div class="phoenix-confirm-kicker">PHOENIX / УДАЛЕНИЕ</div>
+            <h3 class="phoenix-confirm-title">Удалить задачу?</h3>
+            <p class="phoenix-confirm-text" id="taskDeleteText"></p>
+            <div class="phoenix-confirm-actions">
+                <button type="button" class="phoenix-confirm-cancel" id="cancelTaskDelete">Отмена</button>
+                <button type="button" class="phoenix-confirm-delete" id="confirmTaskDelete">Удалить</button>
             </div>
         </div>
+    </div>
 
-        <button
-            type="submit"
-            style="
-                padding: 10px 16px;
-                background: #333;
-                color: white;
-                border: 0;
-                border-radius: 8px;
-                cursor: pointer;
-            "
-        >
-            Добавить задачу
-        </button>
+    <div id="taskCreator" class="phoenix-goal-modal" aria-hidden="true">
+        <div class="phoenix-goal-modal-backdrop" id="closeTaskCreatorBackdrop"></div>
+        <div class="phoenix-goal-modal-card">
+            <button type="button" class="phoenix-goal-modal-close" id="closeTaskCreator">×</button>
+            <div class="phoenix-kicker" id="taskCreatorKicker">PHOENIX / НОВАЯ ЗАДАЧА</div>
+            <h3 id="taskCreatorTitle">Создать задачу</h3>
+            <p class="phoenix-goal-modal-subtitle">Задача — конкретное действие. При необходимости свяжи её с одной или несколькими целями.</p>
 
-    </form>
+            <form id="taskForm" style="margin-bottom:0;">
+                <input id="taskTitle" type="text" placeholder="Название задачи" required>
 
-    <div id="tasksList">Загрузка задач...</div>
+                <textarea id="taskDescription" placeholder="Описание задачи" rows="4"></textarea>
+
+                <select id="taskStatus" required>
+                    <option value="">Выберите статус</option>
+                    <option value="open">Открыта</option>
+                    <option value="completed">Выполнена</option>
+                    <option value="postponed">Отложена</option>
+                </select>
+
+                <select id="taskPriority" required>
+                    <option value="">Выберите приоритет</option>
+                    <option value="mandatory">Обязательно</option>
+                    <option value="important">Важно</option>
+                    <option value="desirable">Желательно</option>
+                    <option value="if_time">Если есть время</option>
+                </select>
+
+                <label class="phoenix-task-field-label">Дедлайн</label>
+                <input id="taskDueDate" type="date">
+                <div class="phoenix-task-date-note">Срок можно оставить пустым, если задача без жёсткого дедлайна.</div>
+
+                <div class="phoenix-goal-relations-editor">
+                    <h4>СВЯЗАННЫЕ ЦЕЛИ</h4>
+                    <div id="taskGoalsList" class="phoenix-goal-relations-list">Загрузка целей...</div>
+                </div>
+
+                <button type="submit" class="phoenix-task-submit" id="taskSubmitButton">Добавить задачу</button>
+            </form>
+        </div>
+    </div>
 </section>
 
 <script>
+    let editingTaskId = null;
+    let pendingDeleteTaskId = null;
+    let allPhoenixTasks = [];
 
     function getTaskStatusLabel(status) {
         const labels = {
@@ -2173,10 +2134,8 @@
             completed: 'Выполнена',
             postponed: 'Отложена'
         };
-
         return labels[status] || status || 'Не указан';
     }
-
 
     function getTaskPriorityLabel(priority) {
         const labels = {
@@ -2185,22 +2144,27 @@
             2: 'Желательно',
             1: 'Если есть время'
         };
-
         return labels[priority] || 'Не указан';
     }
 
+    function formatTaskDate(date) {
+        if (!date) return '';
+        const parts = String(date).split('-');
+        if (parts.length !== 3) return date;
+        return `${parts[2]}.${parts[1]}.${parts[0]}`;
+    }
 
-    async function loadTaskGoals() {
+    async function loadTaskGoals(selectedIds = []) {
         const taskGoalsList = document.getElementById('taskGoalsList');
+        if (!taskGoalsList) return;
 
         const { data, error } = await supabaseClient
             .from('goals')
-            .select('id, title, period')
+            .select('id, title, period, status')
             .order('created_at', { ascending: false });
 
         if (error) {
-            taskGoalsList.textContent =
-                'Ошибка загрузки целей: ' + error.message;
+            taskGoalsList.textContent = 'Ошибка загрузки целей: ' + error.message;
             return;
         }
 
@@ -2209,354 +2173,381 @@
             return;
         }
 
+        const selected = new Set((selectedIds || []).map(Number));
+
         taskGoalsList.innerHTML = data.map(goal => `
-            <label style="
-                display: block;
-                padding: 8px 0;
-                color: #ddd;
-                cursor: pointer;
-            ">
-                <input
-                    type="checkbox"
-                    class="task-goal-checkbox"
-                    value="${goal.id}"
-                    style="margin-right: 8px;"
-                >
-                ${goal.title || 'Без названия'}
-                <span style="color:#777;">
-                    (${getGoalPeriodLabel(goal.period)})
-                </span>
+            <label class="phoenix-goal-relation-option">
+                <input type="checkbox" class="task-goal-checkbox" value="${goal.id}" ${selected.has(Number(goal.id)) ? 'checked' : ''}>
+                <span>${escapeHtml(goal.title || 'Без названия')} <span style="color:#6f6259;">(${escapeHtml(getGoalPeriodLabel(goal.period))})</span></span>
             </label>
         `).join('');
     }
 
-
-    function getGoalPeriodLabel(period) {
-        const labels = {
-            year: 'год',
-            month: 'месяц',
-            week: 'неделя',
-            day: 'день'
-        };
-
-        return labels[period] || period || '';
+    function resetTaskForm() {
+        editingTaskId = null;
+        document.getElementById('taskTitle').value = '';
+        document.getElementById('taskDescription').value = '';
+        document.getElementById('taskStatus').value = 'open';
+        document.getElementById('taskPriority').value = '';
+        document.getElementById('taskDueDate').value = '';
+        document.getElementById('taskCreatorKicker').textContent = 'PHOENIX / НОВАЯ ЗАДАЧА';
+        document.getElementById('taskCreatorTitle').textContent = 'Создать задачу';
+        document.getElementById('taskSubmitButton').textContent = 'Добавить задачу';
+        loadTaskGoals([]);
     }
 
-async function completeTask(taskId) {
-    const { error } = await supabaseClient
-        .from('tasks')
-        .update({
-            status: 'completed',
-            completed_at: new Date().toISOString()
-        })
-        .eq('id', taskId);
-
-    if (error) {
-        alert('Ошибка завершения задачи: ' + error.message);
-        return;
+    async function openTaskCreator() {
+        await loadTaskGoals([]);
+        const modal = document.getElementById('taskCreator');
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.getElementById('taskTitle').focus();
     }
 
-    await loadTasks();
-}
-async function reopenTask(taskId) {
-    const { error } = await supabaseClient
-        .from('tasks')
-        .update({
-            status: 'open',
-            completed_at: null
-        })
-        .eq('id', taskId);
-
-    if (error) {
-        alert('Ошибка возврата задачи: ' + error.message);
-        return;
+    function closeTaskCreator() {
+        const modal = document.getElementById('taskCreator');
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
     }
 
-    await loadTasks();
-}
-
-    async function loadTasks() {
-    const tasksList = document.getElementById('tasksList');
-
-    const { data: tasks, error: tasksError } = await supabaseClient
-        .from('tasks')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-    if (tasksError) {
-        tasksList.textContent =
-            'Ошибка загрузки задач: ' + tasksError.message;
-        return;
+    function getTaskGoals(taskId, links) {
+        const ids = (links || [])
+            .filter(link => Number(link.task_id) === Number(taskId))
+            .map(link => Number(link.goal_id));
+        return (allPhoenixGoals || []).filter(goal => ids.includes(Number(goal.id)));
     }
 
-    if (!tasks || tasks.length === 0) {
-        tasksList.textContent = 'Пока задач нет.';
-        return;
-    }
+    async function openTaskDetail(taskId) {
+        const task = allPhoenixTasks.find(x => Number(x.id) === Number(taskId));
+        if (!task) return;
 
-    const taskIds = tasks.map(task => task.id);
+        const { data: links, error: linksError } = await supabaseClient
+            .from('task_goal_links')
+            .select('goal_id')
+            .eq('task_id', task.id);
 
-    const { data: links, error: linksError } = await supabaseClient
-        .from('task_goal_links')
-        .select('task_id, goal_id')
-        .in('task_id', taskIds);
-
-    if (linksError) {
-        tasksList.textContent =
-            'Ошибка загрузки связей задач: ' + linksError.message;
-        return;
-    }
-
-    const goalIds = [...new Set(
-        (links || []).map(link => link.goal_id)
-    )];
-
-    let goals = [];
-
-    if (goalIds.length > 0) {
-        const { data: goalData, error: goalsError } =
-            await supabaseClient
-                .from('goals')
-                .select('id, title, period')
-                .in('id', goalIds);
-
-        if (goalsError) {
-            tasksList.textContent =
-                'Ошибка загрузки связанных целей: ' +
-                goalsError.message;
+        if (linksError) {
+            alert('Ошибка загрузки связей задачи: ' + linksError.message);
             return;
         }
 
-        goals = goalData || [];
-    }
+        const goalIds = (links || []).map(x => Number(x.goal_id));
+        const { data: goals, error: goalsError } = await supabaseClient
+            .from('goals')
+            .select('id, title, period, status')
+            .in('id', goalIds.length ? goalIds : [-1]);
 
-    tasksList.innerHTML = tasks.map(task => {
+        if (goalsError) {
+            alert('Ошибка загрузки связанных целей: ' + goalsError.message);
+            return;
+        }
 
-        const taskGoalIds = (links || [])
-            .filter(link => link.task_id === task.id)
-            .map(link => link.goal_id);
+        const linkedGoals = goals || [];
+        const content = document.getElementById('taskDetailContent');
+        const completed = task.status === 'completed';
 
-        const taskGoals = goals.filter(goal =>
-            taskGoalIds.includes(goal.id)
-        );
+        content.innerHTML = `
+            <div class="phoenix-goal-detail-kicker">PHOENIX / ЗАДАЧА</div>
+            <h3 class="phoenix-goal-detail-title ${completed ? 'phoenix-task-detail-completed' : ''}">${escapeHtml(task.title || 'Без названия')}</h3>
+            <p class="phoenix-goal-detail-description">${escapeHtml(task.description || 'Описание не добавлено.')}</p>
 
-        const goalsHtml = taskGoals.length > 0
-            ? `
-                <div style="
-                    margin-top: 12px;
-                    padding-top: 10px;
-                    border-top: 1px solid #292929;
-                    color: #aaa;
-                ">
-                    <div style="
-                        font-size: 14px;
-                        margin-bottom: 6px;
-                    ">
-                        🎯 Связанные цели
-                    </div>
+            <div class="phoenix-goal-detail-grid">
+                <div class="phoenix-goal-detail-item"><small>Статус</small><strong>${escapeHtml(getTaskStatusLabel(task.status))}</strong></div>
+                <div class="phoenix-goal-detail-item"><small>Приоритет</small><strong>${escapeHtml(getTaskPriorityLabel(task.priority))}</strong></div>
+                <div class="phoenix-goal-detail-item"><small>Дедлайн</small><strong>${escapeHtml(formatTaskDate(task.due_date) || 'Не указан')}</strong></div>
+                <div class="phoenix-goal-detail-item"><small>Создана</small><strong>${escapeHtml(formatTaskDate(String(task.created_at || '').slice(0,10)) || 'Не указано')}</strong></div>
+            </div>
 
-                    ${taskGoals.map(goal => `
-                        <div style="
-                            color: #ddd;
-                            margin-top: 4px;
-                        ">
-                            → ${goal.title}
-                            <span style="color:#777;">
-                                (${getGoalPeriodLabel(goal.period)})
-                            </span>
-                        </div>
-                    `).join('')}
+            <div class="phoenix-goal-detail-section">
+                <h4>СВЯЗАННЫЕ ЦЕЛИ</h4>
+                <div class="phoenix-goal-detail-links">
+                    ${linkedGoals.length ? linkedGoals.map(goal => `<div class="phoenix-goal-detail-link">🎯 ${escapeHtml(goal.title || 'Без названия')} <span style="color:#6f6259;">(${escapeHtml(getGoalPeriodLabel(goal.period))})</span></div>`).join('') : '<div class="phoenix-goal-detail-link">Цели не связаны.</div>'}
                 </div>
-            `
-            : '';
+            </div>
 
-        const completeButton = task.status === 'completed'
-    ? `
-        <div style="
-            margin-top: 10px;
-            color: #aaa;
-        ">
-            ☑ Выполнена
-        </div>
-
-        <div style="margin-top: 8px;">
-            <button
-                type="button"
-                onclick="reopenTask(${task.id})"
-                style="
-                    padding: 7px 12px;
-                    background: #333;
-                    color: white;
-                    border: 0;
-                    border-radius: 7px;
-                    cursor: pointer;
-                "
-            >
-                ↩ Вернуть в открытые
-            </button>
-        </div>
-    `
-    : `
-        <div style="margin-top: 10px;">
-            <button
-                type="button"
-                onclick="completeTask(${task.id})"
-                style="
-                    padding: 7px 12px;
-                    background: #333;
-                    color: white;
-                    border: 0;
-                    border-radius: 7px;
-                    cursor: pointer;
-                "
-            >
-                ☑ Выполнить
-            </button>
-        </div>
-    `;
-
-        return `
-            <div style="
-                padding: 16px 0;
-                border-bottom: 1px solid #292929;
-            ">
-                <strong>${task.title || 'Без названия'}</strong>
-
-                ${completeButton}
-
-                ${task.description
-                    ? `<div style="color:#aaa; margin-top:6px;">
-                        ${task.description}
-                    </div>`
-                    : ''
-                }
-
-                <div style="color:#999; margin-top:8px;">
-                    Статус: ${getTaskStatusLabel(task.status)}
-                </div>
-
-                <div style="color:#999;">
-                    Приоритет: ${getTaskPriorityLabel(task.priority)}
-                </div>
-
-                ${task.due_date
-                    ? `<div style="color:#999;">
-                        Дедлайн: ${task.due_date}
-                    </div>`
-                    : ''
-                }
-
-                ${goalsHtml}
+            <div class="phoenix-goal-detail-actions">
+                <button type="button" class="phoenix-goal-edit-button" onclick="editPhoenixTask(${task.id})">Редактировать</button>
+                ${completed
+                    ? `<button type="button" class="phoenix-goal-edit-button" onclick="reopenTask(${task.id}); closeTaskDetail();">Вернуть в открытые</button>`
+                    : `<button type="button" class="phoenix-goal-edit-button" onclick="completeTask(${task.id}); closeTaskDetail();">Выполнить</button>`}
+                <button type="button" class="phoenix-goal-delete-button" onclick="deletePhoenixTask(${task.id})">Удалить</button>
             </div>
         `;
-    }).join('');
-}
 
+        const modal = document.getElementById('taskDetailModal');
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeTaskDetail() {
+        const modal = document.getElementById('taskDetailModal');
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+    }
+
+    async function editPhoenixTask(taskId) {
+        const task = allPhoenixTasks.find(x => Number(x.id) === Number(taskId));
+        if (!task) return;
+
+        const { data: links, error } = await supabaseClient
+            .from('task_goal_links')
+            .select('goal_id')
+            .eq('task_id', task.id);
+
+        if (error) {
+            alert('Ошибка загрузки связей задачи: ' + error.message);
+            return;
+        }
+
+        editingTaskId = task.id;
+        closeTaskDetail();
+        document.getElementById('taskCreatorKicker').textContent = 'PHOENIX / ЗАДАЧА';
+        document.getElementById('taskCreatorTitle').textContent = 'Редактировать задачу';
+        document.getElementById('taskSubmitButton').textContent = 'Сохранить изменения';
+        document.getElementById('taskTitle').value = task.title || '';
+        document.getElementById('taskDescription').value = task.description || '';
+        document.getElementById('taskStatus').value = task.status || 'open';
+        document.getElementById('taskPriority').value = Number(task.priority) === 4 ? 'mandatory' : Number(task.priority) === 3 ? 'important' : Number(task.priority) === 2 ? 'desirable' : 'if_time';
+        document.getElementById('taskDueDate').value = task.due_date || '';
+        await loadTaskGoals((links || []).map(x => x.goal_id));
+        const modal = document.getElementById('taskCreator');
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.getElementById('taskTitle').focus();
+    }
+
+    function openDeleteTaskModal(taskId) {
+        const task = allPhoenixTasks.find(x => Number(x.id) === Number(taskId));
+        if (!task) return;
+        pendingDeleteTaskId = task.id;
+        document.getElementById('taskDeleteText').textContent = `Удалить задачу «${task.title || 'Без названия'}»? Это действие нельзя отменить.`;
+        const modal = document.getElementById('taskDeleteModal');
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeDeleteTaskModal() {
+        pendingDeleteTaskId = null;
+        const modal = document.getElementById('taskDeleteModal');
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+    }
+
+    function deletePhoenixTask(taskId) {
+        openDeleteTaskModal(taskId);
+    }
+
+    async function confirmDeletePhoenixTask() {
+        if (!pendingDeleteTaskId) return;
+        const taskId = pendingDeleteTaskId;
+
+        const { error: linkError } = await supabaseClient
+            .from('task_goal_links')
+            .delete()
+            .eq('task_id', taskId);
+
+        if (linkError) {
+            closeDeleteTaskModal();
+            alert('Не удалось удалить связи задачи: ' + linkError.message);
+            return;
+        }
+
+        const { error } = await supabaseClient
+            .from('tasks')
+            .delete()
+            .eq('id', taskId);
+
+        if (error) {
+            closeDeleteTaskModal();
+            alert('Ошибка удаления задачи: ' + error.message);
+            return;
+        }
+
+        closeDeleteTaskModal();
+        closeTaskDetail();
+        await loadTasks();
+    }
+
+    async function completeTask(taskId) {
+        const { error } = await supabaseClient
+            .from('tasks')
+            .update({ status: 'completed', completed_at: new Date().toISOString() })
+            .eq('id', taskId);
+
+        if (error) {
+            alert('Ошибка завершения задачи: ' + error.message);
+            return;
+        }
+        await loadTasks();
+    }
+
+    async function reopenTask(taskId) {
+        const { error } = await supabaseClient
+            .from('tasks')
+            .update({ status: 'open', completed_at: null })
+            .eq('id', taskId);
+
+        if (error) {
+            alert('Ошибка возврата задачи: ' + error.message);
+            return;
+        }
+        await loadTasks();
+    }
+
+    async function loadTasks() {
+        const tasksList = document.getElementById('tasksList');
+
+        const { data: tasks, error: tasksError } = await supabaseClient
+            .from('tasks')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (tasksError) {
+            tasksList.textContent = 'Ошибка загрузки задач: ' + tasksError.message;
+            return;
+        }
+
+        allPhoenixTasks = tasks || [];
+
+        if (!allPhoenixTasks.length) {
+            tasksList.innerHTML = '<div class="phoenix-task-empty">Пока задач нет.<br><span>Создай первую конкретную задачу из цели.</span></div>';
+            return;
+        }
+
+        const taskIds = allPhoenixTasks.map(task => task.id);
+        const { data: links, error: linksError } = await supabaseClient
+            .from('task_goal_links')
+            .select('task_id, goal_id')
+            .in('task_id', taskIds);
+
+        if (linksError) {
+            tasksList.textContent = 'Ошибка загрузки связей задач: ' + linksError.message;
+            return;
+        }
+
+        const goalIds = [...new Set((links || []).map(link => Number(link.goal_id)))];
+        let goals = [];
+        if (goalIds.length) {
+            const { data: goalData, error: goalsError } = await supabaseClient
+                .from('goals')
+                .select('id, title, period, status')
+                .in('id', goalIds);
+            if (goalsError) {
+                tasksList.textContent = 'Ошибка загрузки связанных целей: ' + goalsError.message;
+                return;
+            }
+            goals = goalData || [];
+        }
+
+        tasksList.innerHTML = allPhoenixTasks.map(task => {
+            const taskGoalIds = (links || []).filter(link => Number(link.task_id) === Number(task.id)).map(link => Number(link.goal_id));
+            const taskGoals = goals.filter(goal => taskGoalIds.includes(Number(goal.id)));
+            const completed = task.status === 'completed';
+
+            return `
+                <button type="button" class="phoenix-task-card ${completed ? 'is-completed' : ''}" onclick="openTaskDetail(${task.id})">
+                    <div class="phoenix-task-card-row">
+                        <span class="phoenix-task-check ${completed ? 'is-completed' : ''}">${completed ? '✓' : ''}</span>
+                        <div class="phoenix-task-card-main">
+                            <span class="phoenix-task-card-title ${completed ? 'is-completed' : ''}">${escapeHtml(task.title || 'Без названия')}</span>
+                            <span class="phoenix-task-card-meta">
+                                ${task.due_date ? `до ${escapeHtml(formatTaskDate(task.due_date))}` : 'без дедлайна'}
+                                <span>${escapeHtml(getTaskPriorityLabel(task.priority))}</span>
+                                ${taskGoals.length ? `<span>🎯 ${taskGoals.length} ${taskGoals.length === 1 ? 'цель' : taskGoals.length < 5 ? 'цели' : 'целей'}</span>` : ''}
+                            </span>
+                        </div>
+                    </div>
+                </button>
+            `;
+        }).join('');
+    }
 
     document.getElementById('taskForm').addEventListener('submit', async (event) => {
         event.preventDefault();
 
-        const title =
-            document.getElementById('taskTitle').value.trim();
+        const title = document.getElementById('taskTitle').value.trim();
+        const description = document.getElementById('taskDescription').value.trim();
+        const status = document.getElementById('taskStatus').value;
+        const priority = document.getElementById('taskPriority').value;
+        const dueDate = document.getElementById('taskDueDate').value;
+        const selectedGoalIds = Array.from(document.querySelectorAll('.task-goal-checkbox:checked')).map(x => Number(x.value));
 
-        const description =
-            document.getElementById('taskDescription').value.trim();
+        if (!title || !status || !priority) return;
 
-        const status =
-            document.getElementById('taskStatus').value;
+        const priorityNumber = priority === 'mandatory' ? 4 : priority === 'important' ? 3 : priority === 'desirable' ? 2 : 1;
+        const payload = {
+            title,
+            description: description || null,
+            status,
+            priority: priorityNumber,
+            due_date: dueDate || null,
+            completed_at: status === 'completed' ? new Date().toISOString() : null
+        };
 
-        const priority =
-            document.getElementById('taskPriority').value;
+        let savedTaskId = editingTaskId;
+        let error = null;
 
-        const dueDate =
-            document.getElementById('taskDueDate').value;
+        if (editingTaskId) {
+            const result = await supabaseClient.from('tasks').update(payload).eq('id', editingTaskId);
+            error = result.error;
+        } else {
+            const result = await supabaseClient.from('tasks').insert(payload).select('id').single();
+            error = result.error;
+            if (!error) savedTaskId = result.data.id;
+        }
 
-        const selectedGoalIds = Array.from(
-            document.querySelectorAll('.task-goal-checkbox:checked')
-        ).map(checkbox => Number(checkbox.value));
-
-
-        if (!title || !status || !priority) {
+        if (error) {
+            alert((editingTaskId ? 'Ошибка сохранения задачи: ' : 'Ошибка создания задачи: ') + error.message);
             return;
         }
 
+        const { error: deleteLinksError } = await supabaseClient
+            .from('task_goal_links')
+            .delete()
+            .eq('task_id', savedTaskId);
 
-        const priorityNumber =
-            priority === 'mandatory' ? 4 :
-            priority === 'important' ? 3 :
-            priority === 'desirable' ? 2 :
-            1;
-
-
-        const { data: task, error: taskError } =
-            await supabaseClient
-                .from('tasks')
-                .insert({
-                    title: title,
-                    description: description || null,
-                    status: status,
-                    priority: priorityNumber,
-                    due_date: dueDate || null
-                })
-                .select()
-                .single();
-
-
-        if (taskError) {
-            alert('Ошибка создания задачи: ' + taskError.message);
+        if (deleteLinksError) {
+            alert('Задача сохранена, но старые связи с целями не удалось обновить: ' + deleteLinksError.message);
             return;
         }
 
+        if (selectedGoalIds.length) {
+            const { error: insertLinksError } = await supabaseClient
+                .from('task_goal_links')
+                .insert(selectedGoalIds.map(goal_id => ({ task_id: savedTaskId, goal_id })));
 
-        if (selectedGoalIds.length > 0) {
-
-            const links = selectedGoalIds.map(goalId => ({
-                task_id: task.id,
-                goal_id: goalId
-            }));
-
-            const { error: linkError } =
-                await supabaseClient
-                    .from('task_goal_links')
-                    .insert(links);
-
-            if (linkError) {
-                alert(
-                    'Задача создана, но не удалось сохранить связи с целями: ' +
-                    linkError.message
-                );
+            if (insertLinksError) {
+                alert('Задача сохранена, но связи с целями не удалось сохранить: ' + insertLinksError.message);
+                return;
             }
         }
 
-
-        document.getElementById('taskTitle').value = '';
-        document.getElementById('taskDescription').value = '';
-        document.getElementById('taskStatus').value = '';
-        document.getElementById('taskPriority').value = '';
-        document.getElementById('taskDueDate').value = '';
-
-        document
-            .querySelectorAll('.task-goal-checkbox')
-            .forEach(checkbox => {
-                checkbox.checked = false;
-            });
-
-
+        resetTaskForm();
+        closeTaskCreator();
         await loadTasks();
+        if (typeof loadToday === 'function') await loadToday();
     });
 
+    document.getElementById('openTaskCreator').addEventListener('click', () => {
+        resetTaskForm();
+        openTaskCreator();
+    });
+    document.getElementById('closeTaskCreator').addEventListener('click', closeTaskCreator);
+    document.getElementById('closeTaskCreatorBackdrop').addEventListener('click', closeTaskCreator);
+    document.getElementById('closeTaskDetail').addEventListener('click', closeTaskDetail);
+    document.getElementById('closeTaskDetailBackdrop').addEventListener('click', closeTaskDetail);
+    document.getElementById('cancelTaskDelete').addEventListener('click', closeDeleteTaskModal);
+    document.getElementById('closeTaskDeleteBackdrop').addEventListener('click', closeDeleteTaskModal);
+    document.getElementById('confirmTaskDelete').addEventListener('click', confirmDeletePhoenixTask);
 
     supabaseClient.auth.getSession().then(({ data }) => {
-
         if (data.session) {
-            loadTaskGoals();
+            loadTaskGoals([]);
             loadTasks();
         }
-
     });
-
 </script>
-    <section id="routinesSection" style="
+<section id="routinesSection" style="
     max-width: 900px;
     margin: 30px auto;
     padding: 24px;
