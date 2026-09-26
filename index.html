@@ -1556,6 +1556,16 @@
             <div id="goalChildList" class="phoenix-goal-relations-list">
                 Загрузка целей...
             </div>
+
+            <h4>СВЯЗАННЫЕ ЗАДАЧИ</h4>
+            <div id="goalTaskList" class="phoenix-goal-relations-list">
+                Загрузка задач...
+            </div>
+
+            <h4>СВЯЗАННЫЕ РУТИНЫ</h4>
+            <div id="goalRoutineList" class="phoenix-goal-relations-list">
+                Загрузка рутин...
+            </div>
         </div>
 
         <button
@@ -1647,27 +1657,26 @@
         const dueInput = document.getElementById('goalDueDate');
         const note = document.getElementById('goalDateNote');
 
+        startInput.disabled = false;
+        dueInput.disabled = true;
+
+        // Важно: не ограничиваем календарь текущим годом/месяцем.
+        // Пользователь может планировать цели на любой будущий период.
+        startInput.removeAttribute('min');
+        startInput.removeAttribute('max');
+
         if (!period) {
-            startInput.disabled = false;
-            dueInput.disabled = true;
-            startInput.removeAttribute('min');
-            startInput.removeAttribute('max');
             dueInput.value = '';
             note.textContent = 'Сначала выбери период.';
             return;
         }
 
-        startInput.disabled = false;
-        dueInput.disabled = true;
-
         if (period === 'year') {
             const base = startInput.value || getTodayIsoDate();
             const year = Number(String(base).slice(0,4));
-            startInput.min = `${year}-01-01`;
-            startInput.max = `${year}-12-31`;
             startInput.value = `${year}-01-01`;
             dueInput.value = `${year}-12-31`;
-            note.textContent = 'Годовая цель всегда занимает весь выбранный календарный год.';
+            note.textContent = 'Выбери любую дату нужного года — Phoenix установит 1 января и 31 декабря этого года.';
             return;
         }
 
@@ -1678,32 +1687,25 @@
             const month = Number(parts[1]);
             const first = `${year}-${String(month).padStart(2,'0')}-01`;
             const last = getMonthEnd(year, month);
-            startInput.min = first;
-            startInput.max = last;
             startInput.value = first;
             dueInput.value = last;
-            note.textContent = 'Месячная цель всегда занимает только один календарный месяц.';
+            note.textContent = 'Выбери любую дату нужного месяца — Phoenix установит первое и последнее число этого месяца.';
             return;
         }
 
         if (period === 'week') {
             const base = startInput.value || getTodayIsoDate();
-            const end = addDaysIso(base, 6);
-            startInput.removeAttribute('min');
-            startInput.removeAttribute('max');
             startInput.value = base;
-            dueInput.value = end;
-            note.textContent = 'Неделя = ровно 7 дней, начиная с выбранной даты.';
+            dueInput.value = addDaysIso(base, 6);
+            note.textContent = 'Можно выбрать любой день начала. Период всегда составляет ровно 7 дней.';
             return;
         }
 
         if (period === 'day') {
             const base = startInput.value || getTodayIsoDate();
-            startInput.removeAttribute('min');
-            startInput.removeAttribute('max');
             startInput.value = base;
             dueInput.value = base;
-            note.textContent = 'Дневная цель занимает ровно один день.';
+            note.textContent = 'Можно выбрать любую дату. Дневная цель занимает ровно один день.';
         }
     }
 
@@ -1842,33 +1844,49 @@
     async function loadGoalRelationEditor(goalId) {
         const parentList=document.getElementById('goalParentList');
         const childList=document.getElementById('goalChildList');
+        const taskList=document.getElementById('goalTaskList');
+        const routineList=document.getElementById('goalRoutineList');
         const candidates=allPhoenixGoals.filter(g=>Number(g.id)!==Number(goalId));
 
-        const [parentLinks,childLinks]=await Promise.all([
-            supabaseClient.from('goal_links').select('parent_goal_id').eq('child_goal_id',goalId),
-            supabaseClient.from('goal_links').select('child_goal_id').eq('parent_goal_id',goalId)
+        const [parentLinks,childLinks,taskLinks,routineLinks,taskData,routineData]=await Promise.all([
+            goalId ? supabaseClient.from('goal_links').select('parent_goal_id').eq('child_goal_id',goalId) : Promise.resolve({data:[]}),
+            goalId ? supabaseClient.from('goal_links').select('child_goal_id').eq('parent_goal_id',goalId) : Promise.resolve({data:[]}),
+            goalId ? supabaseClient.from('task_goal_links').select('task_id').eq('goal_id',goalId) : Promise.resolve({data:[]}),
+            goalId ? supabaseClient.from('routine_goal_links').select('routine_id').eq('goal_id',goalId) : Promise.resolve({data:[]}),
+            supabaseClient.from('tasks').select('id,title,status,due_date').order('created_at',{ascending:false}),
+            supabaseClient.from('routines').select('id,title,frequency,is_active').order('created_at',{ascending:false})
         ]);
 
-        if(parentLinks.error||childLinks.error){
+        const relationError=[parentLinks,childLinks,taskLinks,routineLinks,taskData,routineData].find(x=>x.error)?.error;
+        if(relationError){
             parentList.textContent='Не удалось загрузить связи.';
             childList.textContent='Не удалось загрузить связи.';
+            taskList.textContent='Не удалось загрузить задачи.';
+            routineList.textContent='Не удалось загрузить рутины.';
             return;
         }
 
         const selectedParents=new Set((parentLinks.data||[]).map(x=>Number(x.parent_goal_id)));
         const selectedChildren=new Set((childLinks.data||[]).map(x=>Number(x.child_goal_id)));
+        const selectedTasks=new Set((taskLinks.data||[]).map(x=>Number(x.task_id)));
+        const selectedRoutines=new Set((routineLinks.data||[]).map(x=>Number(x.routine_id)));
 
-        const renderOptions=(items,selected,className,emptyText)=>{
+        const renderOptions=(items,selected,className,emptyText,metaFn)=>{
             if(!items.length)return `<div style="color:#6f6259;font:12px/1.4 Arial,sans-serif;">${emptyText}</div>`;
-            return items.map(g=>`
+            return items.map(item=>{
+                const meta=metaFn(item);
+                return `
                 <label class="phoenix-goal-relation-option">
-                    <input type="checkbox" class="${className}" value="${g.id}" ${selected.has(Number(g.id))?'checked':''}>
-                    <span>${escapeHtml(g.title||'Без названия')} <span style="color:#6f6259;">(${escapeHtml(getPeriodLabel(g.period))})</span></span>
-                </label>`).join('');
+                    <input type="checkbox" class="${className}" value="${item.id}" ${selected.has(Number(item.id))?'checked':''}>
+                    <span>${escapeHtml(item.title||'Без названия')} ${meta}</span>
+                </label>`;
+            }).join('');
         };
 
-        parentList.innerHTML=renderOptions(candidates,selectedParents,'goal-parent-checkbox','Других целей пока нет.');
-        childList.innerHTML=renderOptions(candidates,selectedChildren,'goal-child-checkbox','Других целей пока нет.');
+        parentList.innerHTML=renderOptions(candidates,selectedParents,'goal-parent-checkbox','Других целей пока нет.',g=>`<span style="color:#6f6259;">(${escapeHtml(getPeriodLabel(g.period))})</span>`);
+        childList.innerHTML=renderOptions(candidates,selectedChildren,'goal-child-checkbox','Других целей пока нет.',g=>`<span style="color:#6f6259;">(${escapeHtml(getPeriodLabel(g.period))})</span>`);
+        taskList.innerHTML=renderOptions(taskData.data||[],selectedTasks,'goal-task-checkbox','Задач пока нет.',t=>`<span style="color:#6f6259;">(${escapeHtml(getTaskStatusLabel(t.status))}${t.due_date?' · до '+escapeHtml(formatTaskDate(t.due_date)):''})</span>`);
+        routineList.innerHTML=renderOptions(routineData.data||[],selectedRoutines,'goal-routine-checkbox','Рутин пока нет.',r=>`<span style="color:#6f6259;">(${escapeHtml(getRoutineFrequencyLabel(r.frequency))}${r.is_active===false?' · неактивна':''})</span>`);
     }
 
     function resetGoalForm() {
@@ -1876,7 +1894,7 @@
         ['goalTitle','goalDescription','goalPeriod','goalStatus','goalPriority','goalStartDate','goalDueDate'].forEach(id=>document.getElementById(id).value='');
         document.getElementById('goalDateNote').textContent='Сначала выбери период.';
         document.getElementById('goalDueDate').disabled=true;
-        document.querySelectorAll('.goal-parent-checkbox,.goal-child-checkbox').forEach(x=>x.checked=false);
+        document.querySelectorAll('.goal-parent-checkbox,.goal-child-checkbox,.goal-task-checkbox,.goal-routine-checkbox').forEach(x=>x.checked=false);
         document.querySelector('#goalCreator .phoenix-kicker').textContent='PHOENIX / НОВАЯ ЦЕЛЬ';
         document.querySelector('#goalCreator h3').textContent='Создать цель';
         document.querySelector('#goalForm button[type="submit"]').textContent='Добавить цель';
@@ -1949,21 +1967,37 @@
     async function saveGoalRelations(goalId) {
         const parentIds=[...document.querySelectorAll('.goal-parent-checkbox:checked')].map(x=>Number(x.value));
         const childIds=[...document.querySelectorAll('.goal-child-checkbox:checked')].map(x=>Number(x.value));
-        const links=[
+        const taskIds=[...document.querySelectorAll('.goal-task-checkbox:checked')].map(x=>Number(x.value));
+        const routineIds=[...document.querySelectorAll('.goal-routine-checkbox:checked')].map(x=>Number(x.value));
+
+        const goalLinks=[
             ...parentIds.map(parent_goal_id=>({parent_goal_id,child_goal_id:Number(goalId)})),
             ...childIds.map(child_goal_id=>({parent_goal_id:Number(goalId),child_goal_id}))
         ];
+        const taskLinks=taskIds.map(task_id=>({task_id,goal_id:Number(goalId)}));
+        const routineLinks=routineIds.map(routine_id=>({routine_id,goal_id:Number(goalId)}));
 
-        const {error:deleteError}=await supabaseClient
-            .from('goal_links')
-            .delete()
-            .or(`parent_goal_id.eq.${goalId},child_goal_id.eq.${goalId}`);
-        if(deleteError)return deleteError;
+        const cleanup=await Promise.all([
+            supabaseClient.from('goal_links').delete().or(`parent_goal_id.eq.${goalId},child_goal_id.eq.${goalId}`),
+            supabaseClient.from('task_goal_links').delete().eq('goal_id',goalId),
+            supabaseClient.from('routine_goal_links').delete().eq('goal_id',goalId)
+        ]);
+        const cleanupError=cleanup.find(result=>result.error)?.error;
+        if(cleanupError)return cleanupError;
 
-        if(!links.length)return null;
-
-        const {error:insertError}=await supabaseClient.from('goal_links').insert(links);
-        return insertError||null;
+        if(goalLinks.length){
+            const {error}=await supabaseClient.from('goal_links').insert(goalLinks);
+            if(error)return error;
+        }
+        if(taskLinks.length){
+            const {error}=await supabaseClient.from('task_goal_links').insert(taskLinks);
+            if(error)return error;
+        }
+        if(routineLinks.length){
+            const {error}=await supabaseClient.from('routine_goal_links').insert(routineLinks);
+            if(error)return error;
+        }
+        return null;
     }
 
     document.getElementById('goalForm').addEventListener('submit',async(event)=>{
@@ -2001,7 +2035,7 @@
 
         const relationError=await saveGoalRelations(savedGoalId);
         if(relationError){
-            alert('Цель сохранена, но связи с целями не обновились: '+relationError.message);
+            alert('Цель сохранена, но связанные элементы не обновились: '+relationError.message);
             return;
         }
 
@@ -2021,8 +2055,9 @@
         modal.classList.remove('is-open');modal.setAttribute('aria-hidden','true');
     }
 
-    document.getElementById('openGoalCreator').addEventListener('click',()=>{
+    document.getElementById('openGoalCreator').addEventListener('click',async()=>{
         resetGoalForm();
+        await loadGoalRelationEditor(null);
         openGoalCreator();
     });
 
