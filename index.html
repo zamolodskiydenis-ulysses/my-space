@@ -914,6 +914,7 @@
 .phoenix-task-card:hover{border-color:rgba(255,177,95,.28);background:radial-gradient(circle at 0% 50%,rgba(255,88,18,.12),transparent 42%),rgba(255,255,255,.025);transform:translateY(-1px)}
 .phoenix-task-card-row{display:flex;align-items:center;gap:13px}
 .phoenix-task-check{width:21px;height:21px;flex:0 0 21px;border:1px solid rgba(255,177,95,.28);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#f0b06d;font:14px/1 Arial,sans-serif}
+ .phoenix-task-check{cursor:pointer;transition:.18s ease}.phoenix-task-check:hover{border-color:rgba(255,177,95,.60);box-shadow:0 0 12px rgba(255,90,18,.14)}
 .phoenix-task-check.is-completed{border-color:rgba(255,177,95,.55);background:rgba(255,112,28,.13);box-shadow:0 0 14px rgba(255,90,18,.10)}
 .phoenix-task-card-main{min-width:0;display:block}
 .phoenix-task-card-title{display:block;color:#eee0d2;font:400 18px/1.35 Georgia,'Times New Roman',serif}
@@ -2403,6 +2404,17 @@
         await loadTasks();
     }
 
+    async function toggleTaskCompletion(taskId) {
+        const task = allPhoenixTasks.find(x => Number(x.id) === Number(taskId));
+        if (!task) return;
+
+        if (task.status === 'completed') {
+            await reopenTask(taskId);
+        } else {
+            await completeTask(taskId);
+        }
+    }
+
     async function completeTask(taskId) {
         const { error } = await supabaseClient
             .from('tasks')
@@ -2482,7 +2494,11 @@
             return `
                 <button type="button" class="phoenix-task-card ${completed ? 'is-completed' : ''}" onclick="openTaskDetail(${task.id})">
                     <div class="phoenix-task-card-row">
-                        <span class="phoenix-task-check ${completed ? 'is-completed' : ''}">${completed ? '✓' : ''}</span>
+                        <span
+                            class="phoenix-task-check ${completed ? 'is-completed' : ''}"
+                            title="${completed ? 'Вернуть в открытые' : 'Выполнить'}"
+                            onclick="event.stopPropagation(); toggleTaskCompletion(${task.id})"
+                        >${completed ? '✓' : ''}</span>
                         <div class="phoenix-task-card-main">
                             <span class="phoenix-task-card-title ${completed ? 'is-completed' : ''}">${escapeHtml(task.title || 'Без названия')}</span>
                             <span class="phoenix-task-card-meta">
