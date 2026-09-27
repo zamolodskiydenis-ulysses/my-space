@@ -2229,15 +2229,19 @@
         document.getElementById('taskCreatorKicker').textContent = 'PHOENIX / НОВАЯ ЗАДАЧА';
         document.getElementById('taskCreatorTitle').textContent = 'Создать задачу';
         document.getElementById('taskSubmitButton').textContent = 'Добавить задачу';
-        loadTaskGoals([]);
+        const taskGoalsList = document.getElementById('taskGoalsList');
+        if (taskGoalsList) taskGoalsList.textContent = 'Загрузка целей...';
     }
 
     async function openTaskCreator() {
-        await loadTaskGoals([]);
         const modal = document.getElementById('taskCreator');
         modal.classList.add('is-open');
         modal.setAttribute('aria-hidden', 'false');
         document.getElementById('taskTitle').focus();
+
+        // Сначала открываем окно, затем загружаем цели.
+        // Если Supabase отвечает медленно, кнопка всё равно работает.
+        await loadTaskGoals([]);
     }
 
     function closeTaskCreator() {
