@@ -2082,15 +2082,29 @@
     });
 </script>
     <script>
-window.openPhoenixTaskCreatorDirect = function() {
+window.showTaskCreatorModal = function() {
     const modal = document.getElementById('taskCreator');
     if (!modal) return;
+
+    // Открываем окно напрямую через inline-style.
+    // Это исключает конфликт с CSS/другими обработчиками.
     modal.classList.add('is-open');
+    modal.style.display = 'flex';
+    modal.style.pointerEvents = 'auto';
     modal.setAttribute('aria-hidden', 'false');
+
+    if (typeof window.resetTaskForm === 'function') {
+        window.resetTaskForm();
+    }
+
     const title = document.getElementById('taskTitle');
-    if (title) title.focus();
-    if (typeof window.resetTaskForm === 'function') window.resetTaskForm();
-    if (typeof window.loadTaskGoals === 'function') window.loadTaskGoals([]);
+    if (title) {
+        setTimeout(() => title.focus(), 0);
+    }
+
+    if (typeof window.loadTaskGoals === 'function') {
+        window.loadTaskGoals([]);
+    }
 };
 </script>
 
@@ -2101,7 +2115,7 @@ window.openPhoenixTaskCreatorDirect = function() {
             <h2>ЗАДАЧИ</h2>
             <p>Конкретные действия, которые двигают цели вперёд.</p>
         </div>
-        <button type="button" class="phoenix-task-add-button" id="openTaskCreator" onclick="window.openPhoenixTaskCreatorDirect(); return false;">
+        <button type="button" class="phoenix-task-add-button" id="openTaskCreator" onclick="window.showTaskCreatorModal(); return false;">
             <span>+</span> Новая задача
         </button>
     </div>
@@ -2259,7 +2273,10 @@ window.openPhoenixTaskCreatorDirect = function() {
 
     function closeTaskCreator() {
         const modal = document.getElementById('taskCreator');
+        if (!modal) return;
         modal.classList.remove('is-open');
+        modal.style.display = 'none';
+        modal.style.pointerEvents = 'none';
         modal.setAttribute('aria-hidden', 'true');
     }
 
@@ -2596,11 +2613,8 @@ window.openPhoenixTaskCreatorDirect = function() {
         if (typeof loadToday === 'function') await loadToday();
     });
 
-    document.getElementById('openTaskCreator').addEventListener('click', (event) => {
-        event.preventDefault();
-        resetTaskForm();
-        showTaskCreatorModal();
-    });
+    // Кнопка открытия конструктора уже имеет прямой onclick.
+    // Дополнительный обработчик здесь не нужен.
     document.getElementById('closeTaskCreator').addEventListener('click', closeTaskCreator);
     document.getElementById('closeTaskCreatorBackdrop').addEventListener('click', closeTaskCreator);
     document.getElementById('closeTaskDetail').addEventListener('click', closeTaskDetail);
