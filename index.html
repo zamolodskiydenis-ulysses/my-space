@@ -2088,7 +2088,7 @@
             <h2>ЗАДАЧИ</h2>
             <p>Конкретные действия, которые двигают цели вперёд.</p>
         </div>
-        <button type="button" class="phoenix-task-add-button" id="openTaskCreator">
+        <button type="button" class="phoenix-task-add-button" id="openTaskCreator" onclick="showTaskCreatorModal(); return false;">
             <span>+</span> Новая задача
         </button>
     </div>
@@ -2233,7 +2233,7 @@
         if (taskGoalsList) taskGoalsList.textContent = 'Загрузка целей...';
     }
 
-    async function openTaskCreator() {
+    async function showTaskCreatorModal() {
         const modal = document.getElementById('taskCreator');
         modal.classList.add('is-open');
         modal.setAttribute('aria-hidden', 'false');
@@ -2585,7 +2585,7 @@
 
     document.getElementById('openTaskCreator').addEventListener('click', () => {
         resetTaskForm();
-        openTaskCreator();
+        showTaskCreatorModal();
     });
     document.getElementById('closeTaskCreator').addEventListener('click', closeTaskCreator);
     document.getElementById('closeTaskCreatorBackdrop').addEventListener('click', closeTaskCreator);
