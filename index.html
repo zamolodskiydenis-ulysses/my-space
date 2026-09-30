@@ -2190,6 +2190,16 @@
         return `${parts[2]}.${parts[1]}.${parts[0]}`;
     }
 
+    function getGoalPeriodLabel(period) {
+        const labels = {
+            year: 'Год',
+            month: 'Месяц',
+            week: 'Неделя',
+            day: 'День'
+        };
+        return labels[period] || period || 'Период не указан';
+    }
+
     async function loadTaskGoals(selectedIds = []) {
         const taskGoalsList = document.getElementById('taskGoalsList');
         if (!taskGoalsList) return;
@@ -2341,33 +2351,45 @@
         const task = allPhoenixTasks.find(x => Number(x.id) === Number(taskId));
         if (!task) return;
 
-        const { data: links, error } = await supabaseClient
-            .from('task_goal_links')
-            .select('goal_id')
-            .eq('task_id', task.id);
-
-        if (error) {
-            alert('Ошибка загрузки связей задачи: ' + error.message);
-            return;
-        }
-
+        // Сначала сразу открываем тот же конструктор, что и при создании.
+        // Поэтому редактирование не зависит от скорости запроса связей.
         editingTaskId = task.id;
         closeTaskDetail();
+
         document.getElementById('taskCreatorKicker').textContent = 'PHOENIX / ЗАДАЧА';
         document.getElementById('taskCreatorTitle').textContent = 'Редактировать задачу';
         document.getElementById('taskSubmitButton').textContent = 'Сохранить изменения';
         document.getElementById('taskTitle').value = task.title || '';
         document.getElementById('taskDescription').value = task.description || '';
         document.getElementById('taskStatus').value = task.status || 'open';
-        document.getElementById('taskPriority').value = Number(task.priority) === 4 ? 'mandatory' : Number(task.priority) === 3 ? 'important' : Number(task.priority) === 2 ? 'desirable' : 'if_time';
+        document.getElementById('taskPriority').value =
+            Number(task.priority) === 4 ? 'mandatory' :
+            Number(task.priority) === 3 ? 'important' :
+            Number(task.priority) === 2 ? 'desirable' : 'if_time';
         document.getElementById('taskDueDate').value = task.due_date || '';
-        await loadTaskGoals((links || []).map(x => x.goal_id));
+
         const modal = document.getElementById('taskCreator');
         modal.classList.add('is-open');
         modal.style.display = 'flex';
         modal.style.pointerEvents = 'auto';
         modal.setAttribute('aria-hidden', 'false');
+
+        document.getElementById('taskGoalsList').textContent = 'Загрузка связанных целей...';
         document.getElementById('taskTitle').focus();
+
+        // После открытия окна загружаем связи выбранной задачи.
+        const { data: links, error } = await supabaseClient
+            .from('task_goal_links')
+            .select('goal_id')
+            .eq('task_id', task.id);
+
+        if (error) {
+            document.getElementById('taskGoalsList').textContent =
+                'Не удалось загрузить связанные цели: ' + error.message;
+            return;
+        }
+
+        await loadTaskGoals((links || []).map(x => x.goal_id));
     }
 
     function openDeleteTaskModal(taskId) {
