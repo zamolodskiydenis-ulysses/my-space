@@ -2081,34 +2081,7 @@
         }
     });
 </script>
-    <script>
-window.showTaskCreatorModal = function() {
-    const modal = document.getElementById('taskCreator');
-    if (!modal) return;
-
-    // Открываем окно напрямую через inline-style.
-    // Это исключает конфликт с CSS/другими обработчиками.
-    modal.classList.add('is-open');
-    modal.style.display = 'flex';
-    modal.style.pointerEvents = 'auto';
-    modal.setAttribute('aria-hidden', 'false');
-
-    if (typeof window.resetTaskForm === 'function') {
-        window.resetTaskForm();
-    }
-
-    const title = document.getElementById('taskTitle');
-    if (title) {
-        setTimeout(() => title.focus(), 0);
-    }
-
-    if (typeof window.loadTaskGoals === 'function') {
-        window.loadTaskGoals([]);
-    }
-};
-</script>
-
-<section id="tasksSection" class="phoenix-tasks-screen">
+    <section id="tasksSection" class="phoenix-tasks-screen">
     <div class="phoenix-tasks-header">
         <div>
             <div class="phoenix-kicker">PHOENIX / ЖИЗНЬ</div>
@@ -2261,13 +2234,22 @@ window.showTaskCreatorModal = function() {
     }
 
     window.showTaskCreatorModal = async function() {
-        const modal = document.getElementById('taskCreator');
-        modal.classList.add('is-open');
-        modal.setAttribute('aria-hidden', 'false');
-        document.getElementById('taskTitle').focus();
+        // НОВАЯ задача всегда начинается с чистой формы.
+        resetTaskForm();
 
-        // Сначала открываем окно, затем загружаем цели.
-        // Если Supabase отвечает медленно, кнопка всё равно работает.
+        const modal = document.getElementById('taskCreator');
+        if (!modal) return;
+
+        modal.classList.add('is-open');
+        modal.style.display = 'flex';
+        modal.style.pointerEvents = 'auto';
+        modal.setAttribute('aria-hidden', 'false');
+
+        const title = document.getElementById('taskTitle');
+        if (title) {
+            setTimeout(() => title.focus(), 0);
+        }
+
         await loadTaskGoals([]);
     }
 
@@ -2382,6 +2364,8 @@ window.showTaskCreatorModal = function() {
         await loadTaskGoals((links || []).map(x => x.goal_id));
         const modal = document.getElementById('taskCreator');
         modal.classList.add('is-open');
+        modal.style.display = 'flex';
+        modal.style.pointerEvents = 'auto';
         modal.setAttribute('aria-hidden', 'false');
         document.getElementById('taskTitle').focus();
     }
@@ -2569,14 +2553,25 @@ window.showTaskCreatorModal = function() {
             completed_at: status === 'completed' ? new Date().toISOString() : null
         };
 
-        let savedTaskId = editingTaskId;
+        let savedTaskId = null;
         let error = null;
 
-        if (editingTaskId) {
-            const result = await supabaseClient.from('tasks').update(payload).eq('id', editingTaskId);
+        if (editingTaskId !== null) {
+            // РЕДАКТИРОВАНИЕ: меняем только выбранную существующую задачу.
+            savedTaskId = editingTaskId;
+            const result = await supabaseClient
+                .from('tasks')
+                .update(payload)
+                .eq('id', editingTaskId);
             error = result.error;
         } else {
-            const result = await supabaseClient.from('tasks').insert(payload).select('id').single();
+            // НОВАЯ ЗАДАЧА: всегда создаём новую строку в tasks.
+            // Старые задачи не трогаем.
+            const result = await supabaseClient
+                .from('tasks')
+                .insert(payload)
+                .select('id')
+                .single();
             error = result.error;
             if (!error) savedTaskId = result.data.id;
         }
