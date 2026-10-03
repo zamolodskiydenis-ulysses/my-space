@@ -2936,7 +2936,7 @@
                 Рутина — действие, которое повторяется по заданному правилу.
             </p>
 
-            <form id="routineForm" class="phoenix-routine-form">
+            <form id="routineForm" class="phoenix-routine-form" onsubmit="return window.saveRoutineFromForm(event);">
                 <input id="routineTitle" type="text" placeholder="Название рутины" required>
 
                 <textarea id="routineDescription" rows="4"
@@ -3555,64 +3555,84 @@
         if (typeof loadToday === 'function') await loadToday();
     }
 
-    document.getElementById('routineForm').addEventListener('submit', async (event) => {
-        event.preventDefault();
+    window.saveRoutineFromForm = async function(event) {
+        if (event) event.preventDefault();
 
-        const title = document.getElementById('routineTitle').value.trim();
-        const description = document.getElementById('routineDescription').value.trim();
-        const frequency = document.getElementById('routineFrequency').value;
-        const timesPerPeriodRaw = document.getElementById('routineTimesPerPeriod').value;
-        const timeOfDay = document.getElementById('routineTimeOfDay').value.trim();
-        const durationRaw = document.getElementById('routineDuration').value;
-        const isActive = document.getElementById('routineActive').checked;
+        try {
+            const title = document.getElementById('routineTitle').value.trim();
+            const description = document.getElementById('routineDescription').value.trim();
+            const frequency = document.getElementById('routineFrequency').value;
+            const timesPerPeriodRaw = document.getElementById('routineTimesPerPeriod').value;
+            const timeOfDay = document.getElementById('routineTimeOfDay').value.trim();
+            const durationRaw = document.getElementById('routineDuration').value;
+            const isActive = document.getElementById('routineActive').checked;
 
-        if (!title || !frequency) return;
+            if (!title) {
+                alert('Введите название рутины.');
+                document.getElementById('routineTitle').focus();
+                return false;
+            }
 
-        const payload = {
-            title,
-            description: description || null,
-            frequency,
-            times_per_period: timesPerPeriodRaw ? Number(timesPerPeriodRaw) : null,
-            time_of_day: timeOfDay || null,
-            duration_minutes: durationRaw ? Number(durationRaw) : null,
-            is_active: isActive
-        };
+            if (!frequency) {
+                alert('Выберите частоту рутины.');
+                document.getElementById('routineFrequency').focus();
+                return false;
+            }
 
-        let routineId = editingRoutineId;
-        let error = null;
+            const payload = {
+                title,
+                description: description || null,
+                frequency,
+                times_per_period: timesPerPeriodRaw ? Number(timesPerPeriodRaw) : null,
+                time_of_day: timeOfDay || null,
+                duration_minutes: durationRaw ? Number(durationRaw) : null,
+                is_active: isActive
+            };
 
-        if (editingRoutineId !== null) {
-            const result = await supabaseClient
-                .from('routines')
-                .update(payload)
-                .eq('id', editingRoutineId);
-            error = result.error;
-        } else {
-            const result = await supabaseClient
-                .from('routines')
-                .insert(payload)
-                .select('id')
-                .single();
-            error = result.error;
-            if (!error) routineId = result.data.id;
+            const editingId = editingRoutineId;
+            let routineId = null;
+            let error = null;
+
+            if (editingId !== null) {
+                routineId = Number(editingId);
+                const result = await supabaseClient
+                    .from('routines')
+                    .update(payload)
+                    .eq('id', routineId);
+                error = result.error;
+            } else {
+                const result = await supabaseClient
+                    .from('routines')
+                    .insert(payload)
+                    .select('id')
+                    .single();
+                error = result.error;
+                if (!error) routineId = result.data.id;
+            }
+
+            if (error) {
+                alert((editingId !== null ? 'Ошибка сохранения рутины: ' : 'Ошибка создания рутины: ') + error.message);
+                return false;
+            }
+
+            const relationError = await saveRoutineGoals(routineId);
+            if (relationError) {
+                alert('Рутина сохранена, но связанные цели не обновились: ' + relationError.message);
+                return false;
+            }
+
+            closeRoutineCreator();
+            resetRoutineForm();
+            await loadRoutines();
+            if (typeof loadToday === 'function') await loadToday();
+
+            return false;
+        } catch (error) {
+            alert('Не удалось сохранить рутину: ' + (error?.message || error));
+            return false;
         }
+    };
 
-        if (error) {
-            alert((editingRoutineId !== null ? 'Ошибка сохранения рутины: ' : 'Ошибка создания рутины: ') + error.message);
-            return;
-        }
-
-        const relationError = await saveRoutineGoals(routineId);
-        if (relationError) {
-            alert('Рутина сохранена, но связанные цели не обновились: ' + relationError.message);
-            return;
-        }
-
-        closeRoutineCreator();
-        resetRoutineForm();
-        await loadRoutines();
-        if (typeof loadToday === 'function') await loadToday();
-    });
 
     document.getElementById('closeRoutineCreator').addEventListener('click', closeRoutineCreator);
     document.getElementById('closeRoutineCreatorBackdrop').addEventListener('click', closeRoutineCreator);
