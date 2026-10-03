@@ -989,6 +989,203 @@
 .phoenix-confirm-delete{border:1px solid rgba(190,75,35,.35);background:rgba(130,35,15,.13);color:#d39b83}
 
 
+
+/* ===== PHOENIX / ЕЖЕДНЕВНИК V1 ===== */
+.phoenix-journal-screen{
+    max-width:1100px;
+    margin:30px auto;
+    padding:34px;
+    background:linear-gradient(180deg,#11100f 0%,#0b0b0b 100%);
+    border:1px solid #2b211b;
+    border-radius:18px;
+    box-sizing:border-box;
+}
+.phoenix-journal-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:20px;
+    margin-bottom:28px;
+}
+.phoenix-journal-header h2{
+    margin:5px 0 8px;
+    font-family:Georgia,serif;
+    font-size:52px;
+    line-height:1;
+    font-weight:400;
+    color:#e8d0b5;
+}
+.phoenix-journal-header p{
+    margin:0;
+    color:#8d7767;
+}
+.phoenix-journal-weekbar{
+    display:grid;
+    grid-template-columns:44px repeat(7,1fr) 44px;
+    gap:8px;
+    align-items:stretch;
+    margin-bottom:28px;
+}
+.phoenix-journal-weeknav{
+    border:1px solid #4b321e;
+    background:#15110e;
+    color:#d9b08b;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:20px;
+}
+.phoenix-journal-day{
+    border:1px solid #32251c;
+    background:#0e0d0c;
+    color:#bca795;
+    border-radius:10px;
+    padding:11px 5px;
+    cursor:pointer;
+    text-align:center;
+}
+.phoenix-journal-day:hover{border-color:#74471f;}
+.phoenix-journal-day.is-selected{
+    border-color:#a86124;
+    background:#2a160c;
+    color:#f0d1ae;
+}
+.phoenix-journal-day.is-today{
+    box-shadow:inset 0 0 0 1px #6b421f;
+}
+.phoenix-journal-day-name{
+    display:block;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.12em;
+    color:#7f6b5c;
+}
+.phoenix-journal-day-number{
+    display:block;
+    margin-top:4px;
+    font-family:Georgia,serif;
+    font-size:22px;
+}
+.phoenix-journal-date-title{
+    padding:18px 20px;
+    border:1px solid #32251c;
+    border-radius:12px;
+    background:#0d0c0b;
+    margin-bottom:18px;
+}
+.phoenix-journal-date-title strong{
+    font-family:Georgia,serif;
+    font-size:25px;
+    font-weight:400;
+    color:#ead3ba;
+}
+.phoenix-journal-date-title span{
+    display:block;
+    margin-top:5px;
+    color:#76675d;
+    font-size:13px;
+}
+.phoenix-journal-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+}
+.phoenix-journal-block{
+    border:1px solid #30241d;
+    border-radius:14px;
+    background:#0d0c0b;
+    overflow:hidden;
+}
+.phoenix-journal-block.full{
+    grid-column:1 / -1;
+}
+.phoenix-journal-block-head{
+    padding:16px 18px 12px;
+    border-bottom:1px solid #211b17;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+.phoenix-journal-block-head h3{
+    margin:0;
+    color:#d7ad88;
+    font-size:13px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+}
+.phoenix-journal-count{
+    color:#76675d;
+    font-size:12px;
+}
+.phoenix-journal-items{
+    padding:4px 16px;
+}
+.phoenix-journal-item{
+    display:flex;
+    gap:12px;
+    align-items:flex-start;
+    padding:15px 2px;
+    border-bottom:1px solid #211b17;
+}
+.phoenix-journal-item:last-child{border-bottom:0;}
+.phoenix-journal-check{
+    flex:0 0 24px;
+    width:24px;
+    height:24px;
+    border-radius:50%;
+    border:1px solid #71451f;
+    background:#100d0b;
+    color:#f0c08e;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:14px;
+    padding:0;
+}
+.phoenix-journal-check.is-done{
+    background:#6e3515;
+    border-color:#b96827;
+}
+.phoenix-journal-item-main{min-width:0;flex:1;}
+.phoenix-journal-item-title{
+    color:#e1cbb7;
+    font-size:16px;
+    line-height:1.35;
+}
+.phoenix-journal-item-title.is-done{
+    color:#74665d;
+    text-decoration:line-through;
+}
+.phoenix-journal-meta{
+    margin-top:5px;
+    color:#75675d;
+    font-size:12px;
+}
+.phoenix-journal-goal{
+    margin-top:6px;
+    color:#9a795f;
+    font-size:12px;
+}
+.phoenix-journal-empty{
+    padding:22px 18px;
+    color:#665c56;
+    font-size:13px;
+}
+.phoenix-journal-progress{
+    display:inline-flex;
+    gap:6px;
+    align-items:center;
+    color:#8b715e;
+}
+@media(max-width:760px){
+    .phoenix-journal-screen{padding:22px 16px;}
+    .phoenix-journal-header h2{font-size:42px;}
+    .phoenix-journal-weekbar{grid-template-columns:30px repeat(7,1fr) 30px;gap:4px;}
+    .phoenix-journal-day{padding:8px 2px;}
+    .phoenix-journal-grid{grid-template-columns:1fr;}
+    .phoenix-journal-block.full{grid-column:auto;}
+}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -2144,9 +2341,9 @@
                     <option value="if_time">Если есть время</option>
                 </select>
 
-                <label class="phoenix-task-field-label">Дедлайн</label>
+                <label class="phoenix-task-field-label">Дата задачи</label>
                 <input id="taskDueDate" type="date">
-                <div class="phoenix-task-date-note">Срок можно оставить пустым, если задача без жёсткого дедлайна.</div>
+                <div class="phoenix-task-date-note">Это день, на который задача запланирована. Дату можно оставить пустой.</div>
 
                 <div class="phoenix-goal-relations-editor">
                     <h4>СВЯЗАННЫЕ ЦЕЛИ</h4>
@@ -2316,7 +2513,7 @@
             <div class="phoenix-goal-detail-grid">
                 <div class="phoenix-goal-detail-item"><small>Статус</small><strong>${escapeHtml(getTaskStatusLabel(task.status))}</strong></div>
                 <div class="phoenix-goal-detail-item"><small>Приоритет</small><strong>${escapeHtml(getTaskPriorityLabel(task.priority))}</strong></div>
-                <div class="phoenix-goal-detail-item"><small>Дедлайн</small><strong>${escapeHtml(formatTaskDate(task.due_date) || 'Не указан')}</strong></div>
+                <div class="phoenix-goal-detail-item"><small>Дата задачи</small><strong>${escapeHtml(formatTaskDate(task.due_date) || 'Не указана')}</strong></div>
                 <div class="phoenix-goal-detail-item"><small>Создана</small><strong>${escapeHtml(formatTaskDate(String(task.created_at || '').slice(0,10)) || 'Не указано')}</strong></div>
             </div>
 
@@ -2542,7 +2739,7 @@
                         <div class="phoenix-task-card-main">
                             <span class="phoenix-task-card-title ${completed ? 'is-completed' : ''}">${escapeHtml(task.title || 'Без названия')}</span>
                             <span class="phoenix-task-card-meta">
-                                ${task.due_date ? `до ${escapeHtml(formatTaskDate(task.due_date))}` : 'без дедлайна'}
+                                ${task.due_date ? `дата ${escapeHtml(formatTaskDate(task.due_date))}` : 'без даты'}
                                 <span>${escapeHtml(getTaskPriorityLabel(task.priority))}</span>
                                 ${taskGoals.length ? `<span>🎯 ${taskGoals.length} ${taskGoals.length === 1 ? 'цель' : taskGoals.length < 5 ? 'цели' : 'целей'}</span>` : ''}
                             </span>
@@ -3649,815 +3846,514 @@
         }
     });
 </script>
-<section id="todaySection" style="
-    max-width: 900px;
-    margin: 30px auto;
-    padding: 24px;
-    background: #1b1b1b;
-    border: 1px solid #292929;
-    border-radius: 14px;
-">
-
-    <h2>🔥 Сегодня</h2>
-
-    <div id="todayContent">
-        Загрузка...
+<section id="todaySection" class="phoenix-journal-screen">
+    <div class="phoenix-journal-header">
+        <div>
+            <div class="phoenix-kicker">PHOENIX / ЖИЗНЬ</div>
+            <h2>ЕЖЕДНЕВНИК</h2>
+            <p>Один экран — всё, что нужно сделать в выбранный день.</p>
+        </div>
     </div>
 
+    <div class="phoenix-journal-weekbar">
+        <button type="button" class="phoenix-journal-weeknav" id="journalPrevWeek">‹</button>
+        <div id="journalWeekDays"></div>
+        <button type="button" class="phoenix-journal-weeknav" id="journalNextWeek">›</button>
+    </div>
+
+    <div id="journalContent">Загрузка...</div>
 </section>
 
-
 <script>
-async function showWhy(type, itemId, button) {
+let phoenixJournalSelectedDate = null;
 
-    const table =
-        type === 'task'
-            ? 'task_goal_links'
-            : 'routine_goal_links';
+const phoenixJournalDayNames = ['ПН','ВТ','СР','ЧТ','ПТ','СБ','ВС'];
+const phoenixJournalMonthNames = [
+    'января','февраля','марта','апреля','мая','июня',
+    'июля','августа','сентября','октября','ноября','декабря'
+];
 
-    const itemField =
-        type === 'task'
-            ? 'task_id'
-            : 'routine_id';
+function phoenixJournalPad(value){
+    return String(value).padStart(2,'0');
+}
 
+function phoenixJournalDateToString(date){
+    return `${date.getFullYear()}-${phoenixJournalPad(date.getMonth()+1)}-${phoenixJournalPad(date.getDate())}`;
+}
 
-    const { data: directLinks, error: directError } =
-        await supabaseClient
-            .from(table)
-            .select('goal_id')
-            .eq(itemField, itemId);
+function phoenixJournalStringToDate(value){
+    const [y,m,d] = value.split('-').map(Number);
+    return new Date(y,m-1,d);
+}
 
+function phoenixJournalStartOfWeek(date){
+    const result = new Date(date);
+    const day = result.getDay();
+    const mondayOffset = day === 0 ? -6 : 1 - day;
+    result.setDate(result.getDate() + mondayOffset);
+    result.setHours(0,0,0,0);
+    return result;
+}
 
-    if (directError) {
-        alert(
-            'Ошибка загрузки связи с целью: ' +
-            directError.message
-        );
-        return;
-    }
+function phoenixJournalTodayString(){
+    return phoenixJournalDateToString(new Date());
+}
 
+function phoenixJournalSelectedDateValue(){
+    return phoenixJournalSelectedDate || localStorage.getItem('phoenixJournalSelectedDate') || phoenixJournalTodayString();
+}
 
-    if (!directLinks || directLinks.length === 0) {
-        button.parentElement.insertAdjacentHTML(
-            'afterend',
-            `
-                <div style="
-                    margin-top: 8px;
-                    color: #777;
-                    font-size: 14px;
-                ">
-                    У этого действия пока нет связанной цели.
-                </div>
-            `
-        );
+function phoenixJournalSetSelectedDate(value){
+    phoenixJournalSelectedDate = value;
+    localStorage.setItem('phoenixJournalSelectedDate', value);
+    renderPhoenixJournalWeek();
+    loadToday(value);
+}
 
-        button.style.display = 'none';
-        return;
-    }
+function renderPhoenixJournalWeek(){
+    const holder = document.getElementById('journalWeekDays');
+    if (!holder) return;
 
+    const selected = phoenixJournalStringToDate(phoenixJournalSelectedDateValue());
+    const monday = phoenixJournalStartOfWeek(selected);
+    const today = phoenixJournalTodayString();
 
-    const { data: allGoals, error: goalsError } =
-        await supabaseClient
-            .from('goals')
-            .select('id, title, period');
+    holder.style.display = 'grid';
+    holder.style.gridTemplateColumns = 'repeat(7, minmax(0,1fr))';
+    holder.style.gap = '8px';
 
+    holder.innerHTML = '';
 
-    if (goalsError) {
-        alert(
-            'Ошибка загрузки целей: ' +
-            goalsError.message
-        );
-        return;
-    }
+    for(let i=0;i<7;i++){
+        const date = new Date(monday);
+        date.setDate(monday.getDate()+i);
+        const value = phoenixJournalDateToString(date);
 
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'phoenix-journal-day'
+            + (value === phoenixJournalSelectedDateValue() ? ' is-selected' : '')
+            + (value === today ? ' is-today' : '');
 
-    const { data: goalLinks, error: linksError } =
-        await supabaseClient
-            .from('goal_links')
-            .select('parent_goal_id, child_goal_id');
-
-
-    if (linksError) {
-        alert(
-            'Ошибка загрузки связей целей: ' +
-            linksError.message
-        );
-        return;
-    }
-
-
-    const goalsMap = new Map(
-        (allGoals || []).map(goal => [
-            goal.id,
-            goal
-        ])
-    );
-
-
-    const parentsMap = new Map();
-
-
-    (goalLinks || []).forEach(link => {
-
-        if (!parentsMap.has(link.child_goal_id)) {
-            parentsMap.set(
-                link.child_goal_id,
-                []
-            );
-        }
-
-        parentsMap.get(
-            link.child_goal_id
-        ).push(link.parent_goal_id);
-    });
-
-
-    const chain = [];
-    const visited = new Set();
-
-
-    function addGoalChain(goalId) {
-
-        if (visited.has(goalId)) {
-            return;
-        }
-
-        visited.add(goalId);
-
-
-        const goal = goalsMap.get(goalId);
-
-        if (!goal) {
-            return;
-        }
-
-
-        chain.push(goal);
-
-
-        const parents =
-            parentsMap.get(goalId) || [];
-
-
-        parents.forEach(parentId => {
-            addGoalChain(parentId);
-        });
-    }
-
-
-    directLinks.forEach(link => {
-        addGoalChain(link.goal_id);
-    });
-
-
-    const chainHtml = chain.length > 0
-        ? `
-            <div style="
-                margin-top: 8px;
-                padding: 10px;
-                background: #151515;
-                border-radius: 8px;
-                color: #aaa;
-                font-size: 14px;
-            ">
-
-                <div style="
-                    color: #ddd;
-                    margin-bottom: 6px;
-                ">
-                    🎯 Связь с целями
-                </div>
-
-                ${chain.map((goal, index) => `
-                    <div style="
-                        margin-top: 4px;
-                    ">
-                        ${index > 0 ? '↑ ' : '→ '}
-                        ${goal.title || 'Без названия'}
-                        <span style="color:#777;">
-                            (${getGoalPeriodLabel(goal.period)})
-                        </span>
-                    </div>
-                `).join('')}
-
-            </div>
-        `
-        : `
-            <div style="
-                margin-top: 8px;
-                color: #777;
-                font-size: 14px;
-            ">
-                Связанные цели не найдены.
-            </div>
+        button.innerHTML = `
+            <span class="phoenix-journal-day-name">${phoenixJournalDayNames[i]}</span>
+            <span class="phoenix-journal-day-number">${date.getDate()}</span>
         `;
 
-
-    button.parentElement.insertAdjacentHTML(
-        'afterend',
-        chainHtml
-    );
-
-    button.style.display = 'none';
+        button.addEventListener('click', () => phoenixJournalSetSelectedDate(value));
+        holder.appendChild(button);
+    }
 }
-async function loadToday() {
 
-    const todayContent =
-        document.getElementById('todayContent');
+function phoenixJournalMoveWeek(delta){
+    const current = phoenixJournalStringToDate(phoenixJournalSelectedDateValue());
+    current.setDate(current.getDate() + delta * 7);
+    phoenixJournalSetSelectedDate(phoenixJournalDateToString(current));
+}
 
-    const now = new Date();
+function phoenixJournalGoalHtml(goals){
+    if(!goals || !goals.length) return '';
+    return `
+        <div class="phoenix-journal-goal">
+            🎯 ${goals.map(goal => escapeHtml(goal.title || 'Без названия')).join(' · ')}
+        </div>
+    `;
+}
 
-    const today =
-        `${now.getFullYear()}-` +
-        `${String(now.getMonth() + 1).padStart(2, '0')}-` +
-        `${String(now.getDate()).padStart(2, '0')}`;
+async function phoenixJournalToggleTask(taskId){
+    const task = allPhoenixTasks.find(item => Number(item.id) === Number(taskId));
+    if(!task) return;
 
+    if(task.status === 'completed'){
+        await reopenTask(taskId);
+    }else{
+        await completeTask(taskId);
+    }
 
-    /*
-     * =========================
-     * ЗАДАЧИ НА СЕГОДНЯ
-     * =========================
-     */
+    await loadToday(phoenixJournalSelectedDateValue());
+}
 
-    const { data: tasks, error: tasksError } =
-        await supabaseClient
-            .from('tasks')
-            .select('*')
-            .eq('status', 'open')
-            .eq('due_date', today)
-            .order('priority', { ascending: false });
+async function phoenixJournalToggleGoal(goalId, status){
+    const nextStatus = status === 'completed' ? 'active' : 'completed';
 
+    const { error } = await supabaseClient
+        .from('goals')
+        .update({
+            status: nextStatus,
+            ...(nextStatus === 'completed' ? {} : {})
+        })
+        .eq('id', goalId);
 
-    if (tasksError) {
-        todayContent.textContent =
-            'Ошибка загрузки задач: ' +
-            tasksError.message;
+    if(error){
+        alert('Ошибка изменения цели: ' + error.message);
         return;
     }
 
+    await loadGoals();
+    await loadToday(phoenixJournalSelectedDateValue());
+}
 
-    /*
-     * =========================
-     * РУТИНЫ
-     * =========================
-     */
+async function completeRoutineForJournalDate(routineId, dateValue){
+    const { data: existing, error: existingError } = await supabaseClient
+        .from('routine_completions')
+        .select('id, status')
+        .eq('routine_id', routineId)
+        .eq('completion_date', dateValue)
+        .maybeSingle();
 
-    const { data: routines, error: routinesError } =
-        await supabaseClient
+    if(existingError){
+        alert('Ошибка проверки выполнения рутины: ' + existingError.message);
+        return;
+    }
+
+    if(existing){
+        const { error } = await supabaseClient
+            .from('routine_completions')
+            .delete()
+            .eq('id', existing.id);
+
+        if(error){
+            alert('Ошибка отмены выполнения рутины: ' + error.message);
+            return;
+        }
+    }else{
+        const { error } = await supabaseClient
+            .from('routine_completions')
+            .insert({
+                routine_id: routineId,
+                completion_date: dateValue,
+                status: 'completed',
+                completed_at: new Date().toISOString()
+            });
+
+        if(error){
+            alert('Ошибка выполнения рутины: ' + error.message);
+            return;
+        }
+    }
+
+    await loadRoutines();
+    await loadToday(dateValue);
+}
+
+async function loadToday(selectedDateValue){
+    const journalContent = document.getElementById('journalContent');
+    if(!journalContent) return;
+
+    const selectedValue = selectedDateValue || phoenixJournalSelectedDateValue();
+    phoenixJournalSelectedDate = selectedValue;
+    localStorage.setItem('phoenixJournalSelectedDate', selectedValue);
+    renderPhoenixJournalWeek();
+
+    const selectedDate = phoenixJournalStringToDate(selectedValue);
+    const todayValue = phoenixJournalTodayString();
+
+    journalContent.innerHTML = '<div class="phoenix-journal-empty">Загрузка дня...</div>';
+
+    const [
+        tasksResult,
+        routinesResult,
+        goalsResult
+    ] = await Promise.all([
+        supabaseClient
+            .from('tasks')
+            .select('*')
+            .eq('due_date', selectedValue)
+            .order('priority', { ascending:false })
+            .order('created_at', { ascending:true }),
+
+        supabaseClient
             .from('routines')
             .select('*')
             .eq('is_active', true)
-            .order('created_at', { ascending: false });
+            .order('created_at', { ascending:false }),
 
+        supabaseClient
+            .from('goals')
+            .select('id,title,period,status,start_date,due_date')
+            .eq('period','day')
+            .lte('start_date', selectedValue)
+            .gte('due_date', selectedValue)
+            .order('created_at', { ascending:false })
+    ]);
 
-    if (routinesError) {
-        todayContent.textContent =
-            'Ошибка загрузки рутин: ' +
-            routinesError.message;
+    if(tasksResult.error){
+        journalContent.innerHTML = `<div class="phoenix-journal-empty">Ошибка загрузки задач: ${escapeHtml(tasksResult.error.message)}</div>`;
+        return;
+    }
+    if(routinesResult.error){
+        journalContent.innerHTML = `<div class="phoenix-journal-empty">Ошибка загрузки рутин: ${escapeHtml(routinesResult.error.message)}</div>`;
+        return;
+    }
+    if(goalsResult.error){
+        journalContent.innerHTML = `<div class="phoenix-journal-empty">Ошибка загрузки целей: ${escapeHtml(goalsResult.error.message)}</div>`;
         return;
     }
 
+    const tasks = tasksResult.data || [];
+    const routines = routinesResult.data || [];
+    const dayGoals = goalsResult.data || [];
 
-    const routineIds =
-        (routines || []).map(routine => routine.id);
-
+    const routineIds = routines.map(item => item.id);
 
     let completions = [];
+    if(routineIds.length){
+        const completionResult = await supabaseClient
+            .from('routine_completions')
+            .select('routine_id,completion_date,status')
+            .in('routine_id', routineIds);
 
-
-    if (routineIds.length > 0) {
-
-        const { data, error } =
-            await supabaseClient
-                .from('routine_completions')
-                .select(
-                    'routine_id, completion_date, status'
-                )
-                .in('routine_id', routineIds);
-
-
-        if (error) {
-            todayContent.textContent =
-                'Ошибка загрузки выполнений рутин: ' +
-                error.message;
+        if(completionResult.error){
+            journalContent.innerHTML = `<div class="phoenix-journal-empty">Ошибка загрузки выполнений рутин: ${escapeHtml(completionResult.error.message)}</div>`;
             return;
         }
-
-        completions = data || [];
+        completions = completionResult.data || [];
     }
 
-
-    /*
-     * =========================
-     * СВЯЗИ РУТИН С ЦЕЛЯМИ
-     * =========================
-     */
-
-    let routineLinks = [];
-
-
-    if (routineIds.length > 0) {
-
-        const { data, error } =
-            await supabaseClient
-                .from('routine_goal_links')
-                .select('routine_id, goal_id')
-                .in('routine_id', routineIds);
-
-
-        if (error) {
-            todayContent.textContent =
-                'Ошибка загрузки связей рутин: ' +
-                error.message;
-            return;
-        }
-
-        routineLinks = data || [];
-    }
-
-
-    /*
-     * =========================
-     * СВЯЗИ ЗАДАЧ С ЦЕЛЯМИ
-     * =========================
-     */
-
+    const taskIds = tasks.map(item => item.id);
     let taskLinks = [];
-
-    const taskIds =
-        (tasks || []).map(task => task.id);
-
-
-    if (taskIds.length > 0) {
-
-        const { data, error } =
-            await supabaseClient
-                .from('task_goal_links')
-                .select('task_id, goal_id')
-                .in('task_id', taskIds);
-
-
-        if (error) {
-            todayContent.textContent =
-                'Ошибка загрузки связей задач: ' +
-                error.message;
+    if(taskIds.length){
+        const result = await supabaseClient
+            .from('task_goal_links')
+            .select('task_id,goal_id')
+            .in('task_id', taskIds);
+        if(result.error){
+            journalContent.innerHTML = `<div class="phoenix-journal-empty">Ошибка загрузки связей задач: ${escapeHtml(result.error.message)}</div>`;
             return;
         }
-
-        taskLinks = data || [];
+        taskLinks = result.data || [];
     }
 
-
-    /*
-     * =========================
-     * ВСЕ НУЖНЫЕ ЦЕЛИ
-     * =========================
-     */
+    if(routineIds.length){
+        const result = await supabaseClient
+            .from('routine_goal_links')
+            .select('routine_id,goal_id')
+            .in('routine_id', routineIds);
+        if(result.error){
+            journalContent.innerHTML = `<div class="phoenix-journal-empty">Ошибка загрузки связей рутин: ${escapeHtml(result.error.message)}</div>`;
+            return;
+        }
+        window.phoenixJournalRoutineLinks = result.data || [];
+    }else{
+        window.phoenixJournalRoutineLinks = [];
+    }
 
     const goalIds = [
         ...new Set([
-            ...routineLinks.map(link => link.goal_id),
-            ...taskLinks.map(link => link.goal_id)
+            ...taskLinks.map(link => link.goal_id),
+            ...window.phoenixJournalRoutineLinks.map(link => link.goal_id)
         ])
     ];
 
-
-    let goals = [];
-
-
-    if (goalIds.length > 0) {
-
-        const { data, error } =
-            await supabaseClient
-                .from('goals')
-                .select('id, title, period')
-                .in('id', goalIds);
-
-
-        if (error) {
-            todayContent.textContent =
-                'Ошибка загрузки целей: ' +
-                error.message;
+    let linkedGoals = [];
+    if(goalIds.length){
+        const result = await supabaseClient
+            .from('goals')
+            .select('id,title,period,status')
+            .in('id', goalIds);
+        if(result.error){
+            journalContent.innerHTML = `<div class="phoenix-journal-empty">Ошибка загрузки связанных целей: ${escapeHtml(result.error.message)}</div>`;
             return;
         }
-
-        goals = data || [];
+        linkedGoals = result.data || [];
     }
 
+    const goalMap = new Map(linkedGoals.map(goal => [Number(goal.id), goal]));
 
-    /*
-     * =========================
-     * ЗАДАЧИ
-     * =========================
-     */
+    const taskHtml = tasks.length
+        ? tasks.map(task => {
+            const goals = taskLinks
+                .filter(link => Number(link.task_id) === Number(task.id))
+                .map(link => goalMap.get(Number(link.goal_id)))
+                .filter(Boolean);
 
-    let tasksHtml = '';
-
-
-    if (!tasks || tasks.length === 0) {
-
-        tasksHtml = `
-            <div style="color:#777;">
-                На сегодня задач с дедлайном нет.
-            </div>
-        `;
-
-    } else {
-
-        tasksHtml = tasks.map(task => {
-
-            const linkedGoalIds =
-                taskLinks
-                    .filter(link =>
-                        link.task_id === task.id
-                    )
-                    .map(link => link.goal_id);
-
-
-            const linkedGoals =
-                goals.filter(goal =>
-                    linkedGoalIds.includes(goal.id)
-                );
-
-
-            const goalHtml =
-                linkedGoals.length > 0
-                    ? `
-                        <div style="
-                            margin-top: 6px;
-                            color: #888;
-                            font-size: 14px;
-                        ">
-                            🎯
-                            ${linkedGoals.map(goal =>
-                                `→ ${goal.title}`
-                            ).join(', ')}
-                        </div>
-                    `
-                    : '';
-const whyButton = `
-    <div style="margin-top: 8px;">
-        <button
-            type="button"
-            onclick="showWhy('task', ${task.id}, this)"
-            style="
-                padding: 6px 10px;
-                background: #333;
-                color: white;
-                border: 0;
-                border-radius: 7px;
-                cursor: pointer;
-            "
-        >
-            🎯 Почему?
-        </button>
-    </div>
-`;
+            const done = task.status === 'completed';
 
             return `
-                <div style="
-                    padding: 12px 0;
-                    border-bottom: 1px solid #292929;
-                ">
+                <div class="phoenix-journal-item">
+                    <button
+                        type="button"
+                        class="phoenix-journal-check ${done ? 'is-done' : ''}"
+                        onclick="phoenixJournalToggleTask(${task.id})"
+                        title="${done ? 'Вернуть задачу в открытые' : 'Выполнить задачу'}"
+                    >${done ? '✓' : ''}</button>
 
-                    <div>
-                        ☐
-                        <strong>
-                            ${task.title || 'Без названия'}
-                        </strong>
+                    <div class="phoenix-journal-item-main">
+                        <div class="phoenix-journal-item-title ${done ? 'is-done' : ''}">
+                            ${escapeHtml(task.title || 'Без названия')}
+                        </div>
+                        <div class="phoenix-journal-meta">
+                            ${escapeHtml(getTaskPriorityLabel(task.priority))}
+                        </div>
+                        ${phoenixJournalGoalHtml(goals)}
                     </div>
-
-                    ${task.description
-                        ? `
-                            <div style="
-                                color:#888;
-                                margin-top:5px;
-                            ">
-                                ${task.description}
-                            </div>
-                        `
-                        : ''
-                    }
-
-                    ${goalHtml}
-${whyButton}
-                    <div style="
-                        margin-top: 8px;
-                    ">
-                        <button
-                            type="button"
-                            onclick="completeTask(${task.id}); loadToday();"
-                            style="
-                                padding: 6px 10px;
-                                background: #333;
-                                color: white;
-                                border: 0;
-                                border-radius: 7px;
-                                cursor: pointer;
-                            "
-                        >
-                            ☑ Выполнить
-                        </button>
-                    </div>
-
                 </div>
             `;
+        }).join('')
+        : '<div class="phoenix-journal-empty">На этот день задач нет.</div>';
 
-        }).join('');
-    }
+    const routineHtmlParts = [];
 
+    routines.forEach(routine => {
+        const routineCompletions = completions.filter(item =>
+            Number(item.routine_id) === Number(routine.id) &&
+            item.status === 'completed'
+        );
 
-    /*
-     * =========================
-     * РУТИНЫ НА СЕГОДНЯ
-     * =========================
-     */
+        const completedOnSelectedDate = routineCompletions.some(item =>
+            item.completion_date === selectedValue
+        );
 
-    const todayRoutines =
-        (routines || []).filter(routine => {
+        let periodStart = null;
+        let periodEnd = null;
 
-            const routineCompletions =
-                completions.filter(completion =>
-                    completion.routine_id === routine.id &&
-                    completion.status === 'completed'
-                );
+        if(routine.frequency === 'daily'){
+            periodStart = selectedDate;
+            periodEnd = selectedDate;
+        }else if(routine.frequency === 'weekly'){
+            periodStart = phoenixJournalStartOfWeek(selectedDate);
+            periodEnd = new Date(periodStart);
+            periodEnd.setDate(periodStart.getDate()+6);
+        }else if(routine.frequency === 'monthly'){
+            periodStart = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
+            periodEnd = new Date(selectedDate.getFullYear(), selectedDate.getMonth()+1, 0);
+        }
 
+        if(!periodStart) return;
 
-            const completedToday =
-                routineCompletions.some(completion =>
-                    completion.completion_date === today
-                );
+        const startValue = phoenixJournalDateToString(periodStart);
+        const endValue = phoenixJournalDateToString(periodEnd);
 
+        const completedThisPeriod = routineCompletions.filter(item =>
+            item.completion_date >= startValue &&
+            item.completion_date <= endValue
+        ).length;
 
-            /*
-             * Если сегодня уже выполнена —
-             * в «Сегодня» её больше не показываем.
-             */
+        const target = routine.times_per_period ? Number(routine.times_per_period) : 1;
 
-            if (completedToday) {
-                return false;
-            }
+        // Daily routine is due every day. Weekly/monthly routine stays visible
+        // until its target is reached, and remains visible on its completed date.
+        const shouldShow =
+            routine.frequency === 'daily'
+                ? true
+                : completedThisPeriod < target || completedOnSelectedDate;
 
+        if(!shouldShow) return;
 
-            /*
-             * Для ежедневной рутины
-             * достаточно того, что сегодня она не выполнена.
-             */
+        const linkedRoutineGoals = (window.phoenixJournalRoutineLinks || [])
+            .filter(link => Number(link.routine_id) === Number(routine.id))
+            .map(link => goalMap.get(Number(link.goal_id)))
+            .filter(Boolean);
 
-            if (routine.frequency === 'daily') {
-                return true;
-            }
+        const progressText = routine.frequency === 'daily'
+            ? 'каждый день'
+            : `${completedThisPeriod} / ${target} за период`;
 
+        routineHtmlParts.push(`
+            <div class="phoenix-journal-item">
+                <button
+                    type="button"
+                    class="phoenix-journal-check ${completedOnSelectedDate ? 'is-done' : ''}"
+                    onclick="completeRoutineForJournalDate(${routine.id}, '${selectedValue}')"
+                    title="${completedOnSelectedDate ? 'Снять выполнение за этот день' : 'Выполнить за этот день'}"
+                >${completedOnSelectedDate ? '✓' : ''}</button>
 
-            /*
-             * Определяем начало текущего периода.
-             */
-
-            let periodStart;
-
-
-            if (routine.frequency === 'weekly') {
-
-                const dayOfWeek = now.getDay();
-
-                const daysFromMonday =
-                    dayOfWeek === 0
-                        ? 6
-                        : dayOfWeek - 1;
-
-                periodStart = new Date(now);
-
-                periodStart.setDate(
-                    now.getDate() - daysFromMonday
-                );
-
-            } else if (
-                routine.frequency === 'monthly'
-            ) {
-
-                periodStart = new Date(
-                    now.getFullYear(),
-                    now.getMonth(),
-                    1
-                );
-
-            } else {
-
-                return false;
-            }
-
-
-            const periodStartString =
-                `${periodStart.getFullYear()}-` +
-                `${String(
-                    periodStart.getMonth() + 1
-                ).padStart(2, '0')}-` +
-                `${String(
-                    periodStart.getDate()
-                ).padStart(2, '0')}`;
-
-
-            const completedThisPeriod =
-                routineCompletions.filter(completion =>
-                    completion.completion_date >=
-                    periodStartString &&
-                    completion.completion_date <=
-                    today
-                ).length;
-
-
-            const target =
-                routine.times_per_period
-                    ? Number(
-                        routine.times_per_period
-                    )
-                    : 1;
-
-
-            return completedThisPeriod < target;
-        });
-
-
-    let routinesHtml = '';
-
-
-    if (todayRoutines.length === 0) {
-
-        routinesHtml = `
-            <div style="color:#777;">
-                Все необходимые рутины на сегодня выполнены.
-            </div>
-        `;
-
-    } else {
-
-        routinesHtml =
-            todayRoutines.map(routine => {
-
-                const linkedGoalIds =
-                    routineLinks
-                        .filter(link =>
-                            link.routine_id === routine.id
-                        )
-                        .map(link => link.goal_id);
-
-
-                const linkedGoals =
-                    goals.filter(goal =>
-                        linkedGoalIds.includes(goal.id)
-                    );
-
-
-                const goalHtml =
-                    linkedGoals.length > 0
-                        ? `
-                            <div style="
-                                margin-top: 6px;
-                                color: #888;
-                                font-size: 14px;
-                            ">
-                                🎯
-                                ${linkedGoals.map(goal =>
-                                    `→ ${goal.title}`
-                                ).join(', ')}
-                            </div>
-                        `
-                        : '';
-
-const whyButton = `
-    <div style="margin-top: 8px;">
-        <button
-            type="button"
-            onclick="showWhy('routine', ${routine.id}, this)"
-            style="
-                padding: 6px 10px;
-                background: #333;
-                color: white;
-                border: 0;
-                border-radius: 7px;
-                cursor: pointer;
-            "
-        >
-            🎯 Почему?
-        </button>
-    </div>
-`;
-                return `
-                    <div style="
-                        padding: 12px 0;
-                        border-bottom: 1px solid #292929;
-                    ">
-
-                        <div>
-                            ☐
-                            <strong>
-                                ${routine.title}
-                            </strong>
-                        </div>
-
-                        <div style="
-                            color:#888;
-                            margin-top:5px;
-                        ">
-                            ${getRoutineFrequencyLabel(
-                                routine.frequency
-                            )}
-                            ·
-                            ${routine.times_per_period || 1}
-                            раз за период
-                        </div>
-
-                        ${routine.time_of_day
-                            ? `
-                                <div style="
-                                    color:#888;
-                                ">
-                                    ${routine.time_of_day}
-                                </div>
-                            `
-                            : ''
-                        }
-
-                        ${routine.duration_minutes
-                            ? `
-                                <div style="
-                                    color:#888;
-                                ">
-                                    ${routine.duration_minutes}
-                                    мин.
-                                </div>
-                            `
-                            : ''
-                        }
-
-                        ${goalHtml}
-${whyButton}
-                        <div style="
-                            margin-top: 8px;
-                        ">
-                            <button
-                                type="button"
-                                onclick="completeRoutineToday(${routine.id}); loadToday();"
-                                style="
-                                    padding: 6px 10px;
-                                    background: #333;
-                                    color: white;
-                                    border: 0;
-                                    border-radius: 7px;
-                                    cursor: pointer;
-                                "
-                            >
-                                ☑ Выполнить сегодня
-                            </button>
-                        </div>
-
+                <div class="phoenix-journal-item-main">
+                    <div class="phoenix-journal-item-title ${completedOnSelectedDate ? 'is-done' : ''}">
+                        ${escapeHtml(routine.title || 'Без названия')}
                     </div>
-                `;
+                    <div class="phoenix-journal-meta">
+                        ${escapeHtml(getRoutineFrequencyLabel(routine.frequency))}
+                        · ${escapeHtml(progressText)}
+                        ${routine.time_of_day ? ' · ' + escapeHtml(routine.time_of_day) : ''}
+                        ${routine.duration_minutes ? ' · ' + Number(routine.duration_minutes) + ' мин.' : ''}
+                    </div>
+                    ${phoenixJournalGoalHtml(linkedRoutineGoals)}
+                </div>
+            </div>
+        `);
+    });
 
-            }).join('');
-    }
+    const routineHtml = routineHtmlParts.length
+        ? routineHtmlParts.join('')
+        : '<div class="phoenix-journal-empty">На этот день активных невыполненных рутин нет.</div>';
 
+    const goalHtml = dayGoals.length
+        ? dayGoals.map(goal => {
+            const done = goal.status === 'completed';
+            return `
+                <div class="phoenix-journal-item">
+                    <button
+                        type="button"
+                        class="phoenix-journal-check ${done ? 'is-done' : ''}"
+                        onclick="phoenixJournalToggleGoal(${goal.id}, '${escapeHtml(goal.status || 'active')}')"
+                        title="${done ? 'Вернуть цель в активные' : 'Закрыть дневную цель'}"
+                    >${done ? '✓' : ''}</button>
+                    <div class="phoenix-journal-item-main">
+                        <div class="phoenix-journal-item-title ${done ? 'is-done' : ''}">
+                            ${escapeHtml(goal.title || 'Без названия')}
+                        </div>
+                        <div class="phoenix-journal-meta">Дневная цель</div>
+                    </div>
+                </div>
+            `;
+        }).join('')
+        : '<div class="phoenix-journal-empty">На этот день дневных целей нет.</div>';
 
-    /*
-     * =========================
-     * ИТОГОВЫЙ ЭКРАН
-     * =========================
-     */
+    const selectedDateObject = phoenixJournalStringToDate(selectedValue);
+    const isToday = selectedValue === todayValue;
+    const dateLabel = `${selectedDateObject.getDate()} ${phoenixJournalMonthNames[selectedDateObject.getMonth()]} ${selectedDateObject.getFullYear()}`;
 
-    todayContent.innerHTML = `
+    const taskDoneCount = tasks.filter(item => item.status === 'completed').length;
+    const routineShownCount = routineHtmlParts.length;
+    const routineDoneCount = routineHtmlParts.filter((_, index) => {
+        // Recompute from the generated HTML is unnecessary; show count separately below.
+        return false;
+    }).length;
 
-        <div style="
-            margin-bottom: 28px;
-        ">
-
-            <h3 style="
-                margin-bottom: 8px;
-            ">
-                📋 Задачи
-            </h3>
-
-            ${tasksHtml}
-
+    journalContent.innerHTML = `
+        <div class="phoenix-journal-date-title">
+            <strong>${isToday ? 'Сегодня' : dateLabel}</strong>
+            <span>${dateLabel} · ${taskDoneCount}/${tasks.length} задач завершено</span>
         </div>
 
+        <div class="phoenix-journal-grid">
+            <div class="phoenix-journal-block">
+                <div class="phoenix-journal-block-head">
+                    <h3>Задачи</h3>
+                    <span class="phoenix-journal-count">${taskDoneCount} / ${tasks.length}</span>
+                </div>
+                <div class="phoenix-journal-items">${taskHtml}</div>
+            </div>
 
-        <div>
+            <div class="phoenix-journal-block">
+                <div class="phoenix-journal-block-head">
+                    <h3>Рутины</h3>
+                    <span class="phoenix-journal-count">${routineShownCount}</span>
+                </div>
+                <div class="phoenix-journal-items">${routineHtml}</div>
+            </div>
 
-            <h3 style="
-                margin-bottom: 8px;
-            ">
-                🔁 Рутины
-            </h3>
-
-            ${routinesHtml}
-
+            <div class="phoenix-journal-block full">
+                <div class="phoenix-journal-block-head">
+                    <h3>Цели дня</h3>
+                    <span class="phoenix-journal-count">${dayGoals.filter(item => item.status === 'completed').length} / ${dayGoals.length}</span>
+                </div>
+                <div class="phoenix-journal-items">${goalHtml}</div>
+            </div>
         </div>
-
     `;
 }
+
+document.getElementById('journalPrevWeek')?.addEventListener('click', () => phoenixJournalMoveWeek(-1));
+document.getElementById('journalNextWeek')?.addEventListener('click', () => phoenixJournalMoveWeek(1));
+
 supabaseClient.auth.getSession().then(({ data }) => {
-    if (data.session) {
-        loadToday();
+    if(data.session){
+        const initial = phoenixJournalSelectedDateValue();
+        phoenixJournalSelectedDate = initial;
+        renderPhoenixJournalWeek();
+        loadToday(initial);
     }
 });
 </script>
@@ -4466,5 +4362,8 @@ supabaseClient.auth.getSession().then(({ data }) => {
         setTimeout(restorePhoenixRoute, 0);
     });
 </script>
+</body>
+</html>
+
 </body>
 </html>
