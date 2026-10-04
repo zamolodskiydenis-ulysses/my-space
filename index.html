@@ -1179,12 +1179,71 @@
 }
 .phoenix-journal-option:last-child{border-bottom:0;}
 .phoenix-journal-modal-note{color:#71645b;font-size:12px;}
+.phoenix-journal-columns{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:28px;
+    margin-top:4px;
+}
+.phoenix-journal-column{
+    min-width:0;
+}
+.phoenix-journal-column-title{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 0 10px;
+    border-bottom:1px solid #2b211c;
+}
+.phoenix-journal-column-title h3{
+    margin:0;
+    font-size:12px;
+    letter-spacing:.15em;
+    color:#9d7b61;
+}
+.phoenix-journal-period{
+    margin-top:15px;
+}
+.phoenix-journal-period-title{
+    padding:7px 0;
+    color:#705b4d;
+    font-size:11px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    border-bottom:1px solid #1c1714;
+}
+.phoenix-journal-item-main{
+    flex:1;
+    min-width:0;
+}
+.phoenix-journal-item-actions{
+    margin-left:auto;
+    display:flex;
+    align-items:center;
+    gap:6px;
+}
+.phoenix-journal-remove{
+    border:0;
+    background:transparent;
+    color:#5e5047;
+    cursor:pointer;
+    font-size:18px;
+    line-height:1;
+    padding:3px 5px;
+}
+.phoenix-journal-remove:hover{color:#a56a3d;}
+.phoenix-journal-frequency{
+    color:#665b54;
+    font-size:11px;
+    margin-top:3px;
+}
 @media(max-width:760px){
     .phoenix-journal-screen{padding:20px 14px;}
     .phoenix-journal-header h2{font-size:42px;}
     .phoenix-journal-calendar-day{min-height:55px;padding:7px;}
     .phoenix-journal-controls{flex-wrap:wrap;}
     .phoenix-journal-date-title{align-items:flex-start;gap:10px;flex-direction:column;}
+    .phoenix-journal-columns{grid-template-columns:1fr;}
 }
 
 </style>
@@ -3154,10 +3213,14 @@
                        placeholder="Например: 3">
 
                 <label class="phoenix-routine-field-label">
-                    Время / период дня
+                    Период дня
                 </label>
-                <input id="routineTimeOfDay" type="text"
-                       placeholder="Например: утром">
+                <select id="routineTimeOfDay">
+                    <option value="">Выберите период дня</option>
+                    <option value="morning">Утро</option>
+                    <option value="day">День</option>
+                    <option value="evening">Вечер</option>
+                </select>
 
                 <label class="phoenix-routine-field-label">
                     Продолжительность, минут
@@ -3376,6 +3439,15 @@
         }
     }
 
+    function getRoutineTimeOfDayLabel(value) {
+        const labels = { morning: 'Утро', day: 'День', evening: 'Вечер' };
+        return labels[value] || value || 'Не указано';
+    }
+
+    function getRoutineTimeOfDayOrder(value) {
+        return ({ morning: 1, day: 2, evening: 3 })[value] || 4;
+    }
+
     async function loadRoutines() {
         const list = document.getElementById('routinesList');
         if (!list) return;
@@ -3493,7 +3565,7 @@
                     <div class="phoenix-routine-meta">
                         ${escapeHtml(getRoutineFrequencyLabel(routine.frequency))}
                         ${routine.frequency !== 'daily' ? ` · ${target} раз за период` : ''}
-                        ${routine.time_of_day ? ` · ${escapeHtml(routine.time_of_day)}` : ''}
+                        ${routine.time_of_day ? ` · ${escapeHtml(getRoutineTimeOfDayLabel(routine.time_of_day))}` : ''}
                         ${routine.duration_minutes ? ` · ${Number(routine.duration_minutes)} мин.` : ''}
                     </div>
 
@@ -3565,7 +3637,7 @@
         document.getElementById('routineDescription').value = routine.description || '';
         document.getElementById('routineFrequency').value = routine.frequency || '';
         document.getElementById('routineTimesPerPeriod').value = routine.times_per_period ?? '';
-        document.getElementById('routineTimeOfDay').value = routine.time_of_day || '';
+        document.getElementById('routineTimeOfDay').value = ['morning','day','evening'].includes(routine.time_of_day) ? routine.time_of_day : '';
         document.getElementById('routineDuration').value = routine.duration_minutes ?? '';
         document.getElementById('routineActive').checked = !!routine.is_active;
 
@@ -3648,7 +3720,7 @@
 
             <div class="phoenix-routine-detail-block">
                 <div class="phoenix-routine-detail-label">ВРЕМЯ</div>
-                <div class="phoenix-routine-detail-value">${escapeHtml(routine.time_of_day || 'Не указано')}</div>
+                <div class="phoenix-routine-detail-value">${escapeHtml(getRoutineTimeOfDayLabel(routine.time_of_day))}</div>
             </div>
 
             <div class="phoenix-routine-detail-block">
@@ -4039,7 +4111,6 @@ async function loadPhoenixJournalDay(){
     const routines=routinesRes.data||[];
     const dayGoals=goalsRes.data||[];
 
-    // Automatic daily routines + manually scheduled routines for this exact day.
     const routineIds=routines.map(r=>r.id);
     let completions=[];
     if(routineIds.length){
@@ -4054,65 +4125,65 @@ async function loadPhoenixJournalDay(){
         completions=res.data||[];
     }
 
-    const taskIds=tasks.map(t=>t.id);
-    let taskLinks=[];
-    if(taskIds.length){
-        const res=await supabaseClient.from('task_goal_links').select('task_id,goal_id').in('task_id',taskIds);
-        taskLinks=res.data||[];
-    }
+    const automaticDaily=routines.filter(r=>r.frequency==='daily');
+    const manuallyAdded=routines.filter(r=>{
+        if(r.frequency==='daily') return false;
+        const record=completions.find(c=>Number(c.routine_id)===Number(r.id));
+        return !!record;
+    });
 
-    const linkedGoalIds=[...new Set(taskLinks.map(x=>x.goal_id))];
-    let linkedGoals=[];
-    if(linkedGoalIds.length){
-        const res=await supabaseClient.from('goals').select('id,title,period').in('id',linkedGoalIds);
-        linkedGoals=res.data||[];
-    }
-    const goalMap=new Map(linkedGoals.map(g=>[Number(g.id),g]));
+    const groupRoutines=(items)=>{
+        const groups={morning:[],day:[],evening:[],other:[]};
+        items.forEach(r=>{
+            const key=['morning','day','evening'].includes(r.time_of_day)?r.time_of_day:'other';
+            groups[key].push(r);
+        });
+        Object.values(groups).forEach(arr=>arr.sort((a,b)=>(a.title||'').localeCompare(b.title||'','ru')));
+        return groups;
+    };
+
+    const renderRoutineGroups=(items,allowRemove)=>{
+        const groups=groupRoutines(items);
+        const labels={morning:'Утро',day:'День',evening:'Вечер',other:'Без периода'};
+        const order=['morning','day','evening','other'];
+        let html='';
+        for(const key of order){
+            if(!groups[key].length)continue;
+            html+=`<div class="phoenix-journal-period"><div class="phoenix-journal-period-title">${labels[key]}</div>`;
+            for(const routine of groups[key]){
+                const record=completions.find(c=>Number(c.routine_id)===Number(routine.id));
+                const completed=record?.status==='completed';
+                const frequency=routine.frequency==='daily'?'Каждый день':getRoutineFrequencyLabel(routine.frequency);
+                html+=`<div class="phoenix-journal-item">
+                    <button class="phoenix-journal-check ${completed?'is-done':''}" type="button" onclick="phoenixJournalToggleRoutine(${routine.id}, '${date}')">${completed?'✓':''}</button>
+                    <div class="phoenix-journal-item-main">
+                        <div class="phoenix-journal-item-title ${completed?'is-done':''}">${escapeHtml(routine.title||'Без названия')}</div>
+                        <div class="phoenix-journal-frequency">${escapeHtml(frequency)}${routine.duration_minutes?` · ${Number(routine.duration_minutes)} мин.`:''}</div>
+                    </div>
+                    ${allowRemove?`<div class="phoenix-journal-item-actions"><button class="phoenix-journal-remove" type="button" title="Убрать из дня" onclick="phoenixJournalRemoveRoutine(${routine.id}, '${date}')">×</button></div>`:''}
+                </div>`;
+            }
+            html+='</div>';
+        }
+        return html||'<div class="phoenix-journal-empty">Нет рутин.</div>';
+    };
 
     const taskHtml=tasks.length?tasks.map(task=>{
-        const links=taskLinks.filter(l=>Number(l.task_id)===Number(task.id));
-        const goalNames=links.map(l=>goalMap.get(Number(l.goal_id))).filter(Boolean).map(g=>g.title);
         const done=task.status==='completed';
-        return `
-        <div class="phoenix-journal-item">
-            <button class="phoenix-journal-check ${done?'is-done':''}" type="button"
-                onclick="phoenixJournalToggleTask(${task.id})">${done?'✓':''}</button>
-            <div class="phoenix-journal-item-title ${done?'is-done':''}">
-                ${escapeHtml(task.title||'Без названия')}
-                ${goalNames.length?`<div class="phoenix-journal-item-meta">🎯 ${escapeHtml(goalNames.join(' · '))}</div>`:''}
+        return `<div class="phoenix-journal-item">
+            <button class="phoenix-journal-check ${done?'is-done':''}" type="button" onclick="phoenixJournalToggleTask(${task.id})">${done?'✓':''}</button>
+            <div class="phoenix-journal-item-main">
+                <div class="phoenix-journal-item-title ${done?'is-done':''}">${escapeHtml(task.title||'Без названия')}</div>
             </div>
+            <div class="phoenix-journal-item-actions"><button class="phoenix-journal-remove" type="button" title="Убрать из дня" onclick="phoenixJournalRemoveTask(${task.id})">×</button></div>
         </div>`;
     }).join(''):'<div class="phoenix-journal-empty">Нет задач.</div>';
 
-    // Daily routines are automatic. Weekly/monthly routines appear only if manually added
-    // to this date by a planned routine_completions row.
-    const routineHtmlItems=[];
-    for(const routine of routines){
-        const record=completions.find(c=>Number(c.routine_id)===Number(routine.id));
-        const manuallyPlanned=record?.status==='planned';
-        const completed=record?.status==='completed';
-
-        if(routine.frequency==='daily' || manuallyPlanned || completed){
-            routineHtmlItems.push(`
-            <div class="phoenix-journal-item">
-                <button class="phoenix-journal-check ${completed?'is-done':''}" type="button"
-                    onclick="phoenixJournalToggleRoutine(${routine.id}, '${date}')">${completed?'✓':''}</button>
-                <div class="phoenix-journal-item-title ${completed?'is-done':''}">
-                    ${escapeHtml(routine.title||'Без названия')}
-                    ${routine.frequency!=='daily'?`<div class="phoenix-journal-item-meta">${escapeHtml(getRoutineFrequencyLabel(routine.frequency))}</div>`:''}
-                </div>
-            </div>`);
-        }
-    }
-    const routineHtml=routineHtmlItems.length?routineHtmlItems.join(''):'<div class="phoenix-journal-empty">Нет рутин.</div>';
-
     const goalHtml=dayGoals.length?dayGoals.map(goal=>{
         const done=goal.status==='completed';
-        return `
-        <div class="phoenix-journal-item">
-            <button class="phoenix-journal-check ${done?'is-done':''}" type="button"
-                onclick="phoenixJournalToggleDayGoal(${goal.id}, '${escapeHtml(goal.status||'active')}')">${done?'✓':''}</button>
-            <div class="phoenix-journal-item-title ${done?'is-done':''}">${escapeHtml(goal.title||'Без названия')}</div>
+        return `<div class="phoenix-journal-item">
+            <button class="phoenix-journal-check ${done?'is-done':''}" type="button" onclick="phoenixJournalToggleDayGoal(${goal.id}, '${escapeHtml(goal.status||'active')}')">${done?'✓':''}</button>
+            <div class="phoenix-journal-item-main"><div class="phoenix-journal-item-title ${done?'is-done':''}">${escapeHtml(goal.title||'Без названия')}</div></div>
         </div>`;
     }).join(''):'';
 
@@ -4125,24 +4196,40 @@ async function loadPhoenixJournalDay(){
             </div>
         </div>
 
-        <div class="phoenix-journal-section">
-            <div class="phoenix-journal-section-head"><h3>Рутины</h3></div>
-            ${routineHtml}
+        <div class="phoenix-journal-columns">
+            <div class="phoenix-journal-column">
+                <div class="phoenix-journal-column-title"><h3>АВТОМАТИЧЕСКИЕ ЕЖЕДНЕВНЫЕ</h3></div>
+                ${renderRoutineGroups(automaticDaily,false)}
+            </div>
+            <div class="phoenix-journal-column">
+                <div class="phoenix-journal-column-title"><h3>ПЛАН НА ДЕНЬ</h3></div>
+                <div class="phoenix-journal-section">
+                    <div class="phoenix-journal-section-head"><h3>РУТИНЫ</h3></div>
+                    ${renderRoutineGroups(manuallyAdded,true)}
+                </div>
+                <div class="phoenix-journal-section">
+                    <div class="phoenix-journal-section-head"><h3>ЗАДАЧИ</h3></div>
+                    ${taskHtml}
+                </div>
+                ${dayGoals.length?`<div class="phoenix-journal-section"><div class="phoenix-journal-section-head"><h3>ЦЕЛИ ДНЯ</h3></div>${goalHtml}</div>`:''}
+            </div>
         </div>
-
-        <div class="phoenix-journal-section">
-            <div class="phoenix-journal-section-head"><h3>Задачи</h3></div>
-            ${taskHtml}
-        </div>
-
-        ${dayGoals.length?`
-        <div class="phoenix-journal-section">
-            <div class="phoenix-journal-section-head"><h3>Цели дня</h3></div>
-            ${goalHtml}
-        </div>`:''}
     `;
 }
 
+async function phoenixJournalRemoveRoutine(routineId,date){
+    const {error}=await supabaseClient.from('routine_completions').delete().eq('routine_id',routineId).eq('completion_date',date);
+    if(error){alert('Ошибка удаления рутины из дня: '+error.message);return;}
+    await loadPhoenixJournalDay();
+    await refreshPhoenixJournalDots();
+}
+
+async function phoenixJournalRemoveTask(taskId){
+    const {error}=await supabaseClient.from('tasks').update({due_date:null}).eq('id',taskId);
+    if(error){alert('Ошибка удаления задачи из дня: '+error.message);return;}
+    await loadPhoenixJournalDay();
+    await refreshPhoenixJournalDots();
+}
 async function phoenixJournalToggleTask(taskId){
     const task=allPhoenixTasks.find(t=>Number(t.id)===Number(taskId));
     if(!task)return;
@@ -4209,14 +4296,21 @@ async function openPhoenixJournalAdd(mode){
                 <span>${escapeHtml(t.title||'Без названия')}</span>
             </label>`).join(''):'<div class="phoenix-journal-empty">Нет открытых задач.</div>';
     }else{
-        const res=await supabaseClient.from('routines').select('id,title,frequency,is_active').eq('is_active',true).order('created_at',{ascending:false});
+        const res=await supabaseClient.from('routines').select('id,title,frequency,is_active,time_of_day').eq('is_active',true).order('title',{ascending:true});
         if(res.error){list.innerHTML=`<div class="phoenix-journal-empty">${escapeHtml(res.error.message)}</div>`;return;}
         const routines=res.data||[];
-        list.innerHTML=routines.length?routines.map(r=>`
-            <label class="phoenix-journal-option">
-                <input type="checkbox" class="journal-add-routine" value="${r.id}">
-                <span>${escapeHtml(r.title||'Без названия')} <small>${escapeHtml(getRoutineFrequencyLabel(r.frequency))}</small></span>
-            </label>`).join(''):'<div class="phoenix-journal-empty">Нет активных рутин.</div>';
+        const groups={morning:[],day:[],evening:[],other:[]};
+        routines.forEach(r=>{const key=['morning','day','evening'].includes(r.time_of_day)?r.time_of_day:'other';groups[key].push(r);});
+        Object.values(groups).forEach(arr=>arr.sort((a,b)=>(a.title||'').localeCompare(b.title||'','ru')));
+        const labels={morning:'Утро',day:'День',evening:'Вечер',other:'Без периода'};
+        let html='';
+        ['morning','day','evening','other'].forEach(key=>{
+            if(!groups[key].length)return;
+            html+=`<div class="phoenix-journal-period"><div class="phoenix-journal-period-title">${labels[key]}</div>`;
+            html+=groups[key].map(r=>`<label class="phoenix-journal-option"><input type="checkbox" class="journal-add-routine" value="${r.id}"><span>${escapeHtml(r.title||'Без названия')} <small>${escapeHtml(getRoutineFrequencyLabel(r.frequency))}</small></span></label>`).join('');
+            html+='</div>';
+        });
+        list.innerHTML=html||'<div class="phoenix-journal-empty">Нет активных рутин.</div>';
     }
 }
 
