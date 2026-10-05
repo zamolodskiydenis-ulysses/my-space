@@ -901,6 +901,109 @@
 
 
 
+
+/* GOALS — 3 PERIODS ONLY */
+.phoenix-goals-wheel{
+    background:
+        radial-gradient(circle at center, rgba(0,0,0,.98) 0 15.5%, transparent 15.8%),
+        conic-gradient(from -90deg,
+            rgba(255,116,28,.060) 0 33.05%,
+            rgba(255,255,255,.030) 33.05% 33.35%,
+            rgba(255,116,28,.038) 33.35% 66.35%,
+            rgba(255,255,255,.030) 66.35% 66.65%,
+            rgba(255,116,28,.050) 66.65% 100%);
+}
+.phoenix-goal-year,.phoenix-goal-month,.phoenix-goal-week{
+    left:50%;
+    top:50%;
+    width:38%;
+    height:38%;
+    transform:translate(-50%,-50%);
+    border-radius:50%;
+    padding:10px;
+}
+.phoenix-goal-year{top:27%;}
+.phoenix-goal-month{left:73%;top:68%;}
+.phoenix-goal-week{left:27%;top:68%;}
+.phoenix-goal-period::before,.phoenix-goal-period::after{display:none!important;}
+.phoenix-goal-period:hover{
+    background:radial-gradient(circle at center, rgba(255,94,20,.18), transparent 70%);
+    transform:translate(-50%,-50%) scale(1.035);
+}
+.phoenix-goal-period strong{font-size:clamp(16px,2.1vw,25px);}
+.phoenix-goal-period small b{font-size:24px;}
+
+/* Связанные цели в конструкторе задачи */
+.phoenix-goal-relations-editor{
+    margin:18px 0 20px;
+    padding:15px;
+    border:1px solid rgba(255,177,95,.13);
+    border-radius:14px;
+    background:linear-gradient(180deg,rgba(255,255,255,.022),rgba(255,255,255,.010));
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.025);
+}
+.phoenix-goal-relations-editor h4{margin:0 0 11px;color:#c99565;font:11px/1.2 Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;}
+.phoenix-goal-relations-list{
+    display:grid;
+    gap:6px;
+    max-height:220px;
+    overflow-y:auto;
+    overflow-x:hidden;
+    margin:0;
+    padding-right:4px;
+}
+.phoenix-goal-relations-list::-webkit-scrollbar{width:7px;}
+.phoenix-goal-relations-list::-webkit-scrollbar-track{background:rgba(255,255,255,.02);border-radius:8px;}
+.phoenix-goal-relations-list::-webkit-scrollbar-thumb{background:rgba(255,145,63,.35);border-radius:8px;}
+.phoenix-goal-relation-option{
+    display:flex!important;
+    align-items:center!important;
+    gap:11px!important;
+    width:100%;
+    min-height:46px;
+    padding:8px 10px!important;
+    color:#b7a79a;
+    font:12px/1.3 Arial,sans-serif;
+    border:1px solid transparent;
+    border-radius:10px;
+    cursor:pointer;
+    background:rgba(255,255,255,.012);
+    transition:.18s ease;
+}
+.phoenix-goal-relation-option:hover{background:rgba(255,100,25,.055)!important;border-color:rgba(255,177,95,.10);color:#ead8c6;}
+.phoenix-goal-relation-option input{
+    appearance:none;
+    -webkit-appearance:none;
+    width:17px!important;
+    height:17px!important;
+    flex:0 0 17px;
+    margin:0!important;
+    border:1px solid rgba(255,177,95,.38);
+    border-radius:50%;
+    background:#090807;
+    position:relative;
+    cursor:pointer;
+}
+.phoenix-goal-relation-option input:checked{border-color:#e28a45;background:rgba(207,81,22,.18);box-shadow:0 0 12px rgba(255,91,20,.14);}
+.phoenix-goal-relation-option input:checked::after{content:'';position:absolute;inset:4px;border-radius:50%;background:#f0a05b;box-shadow:0 0 7px rgba(255,119,35,.35);}
+.phoenix-goal-relation-copy{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0;width:100%;}
+.phoenix-goal-relation-title{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#e1d1c1;}
+.phoenix-goal-relation-period{flex:0 0 auto;color:#75685f;font:10px/1 Arial,sans-serif;text-transform:uppercase;letter-spacing:.08em;padding:4px 7px;border:1px solid rgba(255,177,95,.10);border-radius:999px;background:rgba(255,255,255,.018);}
+
+/* Чекбокс цели в списке периода */
+.phoenix-goal-check{cursor:pointer;transition:.18s ease;}
+.phoenix-goal-check:hover{border-color:rgba(255,177,95,.65);box-shadow:0 0 13px rgba(255,90,18,.16);transform:scale(1.06);}
+
+@media(max-width:700px){
+    .phoenix-goal-year{top:26%;}
+    .phoenix-goal-month{left:72%;top:69%;}
+    .phoenix-goal-week{left:28%;top:69%;}
+    .phoenix-goal-period{width:42%;height:42%;}
+    .phoenix-goal-relation-copy{gap:7px;}
+    .phoenix-goal-relation-period{display:none;}
+}
+
+
 /* TASKS */
 .phoenix-tasks-screen{max-width:900px;margin:30px auto;padding:42px 30px 60px;box-sizing:border-box;background:radial-gradient(circle at 50% 0%,rgba(255,91,20,.06),transparent 36%),#070707;border:1px solid rgba(255,177,95,.10);border-radius:18px;min-height:70vh}
 .phoenix-tasks-header{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:28px}
@@ -1536,7 +1639,7 @@
             openLifeSection('goalsSection');
             if (route.startsWith('goals-')) {
                 const period = route.slice(6);
-                if (['year','month','week','day'].includes(period)) {
+                if (['year','month','week'].includes(period)) {
                     openGoalPeriod(period);
                 }
             }
@@ -1593,12 +1696,6 @@
                 <span class="phoenix-goal-icon">◫</span>
                 <strong>НЕДЕЛЯ</strong>
                 <small><b id="goalCountWeek">0</b> целей</small>
-            </button>
-
-            <button type="button" class="phoenix-goal-period phoenix-goal-day" data-period="day">
-                <span class="phoenix-goal-icon">◉</span>
-                <strong>ДЕНЬ</strong>
-                <small><b id="goalCountDay">0</b> целей</small>
             </button>
 
             <button type="button" class="phoenix-goal-add" id="openGoalCreator" aria-label="Создать цель">
@@ -1709,7 +1806,6 @@
             <option value="year">Год</option>
             <option value="month">Месяц</option>
             <option value="week">Неделя</option>
-            <option value="day">День</option>
         </select>
 
         <select
@@ -1849,8 +1945,7 @@
         const labels = {
             year: 'Год',
             month: 'Месяц',
-            week: 'Неделя',
-            day: 'День'
+            week: 'Неделя'
         };
         return labels[period] || period || 'Не указан';
     }
@@ -1959,12 +2054,6 @@
             return;
         }
 
-        if (period === 'day') {
-            const base = startInput.value || getTodayIsoDate();
-            startInput.value = base;
-            dueInput.value = base;
-            note.textContent = 'Можно выбрать любую дату. Дневная цель занимает ровно один день.';
-        }
     }
 
     async function loadGoals() {
@@ -1976,18 +2065,19 @@
             updateGoalWheelCounts([]);
             return;
         }
-        allPhoenixGoals=data||[];
+        // Дневные цели больше не являются частью Phoenix. Старые записи в БД не удаляем,
+        // просто не показываем их в интерфейсе.
+        allPhoenixGoals=(data||[]).filter(g=>g.period!=='day');
         updateGoalWheelCounts(allPhoenixGoals);
         if(currentGoalPeriod) renderGoalPeriod(currentGoalPeriod);
     }
 
     function updateGoalWheelCounts(goals) {
-        const counts={year:0,month:0,week:0,day:0};
+        const counts={year:0,month:0,week:0};
         goals.forEach(g=>{if(Object.prototype.hasOwnProperty.call(counts,g.period))counts[g.period]++;});
         document.getElementById('goalCountYear').textContent=counts.year;
         document.getElementById('goalCountMonth').textContent=counts.month;
         document.getElementById('goalCountWeek').textContent=counts.week;
-        document.getElementById('goalCountDay').textContent=counts.day;
     }
 
     function openGoalPeriod(period) {
@@ -2010,7 +2100,7 @@
     }
 
     function renderGoalPeriod(period) {
-        const labels={year:'ГОД',month:'МЕСЯЦ',week:'НЕДЕЛЯ',day:'ДЕНЬ'};
+        const labels={year:'ГОД',month:'МЕСЯЦ',week:'НЕДЕЛЯ'};
         const goals=allPhoenixGoals.filter(g=>g.period===period);
         document.getElementById('goalPeriodTitle').textContent=labels[period]||'ЦЕЛИ';
         document.getElementById('goalPeriodCount').textContent=`${goals.length} ${goals.length===1?'цель':'целей'}`;
@@ -2022,7 +2112,14 @@
         cards.innerHTML=goals.map(g=>`
             <button type="button" class="phoenix-goal-card" data-goal-id="${g.id}">
                 <span class="phoenix-goal-card-row">
-                    <span class="phoenix-goal-check ${g.status==='completed'?'is-completed':''}" aria-hidden="true">${g.status==='completed'?'✓':''}</span>
+                    <span
+                        class="phoenix-goal-check ${g.status==='completed'?'is-completed':''}"
+                        role="button"
+                        tabindex="0"
+                        title="${g.status==='completed'?'Вернуть цель в активные':'Завершить цель'}"
+                        onclick="event.stopPropagation(); toggleGoalCompletion(${g.id})"
+                        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();toggleGoalCompletion(${g.id})}"
+                    >${g.status==='completed'?'✓':''}</span>
                     <span class="phoenix-goal-card-title ${g.status==='completed'?'is-completed':''}">${escapeHtml(g.title||'Без названия')}</span>
                 </span>
                 <span class="phoenix-goal-card-meta">
@@ -2031,6 +2128,26 @@
                 </span>
             </button>`).join('');
         cards.querySelectorAll('.phoenix-goal-card').forEach(card=>card.addEventListener('click',()=>openGoalDetail(Number(card.dataset.goalId))));
+    }
+
+    async function toggleGoalCompletion(goalId) {
+        const goal = allPhoenixGoals.find(g => Number(g.id) === Number(goalId));
+        if (!goal) return;
+
+        const nextStatus = goal.status === 'completed' ? 'active' : 'completed';
+        const { error } = await supabaseClient
+            .from('goals')
+            .update({ status: nextStatus })
+            .eq('id', goalId);
+
+        if (error) {
+            alert('Ошибка изменения статуса цели: ' + error.message);
+            return;
+        }
+
+        goal.status = nextStatus;
+        renderGoalPeriod(currentGoalPeriod);
+        updateGoalWheelCounts(allPhoenixGoals);
     }
 
     async function openGoalDetail(goalId) {
@@ -2451,8 +2568,7 @@
         const labels = {
             year: 'Год',
             month: 'Месяц',
-            week: 'Неделя',
-            day: 'День'
+            week: 'Неделя'
         };
         return labels[period] || period || 'Период не указан';
     }
@@ -2481,7 +2597,10 @@
         taskGoalsList.innerHTML = data.map(goal => `
             <label class="phoenix-goal-relation-option">
                 <input type="checkbox" class="task-goal-checkbox" value="${goal.id}" ${selected.has(Number(goal.id)) ? 'checked' : ''}>
-                <span>${escapeHtml(goal.title || 'Без названия')} <span style="color:#6f6259;">(${escapeHtml(getGoalPeriodLabel(goal.period))})</span></span>
+                <span class="phoenix-goal-relation-copy">
+                    <span class="phoenix-goal-relation-title">${escapeHtml(goal.title || 'Без названия')}</span>
+                    <span class="phoenix-goal-relation-period">${escapeHtml(getGoalPeriodLabel(goal.period))}</span>
+                </span>
             </label>
         `).join('');
     }
@@ -3218,8 +3337,7 @@
                 <select id="routineTimeOfDay">
                     <option value="">Выберите период дня</option>
                     <option value="morning">Утро</option>
-                    <option value="day">День</option>
-                    <option value="evening">Вечер</option>
+                            <option value="evening">Вечер</option>
                 </select>
 
                 <label class="phoenix-routine-field-label">
@@ -4095,22 +4213,19 @@ async function loadPhoenixJournalDay(){
     const date=phoenixJournalSelectedDate;
     root.innerHTML='<div class="phoenix-journal-empty">Загрузка...</div>';
 
-    const [tasksRes,routinesRes,goalsRes]=await Promise.all([
+    const [tasksRes,routinesRes]=await Promise.all([
         supabaseClient.from('tasks').select('*').eq('due_date',date).order('priority',{ascending:false}).order('created_at',{ascending:true}),
-        supabaseClient.from('routines').select('*').eq('is_active',true).order('created_at',{ascending:false}),
-        supabaseClient.from('goals').select('id,title,status,period,start_date,due_date').eq('period','day').lte('start_date',date).gte('due_date',date).order('created_at',{ascending:false})
+        supabaseClient.from('routines').select('*').eq('is_active',true).order('created_at',{ascending:false})
     ]);
 
-    if(tasksRes.error||routinesRes.error||goalsRes.error){
-        const error=(tasksRes.error||routinesRes.error||goalsRes.error);
+    if(tasksRes.error||routinesRes.error){
+        const error=(tasksRes.error||routinesRes.error);
         root.innerHTML=`<div class="phoenix-journal-empty">Ошибка загрузки: ${escapeHtml(error.message)}</div>`;
         return;
     }
 
     const tasks=tasksRes.data||[];
     const routines=routinesRes.data||[];
-    const dayGoals=goalsRes.data||[];
-
     const routineIds=routines.map(r=>r.id);
     let completions=[];
     if(routineIds.length){
@@ -4179,14 +4294,6 @@ async function loadPhoenixJournalDay(){
         </div>`;
     }).join(''):'<div class="phoenix-journal-empty">Нет задач.</div>';
 
-    const goalHtml=dayGoals.length?dayGoals.map(goal=>{
-        const done=goal.status==='completed';
-        return `<div class="phoenix-journal-item">
-            <button class="phoenix-journal-check ${done?'is-done':''}" type="button" onclick="phoenixJournalToggleDayGoal(${goal.id}, '${escapeHtml(goal.status||'active')}')">${done?'✓':''}</button>
-            <div class="phoenix-journal-item-main"><div class="phoenix-journal-item-title ${done?'is-done':''}">${escapeHtml(goal.title||'Без названия')}</div></div>
-        </div>`;
-    }).join(''):'';
-
     root.innerHTML=`
         <div class="phoenix-journal-date-title">
             <strong>${phoenixJournalFormatDate(date)}</strong>
@@ -4211,7 +4318,6 @@ async function loadPhoenixJournalDay(){
                     <div class="phoenix-journal-section-head"><h3>ЗАДАЧИ</h3></div>
                     ${taskHtml}
                 </div>
-                ${dayGoals.length?`<div class="phoenix-journal-section"><div class="phoenix-journal-section-head"><h3>ЦЕЛИ ДНЯ</h3></div>${goalHtml}</div>`:''}
             </div>
         </div>
     `;
@@ -4267,14 +4373,6 @@ async function phoenixJournalToggleRoutine(routineId,date){
     }
     await loadPhoenixJournalDay();
     await refreshPhoenixJournalDots();
-}
-
-async function phoenixJournalToggleDayGoal(goalId,status){
-    const next=status==='completed'?'active':'completed';
-    const {error}=await supabaseClient.from('goals').update({status:next}).eq('id',goalId);
-    if(error){alert(error.message);return;}
-    await loadGoals();
-    await loadPhoenixJournalDay();
 }
 
 async function openPhoenixJournalAdd(mode){
