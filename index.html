@@ -253,6 +253,50 @@
         0 0 35px rgba(170, 62, 18, 0.08);
 }
 
+        .phoenix-home-topic {
+    cursor: default;
+    color: rgba(229, 211, 194, 0.68);
+}
+
+.phoenix-home-topic:hover {
+    color: rgba(255, 239, 223, 0.92);
+    background: radial-gradient(circle at center, rgba(203,84,25,0.10), transparent 70%);
+}
+
+.phoenix-home-topic strong {
+    font-size: clamp(11px, 1.15vw, 16px);
+    letter-spacing: .13em;
+    font-weight: 400;
+}
+
+.phoenix-home-principle {
+    position: absolute;
+    left: 4.5%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: min(220px, 18vw);
+    z-index: 6;
+    color: rgba(184, 161, 143, .62);
+    font: 11px/1.75 Arial, sans-serif;
+    letter-spacing: .03em;
+    text-transform: lowercase;
+    pointer-events: none;
+}
+
+.phoenix-home-principle span {
+    display: block;
+}
+
+.phoenix-home-principle small {
+    display: block;
+    margin-top: 12px;
+    color: rgba(213, 182, 153, .72);
+    font-size: 9px;
+    line-height: 1.5;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
         .phoenix-center {
     position: absolute;
     width: 30%;
@@ -1004,6 +1048,78 @@
 }
 
 
+/* EDGE EDITORIAL TEXT */
+.phoenix-edge-quote,
+.phoenix-edge-routine-principles {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    width: min(245px, 19vw);
+    z-index: 120;
+    color: rgba(184, 161, 143, .62);
+    font: 11px/1.7 Arial, sans-serif;
+    letter-spacing: .025em;
+    pointer-events: none;
+}
+
+.phoenix-edge-quote {
+    right: 24px;
+    text-align: left;
+}
+
+.phoenix-edge-routine-principles {
+    left: 24px;
+    text-align: left;
+}
+
+.phoenix-edge-label {
+    margin-bottom: 13px;
+    color: rgba(205, 143, 92, .72);
+    font-size: 9px;
+    letter-spacing: .24em;
+    text-transform: uppercase;
+}
+
+.phoenix-edge-quote blockquote {
+    margin: 0;
+    color: rgba(224, 203, 187, .76);
+    font: 400 13px/1.65 Georgia, 'Times New Roman', serif;
+}
+
+.phoenix-edge-quote cite {
+    display: block;
+    margin-top: 13px;
+    color: rgba(151, 128, 111, .64);
+    font: 10px/1.5 Arial, sans-serif;
+    font-style: normal;
+}
+
+.phoenix-edge-routine-principles > div:not(.phoenix-edge-label) {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 177, 95, .08);
+}
+
+.phoenix-edge-routine-principles > div:last-child {
+    border-bottom: 0;
+}
+
+@media (max-width: 1180px) {
+    .phoenix-edge-quote,
+    .phoenix-edge-routine-principles {
+        display: none;
+    }
+    .phoenix-home-principle {
+        display: none;
+    }
+}
+
+@media (max-width: 700px) {
+    .phoenix-home-topic strong {
+        font-size: 10px;
+        letter-spacing: .04em;
+    }
+}
+
 /* TASKS */
 .phoenix-tasks-screen{max-width:900px;margin:30px auto;padding:42px 30px 60px;box-sizing:border-box;background:radial-gradient(circle at 50% 0%,rgba(255,91,20,.06),transparent 36%),#070707;border:1px solid rgba(255,177,95,.10);border-radius:18px;min-height:70vh}
 .phoenix-tasks-header{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:28px}
@@ -1493,13 +1609,22 @@
                 <strong>ЖИЗНЬ</strong>
             </div>
 
-            <div class="phoenix-sector sector-2"></div>
-            <div class="phoenix-sector sector-3"></div>
-            <div class="phoenix-sector sector-4"></div>
-            <div class="phoenix-sector sector-5"></div>
+            <div class="phoenix-sector sector-2 phoenix-home-topic"><strong>ЗДОРОВЬЕ</strong></div>
+            <div class="phoenix-sector sector-3 phoenix-home-topic"><strong>ЛИЧНАЯ ЖИЗНЬ</strong></div>
+            <div class="phoenix-sector sector-4 phoenix-home-topic"><strong>КНИГА</strong></div>
+            <div class="phoenix-sector sector-5 phoenix-home-topic"><strong>СПОРТ</strong></div>
             <div class="phoenix-sector sector-6"></div>
             <div class="phoenix-sector sector-7"></div>
             <div class="phoenix-sector sector-8"></div>
+
+            <div class="phoenix-home-principle">
+                <span>лень убивает амбиции</span>
+                <span>страх убивает мечты</span>
+                <span>эго убивает рост</span>
+                <span>зависть убивает покой</span>
+                <span>сомнение убивает уверенность</span>
+                <small>теперь прочти это справа налево</small>
+            </div>
 
             <div class="phoenix-center">
                 <div class="phoenix-flame">🔥</div>
@@ -3286,6 +3411,14 @@
     }
 </style>
 
+<aside class="phoenix-edge-routine-principles" aria-label="Принципы рутины">
+    <div class="phoenix-edge-label">ПРИНЦИПЫ</div>
+    <div>наличие сильного желания</div>
+    <div>совершение ключевых действий</div>
+    <div>осознание цены</div>
+    <div>способность не поддаваться эмоциям</div>
+</aside>
+
 <section id="routinesSection" class="phoenix-routines-screen">
     <div class="phoenix-routines-header">
         <div>
@@ -4038,6 +4171,12 @@
         }
     });
 </script>
+<aside class="phoenix-edge-quote" aria-label="Цитата Эпиктета">
+    <div class="phoenix-edge-label">ЭПИКТЕТ / БЕСЕДЫ / IV</div>
+    <blockquote>«Мужчина, который может отказаться от того, чего он желает, ради того, кем он должен стать, — это человек, которым никто не может владеть.»</blockquote>
+    <cite>Эпиктет, Беседы, Книга IV</cite>
+</aside>
+
 <section id="todaySection" class="phoenix-journal-screen">
     <div class="phoenix-journal-header">
         <div>
