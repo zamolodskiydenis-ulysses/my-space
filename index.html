@@ -1108,14 +1108,39 @@
 @media (max-width: 1180px) {
     .phoenix-edge-quote,
     .phoenix-edge-routine-principles {
-        display: none;
+        width: min(220px, 22vw);
+        font-size: 10px;
     }
+    .phoenix-edge-quote { right: 12px; }
+    .phoenix-edge-routine-principles { left: 12px; }
     .phoenix-home-principle {
-        display: none;
+        display: block;
+        left: 3%;
+        width: min(190px, 24vw);
+        font-size: 10px;
     }
 }
 
 @media (max-width: 700px) {
+    .phoenix-edge-quote,
+    .phoenix-edge-routine-principles {
+        position: relative;
+        top: auto;
+        left: auto;
+        right: auto;
+        transform: none;
+        width: auto;
+        max-width: 100%;
+        margin: 18px 16px 0;
+        padding: 16px 0;
+        border-top: 1px solid rgba(255,177,95,.10);
+    }
+    .phoenix-home-principle {
+        left: 5%;
+        width: 30%;
+        font-size: 8px;
+        line-height: 1.55;
+    }
     .phoenix-home-topic strong {
         font-size: 10px;
         letter-spacing: .04em;
@@ -1686,6 +1711,13 @@
         } catch (e) {}
     }
 
+    function updatePhoenixEdgeEditorial(sectionId) {
+        const quote = document.getElementById('journalEdgeQuote');
+        const routine = document.getElementById('routineEdgePrinciples');
+        if (quote) quote.style.display = sectionId === 'todaySection' ? 'block' : 'none';
+        if (routine) routine.style.display = sectionId === 'routinesSection' ? 'block' : 'none';
+    }
+
     function openPhoenixLife() {
         document.getElementById('phoenixHome').style.display = 'none';
         document.getElementById('phoenixLife').style.display = 'flex';
@@ -1711,6 +1743,7 @@
         }
 
         document.getElementById(sectionId).style.display = 'block';
+        updatePhoenixEdgeEditorial(sectionId);
         document.getElementById('phoenixBackButton').textContent = '← ЖИЗНЬ';
         document.getElementById('phoenixBackButton').onclick = backToPhoenixLife;
 
@@ -1737,6 +1770,7 @@
     }
 
     function closePhoenixLife() {
+        updatePhoenixEdgeEditorial('life');
         document.getElementById('phoenixLife').style.display = 'none';
         document.getElementById('goalsSection').style.display = 'none';
         document.getElementById('tasksSection').style.display = 'none';
@@ -3413,7 +3447,7 @@
     }
 </style>
 
-<aside class="phoenix-edge-routine-principles" aria-label="Принципы рутины">
+<aside id="routineEdgePrinciples" class="phoenix-edge-routine-principles" aria-label="Принципы рутины" style="display:none;">
     <div class="phoenix-edge-label">ПРИНЦИПЫ</div>
     <div>наличие сильного желания</div>
     <div>совершение ключевых действий</div>
@@ -4173,7 +4207,7 @@
         }
     });
 </script>
-<aside class="phoenix-edge-quote" aria-label="Цитата Эпиктета">
+<aside id="journalEdgeQuote" class="phoenix-edge-quote" aria-label="Цитата Эпиктета" style="display:none;">
     <div class="phoenix-edge-label">ЭПИКТЕТ / БЕСЕДЫ / IV</div>
     <blockquote>«Мужчина, который может отказаться от того, чего он желает, ради того, кем он должен стать, — это человек, которым никто не может владеть.»</blockquote>
     <cite>Эпиктет, Беседы, Книга IV</cite>
