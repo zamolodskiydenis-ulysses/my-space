@@ -253,7 +253,13 @@
         0 0 35px rgba(170, 62, 18, 0.08);
 }
 
-        .phoenix-home-topic {
+        .phoenix-sector.sector-6,
+.phoenix-sector.sector-7,
+.phoenix-sector.sector-8 {
+    display: none;
+}
+
+.phoenix-home-topic {
     cursor: default;
     color: rgba(229, 211, 194, 0.68);
 }
@@ -727,16 +733,12 @@
     background: linear-gradient(90deg, transparent, rgba(255, 218, 174, .18), transparent);
 }
 
-.phoenix-goal-month::after,
-.phoenix-goal-day::after { display: none; }
-.phoenix-goal-week::before,
-.phoenix-goal-day::before { display: none; }
+.phoenix-goal-month::after { display: none; }
+.phoenix-goal-week::before { display: none; }
 
 .phoenix-goal-year { left: 0; top: 0; }
 .phoenix-goal-month { left: 50%; top: 0; }
 .phoenix-goal-week { left: 0; top: 50%; }
-.phoenix-goal-day { left: 50%; top: 50%; }
-
 .phoenix-goal-period:hover {
     color: #fff0dc;
     background: radial-gradient(circle at center, rgba(255, 94, 20, .18), transparent 68%);
@@ -4596,4 +4598,3 @@ window.addEventListener('load',()=>{
 </script>
 </body>
 </html>
-
